@@ -1,0 +1,21 @@
+.\" This file defines macros Bcode and Ecode for writting code blocks
+.X dtag -f latex -t code -c verbatim
+.X dtag -f xhtml,epub -t code -c pre
+.X dtag -f text -t code
+.\" Begin a code block
+.#de Bcode
+.Bd -r -t code
+.#if -f xhtml,epub
+.Bf -t escape
+.#;
+.#if -f latex
+.Bf -t verbatim
+.#;
+.#.
+.\" End a code block
+.#de Ecode
+.#if -f xhtml,epub,latex
+.Ef
+.#;
+.Ed -t code
+.#.

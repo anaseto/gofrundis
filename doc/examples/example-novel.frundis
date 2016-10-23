@@ -1,0 +1,16 @@
+.\" some meta info
+.X set lang en
+.X set document-author "author name"
+.X set document-title "title name"
+.X set document-date "2016"
+.X set title-page 1 \" generate page with document info
+.\" first chapter
+.Ch Introduction
+Some text.
+.\" paragraph break
+.P
+Another paragraph.
+.\" second chapter
+.Ch Name of the Chapter
+Some normal text. And some
+.Sm emphasis .

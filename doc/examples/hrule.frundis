@@ -1,0 +1,14 @@
+.\" horizontal rule macro
+.#de Hr
+.P
+.Bf -f xhtml
+<hr>
+.Ef
+.Bf -f latex
+\erule{\etextwidth}{1pt}
+.Ef
+.Bf -f text
+***
+.Ef
+.P
+.#.

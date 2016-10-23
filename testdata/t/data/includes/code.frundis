@@ -1,0 +1,16 @@
+.X dtag -f latex -t code -c verbatim
+.X dtag -f xhtml -t code -c pre
+.X dtag -f markdown -t code
+.#de Bcode
+.#if -f markdown,latex
+.Bf -f markdown,latex
+.#;
+.Bd -r -t code
+.#if -f xhtml
+.Bf -t escape
+.#;
+.#.
+.#de Ecode
+.Ef
+.Ed -t code
+.#.

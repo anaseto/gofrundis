@@ -1,0 +1,15 @@
+.Bl -t verse "A poem"
+.It a verse
+.It
+a second verse
+.P
+.It
+first verse of second strofe
+.El
+.Bl -t verse A Sm poem
+.It Lulu verse
+.It a second Sm verse
+.It a third verse
+.El
+.Sx -t lop A poem
+.Sx -t lop A Sm poem

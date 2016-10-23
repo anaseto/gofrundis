@@ -1,0 +1,91 @@
+.#de -f xhtml salto
+.P
+.  Ft -f xhtml "<p>* * *</p>"
+.#.
+.#de -f xhtml lolailo
+.  Ft -f xhtml <lolailo />
+.#.
+.#de -f latex salto
+.Bf -f latex
+
+\esalto
+
+.Ef
+.#.
+.#de -f markdown salto
+.P
+----------------------------------------
+.P
+.#.
+.#de -f latex lolailo
+.Ft -f latex \elolailo
+.#.
+.#de -f markdown lolailo
+\elolailo
+.#.
+Ponemos texto
+.salto
+.Bf -f latex
+
+
+\elulu
+
+.Ef
+.Bf -f xhtml
+
+
+<lulu />
+
+.Ef
+Patatas
+.#de testmacro
+Esto es una \$1 prueba. Pero que muy \$1de. Además
+hay \$2.
+.#.
+.testmacro gran más
+.\" Define a tag "title" for xhtml rendered as an "<em>" element
+.X mtag -t title -f xhtml -c em
+.X mtag -t title -f latex -c emph
+.X mtag -t title -f markdown
+.\" Define a macro to be used latter
+.#de mytitle
+.  Sm -t title The Title of the Book\$1
+.#.
+.\" ...
+The book title is
+.mytitle " ."
+.mytitle """"
+.mytitle ""
+.mytitle "\e%"
+.#de myitem
+.It text
+.mytitle ""
+.#.
+.Bl
+.myitem
+.El
+.Bl -t desc
+.myitem
+Text.
+.El
+.#de «»
+«»
+.#.
+.«»
+.#de prefix
+.Sm START \$@
+\$@
+.#.
+.prefix one two three .
+.#de flags
+.#if \$?[flag]
+Got a flag.
+.#;
+.#.
+.flags -flag
+.flags
+.#de options
+\$[option]
+.Sm \$[otheroption]
+.#.
+.options -option argument -otheroption otherargument

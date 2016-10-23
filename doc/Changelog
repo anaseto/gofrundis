@@ -1,0 +1,13 @@
+Changes with respect to the perl version:
+
+  + no -perl flag in .#de
+  + no #fl
+  + .Bd -t literal now to be done with "escape" and "verbatim" filters
+  + \$@ can be used to interpolate all arguments of an user defined macro
+  + -filter option should now be spelled -shell
+  + Ft makes use of -t option too
+  + text (markdown-like) exporter (not polished)
+  + added restricted mode more template-friendly
+  + added named arguments and flags to user defined macros
+  + added simple substitution filters and regexp filters
+  + many minor fixes and improvements
