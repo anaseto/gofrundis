@@ -1,4 +1,5 @@
 .X set -f xhtml nbsp " "
+.X mtag -t espace-insecable -f xhtml -c em -b «\~ -e \~»
 .X set dmark —\~
 .If t/data/includes/code.frundis
 A backslash `\e' is written `\ee'. To begin a line with a period you can
@@ -41,3 +42,6 @@ Text.
 .Sm "Some     Text
 .Sm "Some     ""Text
 .Ft -f xhtml,latex -t escape \&"&
+.#if -f xhtml
+.Sm -t espace-insecable blabla blabla
+.#;
