@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd September 11, 2016
+.Dd January 21, 2017
 .Dt FRUNDIS 1
 .Os
 .Sh NAME
@@ -34,7 +34,7 @@ or standard input if no file is given as argument, written in the
 .Nm frundis
 language as documented in
 .Xr frundis_syntax 5 ,
-and exports it to LaTeX, XHTML, EPUB or markdown.
+and exports it to LaTeX, XHTML, EPUB, markdown or groff mom.
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
@@ -45,9 +45,10 @@ The
 argument can be
 .Cm latex ,
 .Cm xhtml ,
-.Cm epub
+.Cm epub ,
+.Cm markdown
 or
-.Cm markdown .
+.Cm mom .
 .It Fl a
 When exporting to XHTML, output only one file, instead of a directory with one
 file per part or chapter, and implies also that
@@ -118,6 +119,12 @@ To produce a LaTeX document without a preamble:
 To produce a complete LaTeX document:
 .Pp
 .Dl "$ frundis -s -T latex input.frundis > output.tex"
+.Pp
+To produce a pdf document using groff mom output format:
+.Pp
+.Dl "$ frundis -s -T mom input.frundis > output.mom"
+.Dl "$ pdfmom -k -t output.mom > output.pdf"
+.Pp
 .Sh DIAGNOSTICS
 Standard error messages have the following form:
 .Pp

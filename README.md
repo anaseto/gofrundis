@@ -1,14 +1,12 @@
-This program is in “alpha” stage, but command-line program under bin/frundis
-is already reasonably tested and should be quite stable, though.
-
 Description
 -----------
 
 The *frundis* language intends to be a semantic markup language with a
 simplified roff-like syntax, originally intended for supporting authoring of
 novels, but it can be used for more varied stuff.  It relies on the exporting
-capabilities of the tool `frundis` to LaTeX, XHTML, EPUB (2 and 3) and
-markdown.
+capabilities of the tool `frundis` to LaTeX, XHTML, EPUB (2 and 3),
+markdown and groff mom. Only LaTeX, XHTML and EPUB output formats are
+considered mature.
 
 The language focuses on simplicity, using a few flexible built-in macros, and
 strives to provide good error messages, while allowing one to explicitly mess

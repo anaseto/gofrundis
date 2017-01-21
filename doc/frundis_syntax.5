@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd September 24, 2016
+.Dd January 21, 2017
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -25,7 +25,7 @@ supporting authoring of a variety of light to medium weight documents, from
 novels to technical tutorials.
 It relies on the exporting capabilities of the tool
 .Xr frundis 1
-to LaTeX, XHTML, EPUB and markdown.
+to LaTeX, XHTML, EPUB, markdown and groff mom.
 .Pp
 The manual is organized as follows.
 Language syntax is described in the
@@ -216,8 +216,8 @@ define exporting parameters and tags:
 .Op Ar string
 .El
 .Sh FORMATS
-Currently four target formats are supported: LaTeX, XHTML, EPUB and
-markdown.
+Currently four target formats are supported: LaTeX, XHTML, EPUB,
+markdown and groff mom.
 Some parameters apply only to a specific target format, see the
 .Sx PARAMETERS
 section.
@@ -234,9 +234,11 @@ refers to XHTML, the
 .Cm epub
 refers to EPUB, the
 .Cm latex
-refers to LaTeX, and the
+refers to LaTeX, the
 .Cm markdown
-refers to markdown.
+refers to markdown, and the
+.Cm mom
+refers to groff mom.
 Several formats can be specified at once by separating them by commas.
 .Ss Restricted mode
 Restricted mode (option
@@ -867,8 +869,8 @@ is provided.
 The
 .Cm hyperref
 package is necessary for LaTeX.
-Cross-references do not work for the markdown export format, text will appear
-as-is.
+Cross-references do not work for the markdown nor mom export formats, text will
+appear as-is.
 .Ss \&Ta
 Table cell separator in
 .Sx \&Bl
@@ -1024,6 +1026,15 @@ found inside a paragraph, such as a
 .Dq span
 element for html, and which follows normal escaping rules of the target format
 in this context.
+When exporting to groff mom, 
+.Cm cmd
+is used as an argument to a \ef[...] font inline escape, so it can for example
+be
+.Cm B ,
+.Cm I ,
+.Cm BI
+or
+.Cm R .
 Finally, the
 .Ar opening
 and
