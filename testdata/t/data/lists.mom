@@ -1,0 +1,88 @@
+.HEADING 1 "An interesting chapter"
+.LIST
+.ITEM
+I no see really why it is interesting\&.
+.ITEM
+But it is\&.
+.LIST OFF
+.LIST
+.ITEM
+un
+.ITEM
+deux
+.ITEM
+trois
+.LIST OFF
+.PP
+.LIST
+.ITEM
+un
+.ITEM
+deux
+.ITEM
+trois
+.LIST OFF
+quatre\&.
+.PP
+.HEADING 1 "Another interesting chapter"
+It is an interesting chapter:
+.PP
+.LIST
+.ITEM
+I no see really why it is interesting to write a very long text of more than
+55 characters\&.
+.ITEM
+But it is\&.
+.LIST OFF
+.LIST
+.ITEM
+first point
+.ITEM
+\f[I]second point\f[R]
+.ITEM
+text 
+and more text
+.ITEM
+and even more text
+\f[I]in fourth point\f[R]
+.LIST OFF
+.LIST USER ""
+.ITEM
+\f[B]a description list\f[R]
+is this\&.
+.ITEM
+\f[B]a poem\f[R]
+is another thing\&.
+.LIST OFF
+.LIST
+.ITEM
+.LIST
+.ITEM
+a nested
+.ITEM
+list
+.LIST OFF
+
+.ITEM
+Item text\&.
+.LIST OFF
+.LIST
+.ITEM
+.LIST
+.ITEM
+some text in the nested list that is too long to fit in a single 55 character line
+.ITEM
+some other text in the nested list
+.LIST OFF
+
+.ITEM
+some text in the main list
+.LIST OFF
+.LIST
+.ITEM
+\f[I]emphasized text\f[R]
+Text
+.ITEM
+\f[I]more emphasized text\f[R]
+Text\&.
+.LIST OFF

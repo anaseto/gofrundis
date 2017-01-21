@@ -1,0 +1,12 @@
+Some text\&.
+More text\&.
+More:
+.PP
+.LIST
+.ITEM
+And textit:
+That\(cqs it\&.
+.LIST OFF
+Some text:
+Some text\&.
+.PP

@@ -29,7 +29,7 @@ func (exp *Exporter) Init() {
 	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout)}
 	exp.Ctx = ctx
 	ctx.Init()
-	ctx.Filters["escape"] = escape.EscapeMarkdownString
+	ctx.Filters["escape"] = escape.Markdown
 }
 
 func (exp *Exporter) Reset() {
@@ -161,6 +161,10 @@ func (exp *Exporter) BeginMarkupBlock(tag string, id string) {
 }
 
 func (exp *Exporter) BeginParagraph() {
+}
+
+func (exp *Exporter) BeginPhrasingMacroInParagraph(nospace bool) {
+	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
 func (exp *Exporter) BeginTable(title string, count int, ncols int) {
@@ -363,7 +367,7 @@ func (exp *Exporter) RenderText(text []ast.Inline) string {
 	if exp.Context().Params["lang"] == "fr" {
 		text = frundis.InsertNbsps(exp, text)
 	}
-	return escape.EscapeMarkdownString(exp.BaseContext().InlinesToText(text))
+	return escape.Markdown(exp.BaseContext().InlinesToText(text))
 }
 
 func (exp *Exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {

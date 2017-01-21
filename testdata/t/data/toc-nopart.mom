@@ -1,0 +1,10 @@
+.HEADING 1 "Chapter name"
+Some introductory text\&.
+.PP
+.HEADING 2 "section name"
+Some section text\&.
+.PP
+.HEADING 3 "subsection name"
+Some subsection text\&.
+.PP
+.TOC

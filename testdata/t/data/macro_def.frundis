@@ -17,10 +17,17 @@
 ----------------------------------------
 .P
 .#.
+.#de -f mom salto
+.P
+.Bf -f mom
+\&.DRH 1.25 2P 3i
+.Ef
+.P
+.#.
 .#de -f latex lolailo
 .Ft -f latex \elolailo
 .#.
-.#de -f markdown lolailo
+.#de -f markdown,mom lolailo
 \elolailo
 .#.
 Ponemos texto
@@ -47,6 +54,7 @@ hay \$2.
 .X mtag -t title -f xhtml -c em
 .X mtag -t title -f latex -c emph
 .X mtag -t title -f markdown
+.X mtag -t title -f mom
 .\" Define a macro to be used latter
 .#de mytitle
 .  Sm -t title The Title of the Book\$1

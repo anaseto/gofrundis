@@ -30,7 +30,9 @@ func doText(exp Exporter) {
 			exp.BeginParagraph()
 			ctx.inpar = true
 			reopenSpanningBlocks(exp)
-		} else if ctx.wantsSpace {
+		} else if ctx.WantsSpace {
+			// XXX: this can break tables for mom (and for markdown
+			// things are not perfect either)
 			fmt.Fprint(&ctx.buf, "\n")
 		}
 		if !ctx.inpar {
@@ -41,7 +43,7 @@ func doText(exp Exporter) {
 			bctx.Error("empty line")
 		}
 		fmt.Fprint(&ctx.buf, text)
-		ctx.wantsSpace = true
+		ctx.WantsSpace = true
 	}
 }
 
@@ -156,7 +158,7 @@ func macroBf(exp Exporter) {
 	}
 	if ctx.inpar {
 		beginPhrasingMacro(exp, flags["ns"])
-		ctx.wantsSpace = false
+		ctx.WantsSpace = false
 	}
 }
 
@@ -290,7 +292,7 @@ func macroBm(exp Exporter) {
 	}
 
 	beginPhrasingMacro(exp, flags["ns"])
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 	var tag string
 	if t, ok := opts["t"]; ok {
 		tag = bctx.InlinesToText(t)
@@ -330,7 +332,7 @@ func macroD(exp Exporter) {
 	ctx.inpar = true
 	reopenSpanningBlocks(exp)
 	exp.BeginDialogue()
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 }
 
 func macroEd(exp Exporter) {
@@ -364,7 +366,7 @@ func macroEd(exp Exporter) {
 	endEventualParagraph(exp, softbreak)
 	exp.EndDisplayBlock(scope.tag)
 
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 }
 
 func macroEf(exp Exporter) {
@@ -397,7 +399,7 @@ func macroEf(exp Exporter) {
 		w := ctx.GetW()
 		fmt.Fprint(w, text)
 		if ctx.inpar && !flags["ns"] {
-			ctx.wantsSpace = true
+			ctx.WantsSpace = true
 		} else {
 			fmt.Fprint(w, "\n")
 		}
@@ -509,7 +511,7 @@ func macroElProcess(exp Exporter) {
 	} else {
 		ctx.itemScope = false
 	}
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 }
 
 func macroEm(exp Exporter) {
@@ -551,7 +553,7 @@ func macroEm(exp Exporter) {
 			fmt.Fprint(w, renderArgs(exp, args))
 		}
 	}
-	ctx.wantsSpace = true
+	ctx.WantsSpace = true
 }
 
 func macroFt(exp Exporter) {
@@ -581,7 +583,7 @@ func macroFt(exp Exporter) {
 	}
 	if ctx.inpar {
 		beginPhrasingMacro(exp, flags["ns"])
-		ctx.wantsSpace = false
+		ctx.WantsSpace = false
 	}
 	// If ctx.Buf is empty, we write directly to ctx.W
 	var text string
@@ -625,7 +627,7 @@ func macroIncludeFile(exp Exporter) {
 		}
 		if ctx.inpar {
 			beginPhrasingMacro(exp, flags["ns"])
-			ctx.wantsSpace = true
+			ctx.WantsSpace = true
 		}
 		source, err := ioutil.ReadFile(filename)
 		if err != nil {
@@ -687,7 +689,7 @@ func macroImProcess(exp Exporter) {
 		bctx.Error("requires at least one argument")
 	case 1:
 		beginPhrasingMacro(exp, flags["ns"])
-		ctx.wantsSpace = true
+		ctx.WantsSpace = true
 		image := bctx.InlinesToText(args[0])
 		exp.InlineImage(image, link, punct)
 	case 2:
@@ -756,7 +758,7 @@ func macroItProcess(exp Exporter) {
 	}
 	closeUnclosedBlocks(exp, "Bm")
 	scope := scopes[len(scopes)-1]
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 	switch scope.tag {
 	case "desc":
 		macroItDesc(exp, args)
@@ -781,7 +783,7 @@ func macroItDesc(exp Exporter, args [][]ast.Inline) {
 		bctx.Error("description name required")
 	}
 	name := processInlineMacros(exp, args)
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 	exp.DescName(name)
 	exp.BeginDescValue()
 	ctx.inpar = true
@@ -805,11 +807,11 @@ func macroItemenum(exp Exporter, args [][]ast.Inline, tag string) {
 		exp.BeginEnumItem()
 	}
 	ctx.inpar = true
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 	if len(args) > 0 {
 		w := ctx.GetW()
 		fmt.Fprint(w, processInlineMacros(exp, args))
-		ctx.wantsSpace = true
+		ctx.WantsSpace = true
 	}
 }
 
@@ -834,7 +836,7 @@ func macroItTable(exp Exporter, args [][]ast.Inline) {
 	if len(args) > 0 {
 		w := ctx.GetW()
 		fmt.Fprint(w, processInlineMacros(exp, args))
-		ctx.wantsSpace = true
+		ctx.WantsSpace = true
 	}
 }
 
@@ -849,7 +851,7 @@ func macroItVerse(exp Exporter, args [][]ast.Inline) {
 	if len(args) > 0 {
 		w := ctx.GetW()
 		fmt.Fprint(w, processInlineMacros(exp, args))
-		ctx.wantsSpace = true
+		ctx.WantsSpace = true
 	}
 }
 
@@ -869,7 +871,7 @@ func macroLk(exp Exporter) {
 		return
 	}
 	beginPhrasingMacro(exp, flags["ns"])
-	ctx.wantsSpace = true
+	ctx.WantsSpace = true
 
 	if len(args) >= 2 {
 		if len(args) > 2 {
@@ -905,7 +907,7 @@ func macroP(exp Exporter) {
 		exp.ParagraphTitle(title)
 		reopenSpanningBlocks(exp)
 	}
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 	ctx.itemScope = false // for verse
 }
 
@@ -949,7 +951,7 @@ func macroSm(exp Exporter) {
 	w := ctx.GetW()
 	fmt.Fprint(w, renderArgs(exp, args))
 	exp.EndMarkupBlock(tag, id, punct)
-	ctx.wantsSpace = true
+	ctx.WantsSpace = true
 }
 
 func macroSx(exp Exporter) {
@@ -988,7 +990,7 @@ func macroSx(exp Exporter) {
 		}
 	}
 	beginPhrasingMacro(exp, flags["ns"])
-	ctx.wantsSpace = true
+	ctx.WantsSpace = true
 	var name string
 	if t, ok := opts["name"]; ok {
 		name = exp.RenderText(t)
@@ -1046,9 +1048,9 @@ func macroTaProcess(exp Exporter) {
 	if len(args) > 0 {
 		w := ctx.GetW()
 		fmt.Fprint(w, processInlineMacros(exp, args))
-		ctx.wantsSpace = true
+		ctx.WantsSpace = true
 	} else {
-		ctx.wantsSpace = false
+		ctx.WantsSpace = false
 	}
 }
 
@@ -1286,7 +1288,13 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 	param := bctx.InlinesToText(args[0])
 	value := bctx.InlinesToText(args[1])
 	switch param {
-	case "dmark", "document-author", "document-date", "document-title", "encoding", "epub-cover", "epub-css", "epub-metadata", "epub-subject", "epub-uuid", "epub-version", "lang", "latex-preamble", "latex-xelatex", "nbsp", "title-page", "xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-go-up", "xhtml-top", "xhtml5":
+	case "dmark", "document-author", "document-date", "document-title",
+		"epub-cover", "epub-css", "epub-metadata", "epub-subject", "epub-uuid", "epub-version",
+		"lang",
+		"latex-preamble", "latex-xelatex",
+		"mom-preamble",
+		"nbsp", "title-page",
+		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-go-up", "xhtml-top", "xhtml5":
 		// XXX use map for this check ?
 	default:
 		bctx.Error("unknown parameter:", param)
@@ -1414,10 +1422,10 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 	loc := bctx.loc
 	curMacro := bctx.macro
 	curArgs := bctx.args
-	ws := ctx.wantsSpace
+	ws := ctx.WantsSpace
 	oldpar := ctx.inpar
 	proc := ctx.Process
-	ctx.wantsSpace = false
+	ctx.WantsSpace = false
 	ctx.Inline = true
 	ctx.inpar = true
 	ctx.Process = true
@@ -1425,7 +1433,7 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 		bctx.loc = loc
 		bctx.macro = curMacro
 		bctx.args = curArgs
-		ctx.wantsSpace = ws
+		ctx.WantsSpace = ws
 		ctx.Inline = false
 		ctx.inpar = oldpar
 		ctx.Process = proc
@@ -1569,14 +1577,7 @@ func testForUnclosedBlock(exp Exporter, macro string) bool {
 func beginPhrasingMacro(exp Exporter, nospace bool) {
 	ctx := exp.Context()
 	if ctx.inpar {
-		if ctx.wantsSpace && !nospace {
-			w := ctx.GetW()
-			if ctx.Inline {
-				fmt.Fprint(w, " ")
-			} else {
-				fmt.Fprint(w, "\n")
-			}
-		}
+		exp.BeginPhrasingMacroInParagraph(nospace)
 		return
 	}
 	if !ctx.Inline && !ctx.itemScope {
@@ -1584,6 +1585,21 @@ func beginPhrasingMacro(exp Exporter, nospace bool) {
 		reopenSpanningBlocks(exp)
 	}
 	ctx.inpar = true
+}
+
+// BeginPhrasingMacroInParagraph is a function for default use with the method
+// of same name of Exporter interface, which works for inline markup in most
+// output formats.
+func BeginPhrasingMacroInParagraph(exp Exporter, nospace bool) {
+	ctx := exp.Context()
+	if ctx.WantsSpace && !nospace {
+		w := ctx.GetW()
+		if ctx.Inline {
+			fmt.Fprint(w, " ")
+		} else {
+			fmt.Fprint(w, "\n")
+		}
+	}
 }
 
 // testForUnclosedFormatBlock returns true if there is an unclosed Bf block,

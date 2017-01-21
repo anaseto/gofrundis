@@ -1,0 +1,5 @@
+.HEADING 1 "That is a quoted argument !"
+.HEADING 1 "Some empty quote"
+.HEADING 1 "Some literal \(dq \(cqinside quotes\(cq quote"
+.HEADING 1 "Some literal \(dq quotes at end"
+.HEADING 1 "Some more \(dq"

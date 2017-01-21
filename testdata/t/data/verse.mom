@@ -1,0 +1,18 @@
+.HEADING 5 "A poem"
+.QUOTE
+a verse
+a second verse
+
+first verse of second strofe
+
+.QUOTE OFF
+.HEADING 5 "A \f[I]poem\f[R]"
+.QUOTE
+Lulu verse
+a second \f[I]verse\f[R]
+a third verse
+
+.QUOTE OFF
+A poem
+A \f[I]poem\f[R]
+.PP

@@ -1,0 +1,47 @@
+.TS
+allbox;
+l l l .
+one	two	three
+a	b	\f[I]c\f[R]
+.TE
+.TS
+allbox;
+l l l .
+one	two	three
+a	b	c
+A	B 
+C	D
+E
+.TE
+.FLOAT
+.TS
+allbox;
+l l l .
+one	two	three
+a	b	c
+.TE
+.CAPTION "Title" TO_LIST TABLES
+.FLOAT OFF
+.LIST_OF_TABLES
+.FLOAT
+.TS
+allbox;
+l l .
+one	two
+a	b
+.TE
+.CAPTION "\f[I]Title\f[R]" TO_LIST TABLES
+.FLOAT OFF
+.TS
+allbox;
+.
+.TE
+.FLOAT
+.TS
+allbox;
+l l .
+1	2
+A	B
+.TE
+.CAPTION "Title" TO_LIST TABLES
+.FLOAT OFF

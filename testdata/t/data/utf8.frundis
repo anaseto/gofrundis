@@ -1,6 +1,7 @@
 .X mtag -f xhtml -t enclose -c span -b « -e »
 .X mtag -f latex -t enclose -c emph -b « -e »
 .X mtag -f markdown -t enclose -b « -e »
+.X mtag -f mom -t enclose -b « -e »
 «text»\~«text»
 .Ch «text»
 .#de macro

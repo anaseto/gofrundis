@@ -1,9 +1,11 @@
 .X mtag -f latex -t dm -c textit
 .X mtag -f xhtml -t dm -c strong
 .X mtag -f markdown -t dm
+.X mtag -f mom -t dm
 .X mtag -f latex -t quotes -c "" -b «\~ -e \~»
 .X mtag -f xhtml -t quotes -c "" -b «\~ -e \~»
 .X mtag -f markdown -t quotes -b «\~ -e \~»
+.X mtag -f mom -t quotes -b «\~ -e \~»
 .X set -f xhtml dmark "—"
 .Pt Primera parte
 .Ch \
@@ -67,6 +69,7 @@ Text.
 .X mtag -f latex -t ** -c textbf
 .X mtag -f xhtml -t ** -c strong
 .X mtag -f markdown -t ** -b ** -e **
+.X mtag -f mom -t ** -c B
 .Sm -t ** Strong .
 .Bm
 .Sm Text

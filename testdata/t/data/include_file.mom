@@ -1,0 +1,24 @@
+Some text and
+.PP
+This is a new paragraph\&.
+.PP
+.PP
+This is a new paragraph\&.
+.PP
+Some text
+.PP
+And more text
+Some more text\&.
+\f[I]«Things»\f[R]
+.PP
+more things
+blabla
+.PP
+.titorig
+blabla
+\f[I]more things
+blabla\f[R]
+@@.titorig
+@@blabla
+
+.PP

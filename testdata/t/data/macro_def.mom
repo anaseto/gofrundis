@@ -1,0 +1,31 @@
+Ponemos texto
+.PP
+.DRH 1.25 2P 3i
+.PP
+Patatas
+Esto es una gran prueba\&. Pero que muy grande\&. Además
+hay más\&.
+The book title is
+\f[I]The Title of the Book \&.\f[R]
+\f[I]The Title of the Book\(dq\f[R]
+\f[I]The Title of the Book\f[R]
+\f[I]The Title of the Book\e%\f[R]
+.PP
+.LIST
+.ITEM
+text
+\f[I]The Title of the Book\f[R]
+.LIST OFF
+.LIST USER ""
+.ITEM
+\f[B]text\f[R]
+\f[I]The Title of the Book\f[R]
+Text\&.
+.LIST OFF
+«»
+\f[I]START one two three\f[R]\&.
+one two three \&.
+Got a flag\&.
+argument
+\f[I]otherargument\f[R]
+.PP

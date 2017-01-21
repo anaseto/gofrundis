@@ -1,0 +1,29 @@
+.CODE
+sub mysub {
+    my @args = @_;
+    return \e@args;
+}
+.CODE OFF
+This is a default
+.PP
+display block
+.PP
+Some centered text
+.PP
+.PP
+Some text that is outside blocks
+.PP
+And now in a block\&.
+.PP
+And now no more in a block\&.
+.PP
+The footer\&.
+.PP
+things and
+.PP
+more centered things
+.PP
+more centered things
+.PP
+Text\&.
+.PP

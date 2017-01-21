@@ -20,8 +20,13 @@ paragraph text.
 .Ch A second Sm chapter
 paragraph text.
 .Sh A last section
+.#if -f xhtml,latex,mom
 .Tc
+.#;
+.\" NOTE: mom only supports simple table of contents
+.#if -f xhtml,latex
 .Tc -summary
 .Tc -nonum
 .Tc -nonum -title "Title"
 .Tc -mini
+.#;

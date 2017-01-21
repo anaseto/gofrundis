@@ -1,0 +1,14 @@
+.HEADING 1 "A section"
+Some text\&.
+.PP
+.HEADING 2 "A subsection"
+Some text
+.PP
+.HEADING 5 PARAHEAD "paragraph with title"
+Text\&.
+\f[I]Text\&.\f[R]
+.PP
+.HEADING 5 PARAHEAD "another paragraph with title"
+\f[I]Text\&.\f[R]
+.PP
+.TOC

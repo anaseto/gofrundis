@@ -49,6 +49,7 @@ E
 .It A
 .Ta B
 .El
+.#if -f xhtml,latex
 .Bl -t table -columns l Title
 .Bf -f xhtml
 <tr><td>Cell</td></tr>
@@ -69,3 +70,4 @@ E
 </tr>
 .Ef
 .El
+.#;

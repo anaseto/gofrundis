@@ -1,0 +1,14 @@
+.HEADING 1 "section"
+\f[I]Some text to markup with a delimiter\f[R]\&.
+And some more text
+\f[I]with another delimiter\f[R]?
+\f[I]text\f[R]#%!¡@?
+That\(cqs it\&.
+\f[I]text\f[R] !
+\f[I]@\f[R]
+\f[I]text\f[R]»
+label (url)\&.
+url\&.
+section\&.
+section \&.
+.PP

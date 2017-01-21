@@ -1,12 +1,18 @@
 .Lk http://bardinflor.perso.aquilenet/frundis/ "Frundis"
 .Lk http://bardinflor.perso.aquilenet/frundis/
+.#if -f xhtml,epub,latex,markdown
 .Im t/data/image.png
+.#;
 .#if -f xhtml,epub
 .Im -link http://bardinflor.perso.aquilenet/bigimage.png image.png
 .#;
+.#if -f xhtml,epub,latex,markdown
 .Im t/data/image.png "image label"
+.#;
 .Lk http://bardinflor.perso.aquilenet/haréka/#001
+.#if -f xhtml,epub,latex,markdown
 .Sx -t lof image label
+.#;
 .P
 .Sm -id label1 Text
 .Sx -name "link to label" -id label1

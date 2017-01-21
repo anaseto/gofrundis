@@ -31,7 +31,7 @@ func (exp *Exporter) Init() {
 	case "xhtml":
 		ctx.Filters["escape"] = html.EscapeString
 	case "latex":
-		ctx.Filters["escape"] = escape.EscapeLatexString
+		ctx.Filters["escape"] = escape.LaTeX
 	}
 	f, ok := ctx.Filters["escape"]
 	if ok {
@@ -117,6 +117,10 @@ func (exp *Exporter) BeginMarkupBlock(tag string, id string) {
 }
 
 func (exp *Exporter) BeginParagraph() {
+}
+
+func (exp *Exporter) BeginPhrasingMacroInParagraph(nospace bool) {
+	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
 func (exp *Exporter) BeginTable(title string, count int, ncols int) {

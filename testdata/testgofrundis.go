@@ -24,6 +24,7 @@ func main() {
 		}
 		fullPath := path.Join("t", "data", f)
 		testFile(fullPath, "latex")
+		testFile(fullPath, "mom")
 		testFile(fullPath, "xhtml")
 		testFile(fullPath, "markdown")
 	}

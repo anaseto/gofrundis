@@ -50,6 +50,9 @@ type Exporter interface {
 	BeginMarkupBlock(tag string, id string)
 	// BeginParagraph starts a paragraph (e.g. "<p>")
 	BeginParagraph()
+	// BeginPhrasingMacroinParagraph introduces a phrasing macro within a
+	// paragraph (often adding a newline or space)
+	BeginPhrasingMacroInParagraph(nospace bool)
 	// BeginTable starts a table (e.g. "<table>"). The table can have an
 	// optional title, and count is the table number.
 	BeginTable(title string, count int, ncols int)
@@ -215,7 +218,7 @@ func (bctx *BaseContext) Init() {
 	bctx.scopes = make(map[string]([]*scope))
 	bctx.macros = make(map[string]macroDefInfo)
 	bctx.vars = make(map[string]string)
-	bctx.validFormats = []string{"markdown", "xhtml", "latex", "epub"}
+	bctx.validFormats = []string{"markdown", "xhtml", "latex", "epub", "mom"}
 	if bctx.files == nil {
 		bctx.files = make(map[string]([]ast.Block))
 	}
@@ -261,6 +264,7 @@ type Context struct {
 	TableNum   int                            // current table number (with or without title)
 	TocInfo    *Toc                           // Toc information
 	W          *bufio.Writer                  // where final output goes
+	WantsSpace bool                           // whether previous in-paragraph stuff reclaims a space
 	asIs       bool                           // treat current text as-is
 	bfInfo     *bfInfo                        // Bf/Ef block info
 	buf        bytes.Buffer                   // buffer for current paragraph-like generated text
@@ -272,7 +276,6 @@ type Context struct {
 	tableInfo  []*TableInfo                   // some non LoX information about tables (e.g. number of columns)
 	tableScope bool                           // in titled table
 	verseCount int
-	wantsSpace bool // whether previous in-paragraph stuff reclaims a space
 }
 
 // TableInfo represents some table information.

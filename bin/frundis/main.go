@@ -9,6 +9,7 @@ import (
 
 	"github.com/anaseto/gofrundis/exporter/latex"
 	"github.com/anaseto/gofrundis/exporter/markdown"
+	"github.com/anaseto/gofrundis/exporter/mom"
 	"github.com/anaseto/gofrundis/exporter/tpl"
 	"github.com/anaseto/gofrundis/exporter/xhtml"
 	"github.com/anaseto/gofrundis/frundis"
@@ -46,7 +47,7 @@ func main() {
 	}
 
 	switch *optFormat {
-	case "epub", "xhtml", "latex", "markdown":
+	case "epub", "xhtml", "latex", "markdown", "mom":
 	case "":
 		Error("-T option required")
 	default:
@@ -84,6 +85,12 @@ func main() {
 			filename)
 	case "markdown":
 		export(&markdown.Exporter{OutputFile: *optOutputFile}, filename)
+	case "mom":
+		export(
+			&mom.Exporter{
+				OutputFile: *optOutputFile,
+				Standalone: *optStandalone},
+			filename)
 	}
 }
 

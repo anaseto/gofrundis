@@ -7,6 +7,7 @@
 .Ft -f xhtml -t a
 .Ft -f xhtml -t b "«blabla» "
 .Ft -f markdown -t b "«blabla» "
+.Ft -f mom -t b "«blabla» "
 .If -as-is -t b t/data/includes/text_to_filter.txt
 .Bf -f latex -t c
 LaTeX blabla

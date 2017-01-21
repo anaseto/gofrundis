@@ -265,6 +265,10 @@ func (exp *Exporter) BeginParagraph() {
 	fmt.Fprint(w, "<p>")
 }
 
+func (exp *Exporter) BeginPhrasingMacroInParagraph(nospace bool) {
+	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
+}
+
 func (exp *Exporter) BeginTable(title string, count int, ncols int) {
 	w := exp.Context().GetW()
 	if title != "" {

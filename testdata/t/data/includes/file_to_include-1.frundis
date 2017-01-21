@@ -4,3 +4,4 @@ This is a new paragraph.
 .X mtag -f latex -t dm -b « -e »
 .X mtag -f xhtml -t dm -b « -e »
 .X mtag -f markdown -t dm -b « -e »
+.X mtag -f mom -t dm -b « -e »

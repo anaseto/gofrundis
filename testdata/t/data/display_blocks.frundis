@@ -1,15 +1,19 @@
 .X dtag -f xhtml -t mytag
 .X dtag -f latex -t mytag -c center
 .X dtag -f markdown -t mytag
+.X dtag -f mom -t mytag
 .X dtag -f xhtml -t tag2 -c footer
 .X dtag -f latex -t tag2
 .X dtag -f markdown -t tag2
+.X dtag -f mom -t tag2
 .X dtag -t center -f latex -c center
 .X dtag -t center -f xhtml -c center
 .X dtag -t center -f markdown
+.X dtag -f mom -t center
 .X dtag -t footer -f xhtml -c footer
 .X dtag -t footer -f latex -c center
 .X dtag -t footer -f markdown
+.X dtag -f mom -t footer
 .If t/data/includes/code.frundis
 .Bcode
 sub mysub {
