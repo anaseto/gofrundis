@@ -28,11 +28,7 @@ Install
 + Set `$GOPATH` variable (for example `export GOPATH=$HOME/go`).
 + Add `$GOPATH/bin` to your `$PATH`.
 
-Then either:
-
-+ Use the command `go get github.com/anaseto/gofrundis/bin/frundis`.
-+ Put gofrundis under $GOPATH/src/, then do `go install` in the bin/frundis
-  subdirectory.
+Then use the command `go get github.com/anaseto/gofrundis/bin/frundis`.
   
 The `frundis` command should now be available.
 
