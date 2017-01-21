@@ -74,7 +74,7 @@ func Init() {
 	babelLangs["fr"] = "frenchb"
 }
 
-func (exp *Exporter) beginLatexDocument() {
+func (exp *exporter) beginLatexDocument() {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	lang := ctx.Params["lang"]
@@ -150,7 +150,7 @@ end:
 	}
 }
 
-func (exp *Exporter) EndLatexDocument() {
+func (exp *exporter) EndLatexDocument() {
 	ctx := exp.Context()
 	ctx.W.WriteString("\n\\end{document}\n")
 }

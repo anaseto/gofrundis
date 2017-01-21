@@ -61,9 +61,9 @@ func main() {
 
 	if *optTemplate {
 		export(
-			&tpl.Exporter{
+			tpl.NewExporter(&tpl.Options{
 				OutputFile: *optOutputFile,
-				Format:     *optFormat},
+				Format:     *optFormat}),
 			filename)
 		os.Exit(0)
 	}
@@ -71,25 +71,27 @@ func main() {
 	switch *optFormat {
 	case "epub", "xhtml":
 		export(
-			&xhtml.Exporter{
+			xhtml.NewExporter(&xhtml.Options{
 				Format:       *optFormat,
 				OutputFile:   *optOutputFile,
 				Standalone:   *optStandalone,
-				AllInOneFile: *optAllInOneFile},
+				AllInOneFile: *optAllInOneFile}),
 			filename)
 	case "latex":
 		export(
-			&latex.Exporter{
+			latex.NewExporter(&latex.Options{
 				OutputFile: *optOutputFile,
-				Standalone: *optStandalone},
+				Standalone: *optStandalone}),
 			filename)
 	case "markdown":
-		export(&markdown.Exporter{OutputFile: *optOutputFile}, filename)
+		export(
+			markdown.NewExporter(&markdown.Options{OutputFile: *optOutputFile}),
+			filename)
 	case "mom":
 		export(
-			&mom.Exporter{
+			mom.NewExporter(&mom.Options{
 				OutputFile: *optOutputFile,
-				Standalone: *optStandalone},
+				Standalone: *optStandalone}),
 			filename)
 	}
 }

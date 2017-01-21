@@ -22,7 +22,7 @@ const (
 	navToc
 )
 
-func (exp *Exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.Inline, flags map[string]bool) {
+func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.Inline, flags map[string]bool) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	tocStack := ctx.LoXstack["toc"]
@@ -187,7 +187,7 @@ func (exp *Exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 	}
 }
 
-func (exp *Exporter) xhtmlLoX(w io.Writer, class string) {
+func (exp *exporter) xhtmlLoX(w io.Writer, class string) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	switch class {
@@ -210,7 +210,7 @@ func (exp *Exporter) xhtmlLoX(w io.Writer, class string) {
 	fmt.Fprintf(w, "</div>\n")
 }
 
-func (exp *Exporter) xhtmlTOClikeEntry(w io.Writer, entry *frundis.LoXinfo, flags map[string]bool, level int) {
+func (exp *exporter) xhtmlTOClikeEntry(w io.Writer, entry *frundis.LoXinfo, flags map[string]bool, level int) {
 	href := entry.Ref
 	var num string
 	if !(flags["nonum"] || strings.HasPrefix(href, "index") && !exp.AllInOneFile) {
@@ -227,7 +227,7 @@ func (exp *Exporter) xhtmlTOClikeEntry(w io.Writer, entry *frundis.LoXinfo, flag
 		strings.Repeat("  ", level+1), href, num, entry.TitleText)
 }
 
-func (exp *Exporter) getID(entry *frundis.LoXinfo) string {
+func (exp *exporter) getID(entry *frundis.LoXinfo) string {
 	var id string
 	if exp.AllInOneFile {
 		id = fmt.Sprintf("s%d", entry.Count)
@@ -245,7 +245,7 @@ func (exp *Exporter) getID(entry *frundis.LoXinfo) string {
 	return id
 }
 
-func (exp *Exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
+func (exp *exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	epub3 := strings.HasPrefix(ctx.Params["epub-version"], "3")
@@ -270,7 +270,7 @@ func (exp *Exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
 	}
 }
 
-func (exp *Exporter) XHTMLdocumentHeader(w io.Writer, title string) {
+func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	exp.XHTMLandEPUBcommonHeader(w)
@@ -308,7 +308,7 @@ func (exp *Exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 	}
 }
 
-func (exp *Exporter) XHTMLdocumentFooter(w io.Writer) {
+func (exp *exporter) XHTMLdocumentFooter(w io.Writer) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	if xhtmlbottom, ok := ctx.Params["xhtml-bottom"]; ok && bctx.Format == "xhtml" {
@@ -336,7 +336,7 @@ var indexTranslations = map[string]string{
 	"es": "Índice",
 	"fr": "Index"}
 
-func (exp *Exporter) xhtmlFileOutputChange(title string) {
+func (exp *exporter) xhtmlFileOutputChange(title string) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	if bctx.Format == "xhtml" && exp.xhtmlNavigationText.Len() > 0 {
@@ -419,7 +419,7 @@ func (exp *Exporter) xhtmlFileOutputChange(title string) {
 	ctx.W.Write(exp.xhtmlNavigationText.Bytes())
 }
 
-func (exp *Exporter) xhtmlTitlePage() {
+func (exp *exporter) xhtmlTitlePage() {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	if !frundis.IsTrue(ctx.Params["title-page"]) {

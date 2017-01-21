@@ -14,7 +14,24 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
-type Exporter struct {
+type Options struct {
+	AllInOneFile bool   // output goes only to one html file
+	Format       string // "epub" or "xhtml"
+	OutputFile   string // name of output file or directory
+	Standalone   bool   // generate complete document with headers (default unless AllInOneFile)
+}
+
+// NewExporter returns a frundis.Exporter suitable to produce EPUB or HTML.
+// See type Options for options.
+func NewExporter(opts *Options) frundis.Exporter {
+	return &exporter{
+		AllInOneFile: opts.AllInOneFile,
+		Format:       opts.Format,
+		OutputFile:   opts.OutputFile,
+		Standalone:   opts.Standalone}
+}
+
+type exporter struct {
 	Bctx                *frundis.BaseContext
 	Ctx                 *frundis.Context
 	Format              string // "epub" or "xhtml"
@@ -25,7 +42,7 @@ type Exporter struct {
 	xhtmlNavigationText *bytes.Buffer
 }
 
-func (exp *Exporter) Init() {
+func (exp *exporter) Init() {
 	bctx := &frundis.BaseContext{Format: exp.Format}
 	exp.Bctx = bctx
 	bctx.Init()
@@ -37,7 +54,7 @@ func (exp *Exporter) Init() {
 	exp.xhtmlNavigationText = &bytes.Buffer{}
 }
 
-func (exp *Exporter) Reset() {
+func (exp *exporter) Reset() {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
@@ -122,7 +139,7 @@ func makeDirectory(filename string) {
 	}
 }
 
-func (exp *Exporter) PostProcessing() {
+func (exp *exporter) PostProcessing() {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	switch bctx.Format {
@@ -145,27 +162,27 @@ func (exp *Exporter) PostProcessing() {
 	}
 }
 
-func (exp *Exporter) BaseContext() *frundis.BaseContext {
+func (exp *exporter) BaseContext() *frundis.BaseContext {
 	return exp.Bctx
 }
 
-func (exp *Exporter) BlockHandler() {
+func (exp *exporter) BlockHandler() {
 	frundis.BlockHandler(exp)
 }
 
-func (exp *Exporter) BeginDescList() {
+func (exp *exporter) BeginDescList() {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "<dl>\n")
 }
 
-func (exp *Exporter) BeginDescValue() {
+func (exp *exporter) BeginDescValue() {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "<dd>")
 }
 
-func (exp *Exporter) BeginDialogue() {
+func (exp *exporter) BeginDialogue() {
 	ctx := exp.Context()
 	dmark, ok := ctx.Params["dmark"]
 	if !ok {
@@ -175,7 +192,7 @@ func (exp *Exporter) BeginDialogue() {
 	fmt.Fprint(w, dmark)
 }
 
-func (exp *Exporter) BeginDisplayBlock(tag string, id string) {
+func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	if tag != "" {
@@ -197,13 +214,13 @@ func (exp *Exporter) BeginDisplayBlock(tag string, id string) {
 	fmt.Fprint(w, ">\n")
 }
 
-func (exp *Exporter) BeginEnumList() {
+func (exp *exporter) BeginEnumList() {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "<ol>\n")
 }
 
-func (exp *Exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
+func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	num := ctx.TocInfo.HeaderLevel(macro)
@@ -223,22 +240,22 @@ func (exp *Exporter) BeginHeader(macro string, title string, numbered bool, rend
 	}
 }
 
-func (exp *Exporter) BeginItem() {
+func (exp *exporter) BeginItem() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<li>")
 }
 
-func (exp *Exporter) BeginEnumItem() {
+func (exp *exporter) BeginEnumItem() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<li>")
 }
 
-func (exp *Exporter) BeginItemList() {
+func (exp *exporter) BeginItemList() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<ul>\n")
 }
 
-func (exp *Exporter) BeginMarkupBlock(tag string, id string) {
+func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	ctx := exp.Context()
 	mtag, okMtag := ctx.Mtags[tag]
 	w := ctx.GetW()
@@ -260,16 +277,16 @@ func (exp *Exporter) BeginMarkupBlock(tag string, id string) {
 	}
 }
 
-func (exp *Exporter) BeginParagraph() {
+func (exp *exporter) BeginParagraph() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<p>")
 }
 
-func (exp *Exporter) BeginPhrasingMacroInParagraph(nospace bool) {
+func (exp *exporter) BeginPhrasingMacroInParagraph(nospace bool) {
 	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
-func (exp *Exporter) BeginTable(title string, count int, ncols int) {
+func (exp *exporter) BeginTable(title string, count int, ncols int) {
 	w := exp.Context().GetW()
 	if title != "" {
 		fmt.Fprintf(w, "<div id=\"tbl%d\" class=\"table\">\n", count)
@@ -277,17 +294,17 @@ func (exp *Exporter) BeginTable(title string, count int, ncols int) {
 	fmt.Fprint(w, "<table>\n")
 }
 
-func (exp *Exporter) BeginTableCell() {
+func (exp *exporter) BeginTableCell() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<td>")
 }
 
-func (exp *Exporter) BeginTableRow() {
+func (exp *exporter) BeginTableRow() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<tr>\n")
 }
 
-func (exp *Exporter) BeginVerse(title string, count int) {
+func (exp *exporter) BeginVerse(title string, count int) {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<div class=\"verse\">\n")
 	if title != "" {
@@ -295,7 +312,7 @@ func (exp *Exporter) BeginVerse(title string, count int) {
 	}
 }
 
-func (exp *Exporter) CheckParamAssignement(param string, value string) bool {
+func (exp *exporter) CheckParamAssignement(param string, value string) bool {
 	bctx := exp.BaseContext()
 	switch param {
 	case "xhtml-index":
@@ -314,11 +331,11 @@ func (exp *Exporter) CheckParamAssignement(param string, value string) bool {
 	return true
 }
 
-func (exp *Exporter) Context() *frundis.Context {
+func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *Exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
+func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "<a")
@@ -331,23 +348,23 @@ func (exp *Exporter) CrossReference(id string, name string, loXentry *frundis.Lo
 	fmt.Fprintf(w, ">%s</a>%s", name, punct)
 }
 
-func (exp *Exporter) DescName(name string) {
+func (exp *exporter) DescName(name string) {
 	w := exp.Context().GetW()
 	fmt.Fprintf(w, "<dt>%s</dt>\n", name)
 }
 
-func (exp *Exporter) EndDescList() {
+func (exp *exporter) EndDescList() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</dl>\n")
 }
 
-func (exp *Exporter) EndDescValue() {
+func (exp *exporter) EndDescValue() {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "</dd>\n")
 }
 
-func (exp *Exporter) EndDisplayBlock(tag string) {
+func (exp *exporter) EndDisplayBlock(tag string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	if tag != "" {
@@ -365,36 +382,36 @@ func (exp *Exporter) EndDisplayBlock(tag string) {
 	}
 }
 
-func (exp *Exporter) EndEnumList() {
+func (exp *exporter) EndEnumList() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</ol>\n")
 }
 
-func (exp *Exporter) EndEnumItem() {
+func (exp *exporter) EndEnumItem() {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "</li>\n")
 }
 
-func (exp *Exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
+func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	num := ctx.TocInfo.HeaderLevel(macro)
 	fmt.Fprintf(w, "</h%d>\n", num)
 }
 
-func (exp *Exporter) EndItemList() {
+func (exp *exporter) EndItemList() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</ul>\n")
 }
 
-func (exp *Exporter) EndItem() {
+func (exp *exporter) EndItem() {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "</li>\n")
 }
 
-func (exp *Exporter) EndMarkupBlock(tag string, id string, punct string) {
+func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	mtag, ok := ctx.Mtags[tag]
@@ -409,20 +426,20 @@ func (exp *Exporter) EndMarkupBlock(tag string, id string, punct string) {
 	fmt.Fprint(w, punct)
 }
 
-func (exp *Exporter) EndParagraph() {
+func (exp *exporter) EndParagraph() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</p>\n")
 }
 
-func (exp *Exporter) EndParagraphSoftly() {
+func (exp *exporter) EndParagraphSoftly() {
 	exp.EndParagraph()
 }
 
-func (exp *Exporter) EndParagraphUnsoftly() {
+func (exp *exporter) EndParagraphUnsoftly() {
 	// do nothing
 }
 
-func (exp *Exporter) EndTable(tableinfo *frundis.TableInfo) {
+func (exp *exporter) EndTable(tableinfo *frundis.TableInfo) {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</table>\n")
 	if tableinfo != nil {
@@ -430,31 +447,31 @@ func (exp *Exporter) EndTable(tableinfo *frundis.TableInfo) {
 	}
 }
 
-func (exp *Exporter) EndTableCell() {
+func (exp *exporter) EndTableCell() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</td>\n")
 }
 
-func (exp *Exporter) EndTableRow() {
+func (exp *exporter) EndTableRow() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</tr>\n")
 }
 
-func (exp *Exporter) EndVerse() {
+func (exp *exporter) EndVerse() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</div>\n")
 }
 
-func (exp *Exporter) EndVerseLine() {
+func (exp *exporter) EndVerseLine() {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "<br />\n")
 }
 
-func (exp *Exporter) FormatParagraph(text []byte) []byte {
+func (exp *exporter) FormatParagraph(text []byte) []byte {
 	return text
 }
 
-func (exp *Exporter) FigureImage(image string, label string, link string) {
+func (exp *exporter) FigureImage(image string, label string, link string) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	w := ctx.GetW()
@@ -483,7 +500,7 @@ func (exp *Exporter) FigureImage(image string, label string, link string) {
 	fmt.Fprint(w, "</div>\n")
 }
 
-func (exp *Exporter) GenRef(prefix string, id string, hasfile bool) string {
+func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	toc := ctx.TocInfo
@@ -509,7 +526,7 @@ func (exp *Exporter) GenRef(prefix string, id string, hasfile bool) string {
 	return href
 }
 
-func (exp *Exporter) HeaderReference(macro string) string {
+func (exp *exporter) HeaderReference(macro string) string {
 	ctx := exp.Context()
 	toc := ctx.TocInfo
 	var href string
@@ -526,7 +543,7 @@ func (exp *Exporter) HeaderReference(macro string) string {
 	return href
 }
 
-func (exp *Exporter) processLink(link string) string {
+func (exp *exporter) processLink(link string) string {
 	bctx := exp.BaseContext()
 	if link == "" {
 		return link
@@ -541,7 +558,7 @@ func (exp *Exporter) processLink(link string) string {
 	return link
 }
 
-func (exp *Exporter) InlineImage(image string, link string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, punct string) {
 	bctx := exp.BaseContext()
 	w := exp.Context().GetW()
 	if bctx.Format == "epub" {
@@ -566,7 +583,7 @@ func (exp *Exporter) InlineImage(image string, link string, punct string) {
 	}
 }
 
-func (exp *Exporter) LkWithLabel(uri string, label string, punct string) {
+func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
 	bctx := exp.BaseContext()
 	w := exp.Context().GetW()
 	parsedURL, err := url.Parse(uri)
@@ -579,24 +596,24 @@ func (exp *Exporter) LkWithLabel(uri string, label string, punct string) {
 	fmt.Fprintf(w, "<a href=\"%s\">%s</a>%s", u, label, punct)
 }
 
-func (exp *Exporter) LkWithoutLabel(uri string, punct string) {
+func (exp *exporter) LkWithoutLabel(uri string, punct string) {
 	exp.LkWithLabel(uri, html.EscapeString(uri), punct)
 }
 
-func (exp *Exporter) ParagraphTitle(title string) {
+func (exp *exporter) ParagraphTitle(title string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprintf(w, "<p class=\"paragraph\"><strong class=\"paragraph\">%s</strong>\n", title)
 }
 
-func (exp *Exporter) RenderText(text []ast.Inline) string {
+func (exp *exporter) RenderText(text []ast.Inline) string {
 	if exp.Context().Params["lang"] == "fr" {
 		text = frundis.InsertNbsps(exp, text)
 	}
 	return html.EscapeString(exp.BaseContext().InlinesToText(text))
 }
 
-func (exp *Exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {
+func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {
 	w := exp.Context().GetW()
 	switch {
 	case flags["toc"]:
@@ -610,19 +627,19 @@ func (exp *Exporter) TableOfContents(opts map[string][]ast.Inline, flags map[str
 	}
 }
 
-func (exp *Exporter) TableOfContentsInfos(flags map[string]bool) {
+func (exp *exporter) TableOfContentsInfos(flags map[string]bool) {
 	// (dominitoc, etc.) (useless for html)
 }
 
-func (exp *Exporter) Xdtag(cmd string) frundis.Dtag {
+func (exp *exporter) Xdtag(cmd string) frundis.Dtag {
 	return frundis.Dtag{Cmd: cmd}
 }
 
-func (exp *Exporter) Xftag(shell string) frundis.Ftag {
+func (exp *exporter) Xftag(shell string) frundis.Ftag {
 	return frundis.Ftag{Shell: shell}
 }
 
-func (exp *Exporter) Xmtag(cmd *string, begin string, end string) frundis.Mtag {
+func (exp *exporter) Xmtag(cmd *string, begin string, end string) frundis.Mtag {
 	var c string
 	if cmd == nil {
 		c = "em"

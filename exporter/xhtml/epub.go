@@ -16,7 +16,7 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
-func (exp *Exporter) epubCopyImages() {
+func (exp *exporter) epubCopyImages() {
 	ctx := exp.Context()
 	if len(ctx.Images) == 0 && ctx.Params["epub-cover"] == "" {
 		return
@@ -58,7 +58,7 @@ func (exp *Exporter) epubCopyImages() {
 	}
 }
 
-func (exp *Exporter) epubGen() {
+func (exp *exporter) epubGen() {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	var title string
@@ -89,7 +89,7 @@ func (exp *Exporter) epubGen() {
 	}
 }
 
-func (exp *Exporter) epubGenContainer() {
+func (exp *exporter) epubGenContainer() {
 	bctx := exp.BaseContext()
 	containerXML := path.Join(exp.OutputFile, "META-INF", "container.xml")
 	err := ioutil.WriteFile(containerXML, []byte(
@@ -118,7 +118,7 @@ func genuuid() (string, error) {
 	return hex.EncodeToString(u), nil
 }
 
-func (exp *Exporter) epubGenContentOpf(title string, lang string, cover string) {
+func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	contentOpf := path.Join(exp.OutputFile, "EPUB", "content.opf")
@@ -276,7 +276,7 @@ func (exp *Exporter) epubGenContentOpf(title string, lang string, cover string) 
 	}
 }
 
-func (exp *Exporter) epubGenCover(title string, cover string) {
+func (exp *exporter) epubGenCover(title string, cover string) {
 	bctx := exp.BaseContext()
 	coverXhtml := path.Join(exp.OutputFile, "EPUB", "cover.xhtml")
 	buf := &bytes.Buffer{}
@@ -300,7 +300,7 @@ func (exp *Exporter) epubGenCover(title string, cover string) {
 	}
 }
 
-func (exp *Exporter) epubGenCSS() {
+func (exp *exporter) epubGenCSS() {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	stylesheetCSS := path.Join(exp.OutputFile, "EPUB", "stylesheet.css")
@@ -327,7 +327,7 @@ func (exp *Exporter) epubGenCSS() {
 	}
 }
 
-func (exp *Exporter) epubGenMimetype() {
+func (exp *exporter) epubGenMimetype() {
 	bctx := exp.BaseContext()
 	mimetype := path.Join(exp.OutputFile, "mimetype")
 	err := ioutil.WriteFile(mimetype, []byte("application/epub+zip"), 0644)
@@ -336,7 +336,7 @@ func (exp *Exporter) epubGenMimetype() {
 	}
 }
 
-func (exp *Exporter) epubGenNav(title string) {
+func (exp *exporter) epubGenNav(title string) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	navFile := path.Join(exp.OutputFile, "EPUB", "nav.xhtml")
@@ -377,7 +377,7 @@ func (exp *Exporter) epubGenNav(title string) {
 	}
 }
 
-func (exp *Exporter) epubGenNCX(title string) {
+func (exp *exporter) epubGenNCX(title string) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ncxFile := path.Join(exp.OutputFile, "EPUB", "toc.ncx")

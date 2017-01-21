@@ -7,7 +7,7 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
-func (exp *Exporter) beginMomDocument() {
+func (exp *exporter) beginMomDocument() {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	title := ctx.Params["document-title"]
