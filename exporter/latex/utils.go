@@ -1,8 +1,8 @@
 package latex
 
 import (
-	"fmt"
 	"io/ioutil"
+	"text/template"
 
 	"github.com/anaseto/gofrundis/frundis"
 )
@@ -90,6 +90,54 @@ func (exp *exporter) beginLatexDocument() {
 	author := ctx.Params["document-author"]
 	date := ctx.Params["document-date"]
 	preamble := ctx.Params["latex-preamble"]
+	data := &struct {
+		Title     string
+		Author    string
+		Date      string
+		Book      bool
+		XeLaTeX   bool
+		MiniToc   bool
+		HasVerse  bool
+		HasImage  bool
+		DominiLof bool
+		DominiLot bool
+		DominiToc bool
+		LangBabel string
+		LangMini  string
+		TitlePage bool
+	}{
+		Title:     title,
+		Author:    author,
+		Date:      date,
+		Book:      ctx.TocInfo.HasPart || ctx.TocInfo.HasChapter,
+		XeLaTeX:   frundis.IsTrue(ctx.Params["latex-xelatex"]),
+		MiniToc:   exp.minitoc,
+		HasVerse:  ctx.HasVerse,
+		HasImage:  ctx.HasImage,
+		DominiLof: exp.dominilof,
+		DominiLot: exp.dominilot,
+		DominiToc: exp.dominitoc,
+		LangBabel: langBabel,
+		LangMini:  langMini,
+		TitlePage: frundis.IsTrue(ctx.Params["title-page"])}
+	tmplBeginDocument, err := template.New("begin-document").Parse(`\begin{document}
+{{if .DominiLof -}}
+\dominilof
+{{end -}}
+{{if .DominiLot -}}
+\dominilot
+{{end -}}
+{{if .DominiToc -}}
+\dominitoc
+{{end -}}
+{{if .TitlePage -}}
+\maketitle
+{{end -}}
+`)
+	if err != nil {
+		bctx.Error("internal error:", err)
+		return
+	}
 	if preamble != "" {
 		p, ok := frundis.SearchIncFile(exp, preamble)
 		if !ok {
@@ -97,56 +145,59 @@ func (exp *exporter) beginLatexDocument() {
 		} else {
 			source, err := ioutil.ReadFile(p)
 			if err != nil {
-				bctx.Error(err) // XXX use another function
+				bctx.Error(err)
 			} else {
 				ctx.W.Write(source)
-				goto end
+				err = tmplBeginDocument.Execute(ctx.W, data)
+				if err != nil {
+					bctx.Error("internal error:", err)
+				}
+				return
 			}
 		}
 	}
-	if ctx.TocInfo.HasPart || ctx.TocInfo.HasChapter {
-		ctx.W.WriteString("\\documentclass[a4paper,11pt]{book}\n")
-	} else {
-		ctx.W.WriteString("\\documentclass[a4paper,11pt]{article}\n")
-	}
-	if frundis.IsTrue(ctx.Params["latex-xelatex"]) {
-		ctx.W.WriteString("\\usepackage{fontspec}\n")
-		ctx.W.WriteString("\\usepackage{xunicode}\n")
-		ctx.W.WriteString("\\usepackage{polyglossia}\n")
-		fmt.Fprintf(ctx.W, "\\setmainlanguage{%s}\n", langBabel) // XXX do language names always be the same?
-	} else {
-		ctx.W.WriteString("\\usepackage[T1]{fontenc}\n")
-		ctx.W.WriteString("\\usepackage[utf8]{inputenc}\n")
-		fmt.Fprintf(ctx.W, "\\usepackage[%s]{babel}\n", langBabel)
-	}
-	if exp.minitoc {
-		fmt.Fprintf(ctx.W, "\\usepackage[%s]{minitoc}\n", langMini)
-	}
-	if ctx.HasVerse {
-		ctx.W.WriteString("\\usepackage{verse}\n")
-	}
-	if ctx.HasImage {
-		ctx.W.WriteString("\\usepackage{graphicx}\n")
-	}
-	ctx.W.WriteString(`\usepackage{verbatim}
+	tmpl, err := template.New("preamble").Parse(`
+{{- if .Book -}}
+\documentclass[a4paper,11pt]{book}
+{{else -}}
+\documentclass[a4paper,11pt]{article}
+{{end -}}
+{{if .XeLaTeX -}}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{polyglossia}
+\setmainlanguage{ {{- .LangBabel -}} }
+{{else -}}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[{{.LangBabel}}]{babel}
+{{end -}}
+{{if .MiniToc -}}
+\usepackage[{{.LangMini}}]{minitoc}
+{{end -}}
+{{if .HasVerse -}}
+\usepackage{verse}
+{{end -}}
+{{if .HasImage -}}
+\usepackage{graphicx}
+{{end -}}
+\usepackage{verbatim}
 \usepackage[linkcolor=blue,colorlinks=true]{hyperref}
+\title{ {{- .Title -}} }
+\author{ {{- .Author -}} }
+\date{ {{- .Date -}} }
 `)
-	fmt.Fprintf(ctx.W, "\\title{%s}\n", title)
-	fmt.Fprintf(ctx.W, "\\author{%s}\n", author)
-	fmt.Fprintf(ctx.W, "\\date{%s}\n", date)
-end:
-	ctx.W.WriteString("\\begin{document}\n")
-	if exp.dominilof {
-		ctx.W.WriteString("\\dominilof\n")
+	if err != nil {
+		bctx.Error("internal error:", err)
+		return
 	}
-	if exp.dominilot {
-		ctx.W.WriteString("\\dominilot\n")
+	err = tmpl.Execute(ctx.W, data)
+	if err != nil {
+		bctx.Error(err)
 	}
-	if exp.dominitoc {
-		ctx.W.WriteString("\\dominitoc\n")
-	}
-	if frundis.IsTrue(ctx.Params["title-page"]) {
-		ctx.W.WriteString("\\maketitle\n")
+	err = tmplBeginDocument.Execute(ctx.W, data)
+	if err != nil {
+		bctx.Error("internal error:", err)
 	}
 }
 

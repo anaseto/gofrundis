@@ -3,6 +3,7 @@ package mom
 import (
 	"fmt"
 	"io/ioutil"
+	"text/template"
 
 	"github.com/anaseto/gofrundis/escape"
 	"github.com/anaseto/gofrundis/frundis"
@@ -22,10 +23,11 @@ func (exp *exporter) beginMomDocument() {
 		} else {
 			source, err := ioutil.ReadFile(p)
 			if err != nil {
-				bctx.Error(err) // XXX use another function
+				bctx.Error(err)
 			} else {
 				ctx.W.Write(source)
-				goto end
+				ctx.W.WriteString(".START\n")
+				return
 			}
 		}
 	}
@@ -38,17 +40,33 @@ func (exp *exporter) beginMomDocument() {
 		fmt.Fprintf(ctx.W, ".do hpf hyphen.us\n")
 		fmt.Fprintf(ctx.W, ".do hpfa hyphenex.us\n")
 	}
-	fmt.Fprintf(ctx.W, ".PAPER A5\n")
-	fmt.Fprintf(ctx.W, ".PRINTSTYLE TYPESET\n")
-	fmt.Fprintf(ctx.W, ".TITLE \"%s\"\n", escape.Roff(title))
-	fmt.Fprintf(ctx.W, ".AUTHOR \"%s\"\n", escape.Roff(author))
-	fmt.Fprintf(ctx.W, ".\\\" %s\n", escape.Roff(date))
-	fmt.Fprintf(ctx.W, ".ATTRIBUTE_STRING \"\"\n")
-	fmt.Fprintf(ctx.W, ".HEADERS OFF\n")
-	fmt.Fprintf(ctx.W, ".HEADING_STYLE 1 SIZE +6 QUAD C SPACE_AFTER NUMBER \n")
-	fmt.Fprintf(ctx.W, ".HEADING_STYLE 2 SIZE +5 QUAD C SPACE_AFTER NUMBER \n")
-	fmt.Fprintf(ctx.W, ".HEADING_STYLE 3 SIZE +3 SPACE_AFTER NUMBER \n")
-	fmt.Fprintf(ctx.W, ".HEADING_STYLE 4 SIZE +2 SPACE_AFTER NUMBER \n")
-end:
+	data := &struct {
+		Title  string
+		Author string
+		Date   string
+	}{
+		escape.Roff(title),
+		escape.Roff(author),
+		escape.Roff(date)}
+	tmpl, err := template.New("preamble").Parse(`.PAPER A5
+.PRINTSTYLE TYPESET
+.TITLE "{{.Title}}"
+.AUTHOR "{{.Author}}"
+.\" {{.Date}}
+.ATTRIBUTE_STRING ""
+.HEADERS OFF
+.HEADING_STYLE 1 SIZE +6 QUAD C SPACE_AFTER NUMBER
+.HEADING_STYLE 2 SIZE +5 QUAD C SPACE_AFTER NUMBER
+.HEADING_STYLE 3 SIZE +3 SPACE_AFTER NUMBER
+.HEADING_STYLE 4 SIZE +2 SPACE_AFTER NUMBER
+`)
+	if err != nil {
+		bctx.Error("internal error:", err)
+		return
+	}
+	err = tmpl.Execute(ctx.W, data)
+	if err != nil {
+		bctx.Error(err)
+	}
 	ctx.W.WriteString(".START\n")
 }
