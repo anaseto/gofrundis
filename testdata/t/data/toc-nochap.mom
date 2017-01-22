@@ -1,7 +1,7 @@
-.HEADING 1 "A section"
+.HEADING 3 "A section"
 Some text\&.
 .PP
-.HEADING 2 "A subsection"
+.HEADING 4 "A subsection"
 Some text
 .PP
 .HEADING 5 PARAHEAD "paragraph with title"

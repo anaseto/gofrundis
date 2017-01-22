@@ -1,26 +1,26 @@
-.HEADING 1 "Prologue"
-.HEADING 1 "A first chapter"
+.HEADING 2 "Prologue"
+.HEADING 2 "A first chapter"
 .TOC
 .PP
 paragraph text\&.
 .PP
-.HEADING 2 "A first section"
+.HEADING 3 "A first section"
 paragraph text\&.
 .PP
-.HEADING 3 "A subsection"
+.HEADING 4 "A subsection"
 paragraph text\&.
 .PP
-.HEADING 3 "Another subsection"
+.HEADING 4 "Another subsection"
 paragraph text\&. A reference to the subsection
 Another subsection\&.
 Another subsection
 link text to Another subsection\&.
 .PP
-.HEADING 2 "Another section"
+.HEADING 3 "Another section"
 paragraph text\&.
 .PP
-.HEADING 1 "A second \f[I]chapter\f[R]"
+.HEADING 2 "A second \f[I]chapter\f[R]"
 paragraph text\&.
 .PP
-.HEADING 2 "A last section"
+.HEADING 3 "A last section"
 .TOC

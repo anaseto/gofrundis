@@ -137,8 +137,16 @@ func (exp *exporter) BeginEnumList() {
 
 func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
 	ctx := exp.Context()
-	cmd := ctx.TocInfo.HeaderLevel(macro)
-	fmt.Fprintf(ctx.GetW(), ".HEADING %d \"", cmd)
+	level := 1
+	switch macro {
+	case "Ch":
+		level = 2
+	case "Sh":
+		level = 3
+	case "Ss":
+		level = 4
+	}
+	fmt.Fprintf(ctx.GetW(), ".HEADING %d \"", level)
 }
 
 func (exp *exporter) BeginItem() {

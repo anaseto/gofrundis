@@ -1,4 +1,4 @@
-.HEADING 1 "section"
+.HEADING 3 "section"
 \f[I]Some text to markup with a delimiter\f[R]\&.
 And some more text
 \f[I]with another delimiter\f[R]?

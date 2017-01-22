@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/anaseto/gofrundis/escape"
 	"github.com/anaseto/gofrundis/frundis"
 )
 
@@ -14,7 +15,6 @@ func (exp *exporter) beginMomDocument() {
 	author := ctx.Params["document-author"]
 	date := ctx.Params["document-date"]
 	preamble := ctx.Params["mom-preamble"]
-	var chapterString string
 	if preamble != "" {
 		p, ok := frundis.SearchIncFile(exp, preamble)
 		if !ok {
@@ -29,26 +29,26 @@ func (exp *exporter) beginMomDocument() {
 			}
 		}
 	}
-	fmt.Fprintf(ctx.W, ".PAPER A5\n")
-	fmt.Fprintf(ctx.W, ".PRINTSTYLE TYPESET\n")
-	fmt.Fprintf(ctx.W, ".TITLE \"%s\"\n", title)
-	fmt.Fprintf(ctx.W, ".AUTHOR \"%s\"\n", author)
-	fmt.Fprintf(ctx.W, ".\\\" %s\n", date)
-	fmt.Fprintf(ctx.W, ".ATTRIBUTE_STRING \"\"\n")
-	fmt.Fprintf(ctx.W, ".HEADING_STYLE 1 SPACE_AFTER\n")
-	fmt.Fprintf(ctx.W, ".HEADING_STYLE 2 SPACE_AFTER\n")
-	fmt.Fprintf(ctx.W, ".CHAPTER 1\n")
 	switch ctx.Params["lang"] {
 	case "fr":
-		chapterString = "Chapitre"
-	case "es":
-		chapterString = "Capítulo"
+		fmt.Fprintf(ctx.W, ".do hla fr\n")
+		fmt.Fprintf(ctx.W, ".do hpf hyphen.fr\n")
 	default:
-		chapterString = "Chapter"
-		// TODO: More? Or just let the user change this with custom
-		// preamble.
+		fmt.Fprintf(ctx.W, ".do hla us\n")
+		fmt.Fprintf(ctx.W, ".do hpf hyphen.us\n")
+		fmt.Fprintf(ctx.W, ".do hpfa hyphenex.us\n")
 	}
-	fmt.Fprintf(ctx.W, ".CHAPTER_STRING \"%s\"\n", chapterString)
+	fmt.Fprintf(ctx.W, ".PAPER A5\n")
+	fmt.Fprintf(ctx.W, ".PRINTSTYLE TYPESET\n")
+	fmt.Fprintf(ctx.W, ".TITLE \"%s\"\n", escape.Roff(title))
+	fmt.Fprintf(ctx.W, ".AUTHOR \"%s\"\n", escape.Roff(author))
+	fmt.Fprintf(ctx.W, ".\\\" %s\n", escape.Roff(date))
+	fmt.Fprintf(ctx.W, ".ATTRIBUTE_STRING \"\"\n")
+	fmt.Fprintf(ctx.W, ".HEADERS OFF\n")
+	fmt.Fprintf(ctx.W, ".HEADING_STYLE 1 SIZE +6 QUAD C SPACE_AFTER NUMBER \n")
+	fmt.Fprintf(ctx.W, ".HEADING_STYLE 2 SIZE +5 QUAD C SPACE_AFTER NUMBER \n")
+	fmt.Fprintf(ctx.W, ".HEADING_STYLE 3 SIZE +3 SPACE_AFTER NUMBER \n")
+	fmt.Fprintf(ctx.W, ".HEADING_STYLE 4 SIZE +2 SPACE_AFTER NUMBER \n")
 end:
 	ctx.W.WriteString(".START\n")
 }

@@ -1,4 +1,4 @@
-.HEADING 1 "An interesting chapter"
+.HEADING 2 "An interesting chapter"
 .LIST
 .ITEM
 I no see really why it is interesting\&.
@@ -24,7 +24,7 @@ trois
 .LIST OFF
 quatre\&.
 .PP
-.HEADING 1 "Another interesting chapter"
+.HEADING 2 "Another interesting chapter"
 It is an interesting chapter:
 .PP
 .LIST

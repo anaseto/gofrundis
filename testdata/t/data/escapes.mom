@@ -1,7 +1,7 @@
 A backslash `\e\(cq is written `\ee\(cq\&. To begin a line with a period you can
 \&. use a zero-width `\e&\(cq character\&. {}
 .PP
-.HEADING 1 "\(dqtitle"
+.HEADING 2 "\(dqtitle"
 A `~\(cqcharacter
 A non-breaking space !
 [bla]
