@@ -2,6 +2,7 @@ package latex
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -47,7 +48,7 @@ func (exp *exporter) Init() {
 	ctx.Filters["escape"] = escape.LaTeX
 }
 
-func (exp *exporter) Reset() {
+func (exp *exporter) Reset() error {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
@@ -56,8 +57,7 @@ func (exp *exporter) Reset() {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-			os.Exit(1)
+			return errors.New(fmt.Sprintf("frundis:%v\n", err))
 		}
 	}
 	if exp.curOutputFile == nil {
@@ -67,6 +67,7 @@ func (exp *exporter) Reset() {
 	if exp.Standalone {
 		exp.beginLatexDocument()
 	}
+	return nil
 }
 
 func (exp *exporter) PostProcessing() {

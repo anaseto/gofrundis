@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -11,78 +12,121 @@ import (
 	"syscall"
 )
 
+var passTests bool = true
+
 func main() {
-	dataDir, err := os.Open("t/data")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading t/data:%v\n", err)
+	for _, f := range []func() error{doFragments, doStandalones} {
+		err := f()
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+	if !passTests {
 		os.Exit(1)
 	}
+}
+
+func doFragments() error {
+	dataDir, err := os.Open("t/data")
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error reading t/data:%v", err))
+	}
+	defer func() {
+		err := dataDir.Close()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error closing t/data:%v", err)
+		}
+	}()
 	names, err := dataDir.Readdirnames(-1)
 	for _, f := range names {
 		if b, _ := path.Match("*.frundis", f); !b {
 			continue
 		}
 		fullPath := path.Join("t", "data", f)
-		testFile(fullPath, "latex")
-		testFile(fullPath, "mom")
-		testFile(fullPath, "xhtml")
-		testFile(fullPath, "markdown")
+		for _, format := range []string{"latex", "mom", "xhtml", "markdown"} {
+			err := testFile(fullPath, format)
+			if err != nil {
+				return err
+			}
+		}
 	}
-	err = dataDir.Close()
+	return nil
+}
+
+func doStandalones() error {
+	dataDir, err := os.Open("t/data-dirs")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error closing t/data:%v\n", err)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("Error reading t/data-dirs:%v", err))
 	}
-	dataDir, err = os.Open("t/data-dirs")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading t/data-dirs:%v\n", err)
-		os.Exit(1)
-	}
-	names, err = dataDir.Readdirnames(-1)
+	defer func() {
+		err = dataDir.Close()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error closing t/data-dirs:%v", err)
+		}
+	}()
+	names, err := dataDir.Readdirnames(-1)
 	for _, f := range names {
 		if b, _ := path.Match("*.frundis", f); !b {
 			continue
 		}
 		fullPath := path.Join("t", "data-dirs", f)
 		if b, _ := path.Match("*-epub*", f); b {
-			testStandalone(fullPath, "epub", false)
+			err := testStandalone(fullPath, "epub", false)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 		if b, _ := path.Match("*-xhtml*", f); b {
-			testStandalone(fullPath, "xhtml", false)
-			testStandalone(fullPath, "xhtml", true)
+			err := testStandalone(fullPath, "xhtml", false)
+			if err != nil {
+				return err
+			}
+			err = testStandalone(fullPath, "xhtml", true)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 		if b, _ := path.Match("*-latex*", f); b {
-			testStandalone(fullPath, "latex", true)
+			err := testStandalone(fullPath, "latex", true)
+			if err != nil {
+				return err
+			}
 			continue
 		}
-		testStandalone(fullPath, "xhtml", false)
-		testStandalone(fullPath, "xhtml", true)
-		testStandalone(fullPath, "latex", true)
+		err := testStandalone(fullPath, "xhtml", false)
+		if err != nil {
+			return err
+		}
+		for _, format := range []string{"xhtml", "latex", "mom"} {
+			err = testStandalone(fullPath, format, true)
+			if err != nil {
+				return err
+			}
+		}
 	}
-	err = dataDir.Close()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error closing t/data-dirs:%v\n", err)
-		os.Exit(1)
-	}
+	return nil
 }
 
 var outputFile = ".gofrundistest.out"
 var outputDir = ".gofrundistestdir.out"
 
-func getBinPath() string {
+func getBinPath() (string, error) {
 	binPath, okEnv := os.LookupEnv("GOPATH")
 	if !okEnv {
-		fmt.Fprintf(os.Stderr, "no GOPATH")
-		os.Exit(1)
+		return "", errors.New("no GOPATH")
 	}
 	binPath = path.Join(binPath, "bin", "frundis")
-	return binPath
+	return binPath, nil
 }
 
-func testFile(file string, format string) {
-	binPath := getBinPath()
+func testFile(file string, format string) error {
+	binPath, err := getBinPath()
+	if err != nil {
+		return err
+	}
 	name := strings.TrimSuffix(file, ".frundis")
 	suffix := strings.Replace(format, "xhtml", "html", -1)
 	suffix = strings.Replace(suffix, "latex", "tex", -1)
@@ -93,7 +137,7 @@ func testFile(file string, format string) {
 	if err != nil {
 		ok(false, ref)
 		fmt.Fprint(os.Stderr, err)
-		return
+		return nil
 	}
 	cmd = exec.Command("diff", "-u", ref, outputFile)
 	_, e := os.Stat(ref)
@@ -110,12 +154,11 @@ func testFile(file string, format string) {
 				ok(false, ref)
 				if s.ExitStatus() >= 2 {
 					fmt.Fprintf(os.Stderr, "Error executing command:%s:%s", strings.Join(cmd.Args, " "), string(diff))
-					return
+					return nil
 				}
 			default:
 				ok(false, ref)
-				fmt.Fprint(os.Stderr, err)
-				os.Exit(1)
+				return err
 			}
 		}
 	}
@@ -126,20 +169,24 @@ func testFile(file string, format string) {
 			b, err := ioutil.ReadFile(outputFile)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error reading:%s", outputFile)
-				return
+				return nil
 			}
 			err = ioutil.WriteFile(ref, b, 0644)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error writing:%s", ref)
-				return
+				return nil
 			}
 
 		}
 	}
+	return nil
 }
 
-func testStandalone(file string, format string, toFile bool) {
-	binPath := getBinPath()
+func testStandalone(file string, format string, toFile bool) error {
+	binPath, err := getBinPath()
+	if err != nil {
+		return err
+	}
 	var suffix string
 	switch format {
 	case "epub":
@@ -152,9 +199,10 @@ func testStandalone(file string, format string, toFile bool) {
 		}
 	case "latex":
 		suffix = ".tex"
+	case "mom":
+		suffix = ".mom"
 	default:
-		fmt.Fprintf(os.Stderr, "internal error:unknown format:%s", format)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("internal error:unknown format:%s", format))
 	}
 	name := strings.TrimSuffix(file, ".frundis")
 	info, err := os.Stat(outputDir)
@@ -162,8 +210,7 @@ func testStandalone(file string, format string, toFile bool) {
 		if info.IsDir() {
 			err = os.RemoveAll(outputDir)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "removing outputDir:%v", err)
-				os.Exit(1)
+				return errors.New(fmt.Sprintf("removing outputDir:%v", err))
 			}
 		} else {
 			os.Remove(outputDir)
@@ -183,7 +230,7 @@ func testStandalone(file string, format string, toFile bool) {
 		ok(false, ref)
 		fmt.Fprintf(os.Stderr, "Error executing command:%s\n", cmdExpression)
 		fmt.Fprint(os.Stderr, err)
-		return
+		return nil
 	}
 	_, e := os.Stat(ref)
 	var diff []byte
@@ -203,11 +250,10 @@ func testStandalone(file string, format string, toFile bool) {
 					fmt.Fprintf(os.Stderr, "Error executing command:%s\n", strings.Join(cmd.Args, " "))
 					fmt.Fprint(os.Stderr, string(diff))
 					fmt.Fprintln(os.Stderr, "^^^^^^^ END OF ERROR ^^^^^^^^^")
-					return
+					return nil
 				}
 			default:
-				fmt.Fprint(os.Stderr, err)
-				os.Exit(1)
+				return err
 			}
 		}
 	}
@@ -219,16 +265,15 @@ func testStandalone(file string, format string, toFile bool) {
 			fmt.Fprintf(os.Stderr, "replacing %s with %s\n", ref, outputFile)
 			err := os.RemoveAll(ref)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error removing directory %s:%v", ref, err)
-				os.Exit(1)
+				return errors.New(fmt.Sprintf("Error removing directory %s:%v", ref, err))
 			}
 			err = os.Rename(outputDir, ref)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error renaming to %s", ref)
-				os.Exit(1)
+				return errors.New(fmt.Sprintf("Error renaming to %s", ref))
 			}
 		}
 	}
+	return nil
 }
 
 func readLine() string {
@@ -249,6 +294,7 @@ func ok(b bool, msg string) bool {
 		fmt.Fprintf(os.Stderr, "ok %d - %s\n", testNum, msg)
 	} else {
 		fmt.Fprintf(os.Stderr, "not ok %d - %s\n", testNum, msg)
+		passTests = false
 	}
 	return b
 }

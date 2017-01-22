@@ -145,7 +145,7 @@ type Exporter interface {
 	// the like) as necessary, and other processings.
 	RenderText([]ast.Inline) string
 	// Reset resets temporary data (for use between info and process phases)
-	Reset()
+	Reset() error
 	// Tableofcontents produces a table of content (it can be just
 	// \tableofcontents in LaTeX, or more complicated stuff in html).
 	TableOfContents(opts map[string][]ast.Inline, flags map[string]bool)

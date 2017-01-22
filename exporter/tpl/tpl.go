@@ -2,6 +2,7 @@ package tpl
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"html"
 	"os"
@@ -54,7 +55,7 @@ func (exp *exporter) Init() {
 	}
 }
 
-func (exp *exporter) Reset() {
+func (exp *exporter) Reset() error {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
@@ -63,14 +64,14 @@ func (exp *exporter) Reset() {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-			os.Exit(1)
+			return errors.New(fmt.Sprintf("frundis:%v\n", err))
 		}
 	}
 	if exp.curOutputFile == nil {
 		exp.curOutputFile = os.Stdout
 	}
 	ctx.W = bufio.NewWriter(exp.curOutputFile)
+	return nil
 }
 
 func (exp *exporter) PostProcessing() {

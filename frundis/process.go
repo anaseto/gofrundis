@@ -14,7 +14,10 @@ func ProcessFrundisSource(exp Exporter, filename string) error {
 	if err != nil {
 		return err
 	}
-	exp.Reset()
+	err = exp.Reset()
+	if err != nil {
+		return err
+	}
 	err = processFile(exp, filename)
 	if err != nil {
 		return err

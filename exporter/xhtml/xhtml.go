@@ -3,6 +3,7 @@ package xhtml
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"html"
 	"net/url"
@@ -54,7 +55,7 @@ func (exp *exporter) Init() {
 	exp.xhtmlNavigationText = &bytes.Buffer{}
 }
 
-func (exp *exporter) Reset() {
+func (exp *exporter) Reset() error {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
@@ -66,8 +67,7 @@ func (exp *exporter) Reset() {
 			if err != nil {
 				err = os.Mkdir(exp.OutputFile, 0755)
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-					os.Exit(1)
+					return errors.New(fmt.Sprintf("frundis:%v\n", err))
 				}
 			} else {
 				fmt.Fprintf(os.Stderr, "frundis:warning:directory %s already exists", exp.OutputFile)
@@ -75,15 +75,13 @@ func (exp *exporter) Reset() {
 			index := path.Join(exp.OutputFile, "index.html")
 			exp.curOutputFile, err = os.Create(index)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-				os.Exit(1)
+				return errors.New(fmt.Sprintf("frundis:%v\n", err))
 			}
 		} else if exp.OutputFile != "" {
 			var err error
 			exp.curOutputFile, err = os.Create(exp.OutputFile)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-				os.Exit(1)
+				return errors.New(fmt.Sprintf("frundis:%v\n", err))
 			}
 		}
 		if exp.curOutputFile == nil {
@@ -108,35 +106,43 @@ func (exp *exporter) Reset() {
 			}
 		}
 	case "epub":
-		makeDirectory(exp.OutputFile)
+		err := makeDirectory(exp.OutputFile)
+		if err != nil {
+			return err
+		}
 		epub := path.Join(exp.OutputFile, "EPUB")
-		makeDirectory(epub)
+		err = makeDirectory(epub)
+		if err != nil {
+			return err
+		}
 		metainf := path.Join(exp.OutputFile, "META-INF")
-		makeDirectory(metainf)
+		err = makeDirectory(metainf)
+		if err != nil {
+			return err
+		}
 		exp.epubGen()
 
-		var err error
 		exp.curOutputFile, err = os.Create(path.Join(exp.OutputFile, "EPUB", "index.xhtml"))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-			os.Exit(1)
+			return errors.New(fmt.Sprintf("frundis:%v\n", err))
 		}
 		ctx.W = bufio.NewWriter(exp.curOutputFile)
 		title := ctx.Params["document-title"]
 		exp.XHTMLdocumentHeader(ctx.W, title)
 		exp.xhtmlTitlePage()
 	}
+	return nil
 }
 
-func makeDirectory(filename string) {
+func makeDirectory(filename string) error {
 	_, err := os.Stat(filename)
 	if err != nil {
 		err = os.Mkdir(filename, 0755)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-			os.Exit(1)
+			return errors.New(fmt.Sprintf("frundis:%v\n", err))
 		}
 	}
+	return nil
 }
 
 func (exp *exporter) PostProcessing() {

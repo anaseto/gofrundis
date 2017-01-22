@@ -1,0 +1,77 @@
+.PAPER A5
+.PRINTSTYLE TYPESET
+.TITLE "The Title"
+.AUTHOR "The author"
+.\" 2042
+.ATTRIBUTE_STRING ""
+.HEADING_STYLE 1 SPACE_AFTER
+.HEADING_STYLE 2 SPACE_AFTER
+.CHAPTER 1
+.CHAPTER_STRING "Chapter"
+.START
+.TOC
+.PDF_IMAGE "t/data-dirs/img/image\&.pdf"
+.PP
+.HEADING 3 "Abstract"
+Text\&.
+\f[I]Emphasized text with a label\f[R]\&.
+.PP
+.HEADING 1 "Part1"
+.TOC
+.HEADING 2 "Chap1"
+Text\&.
+.PP
+.HEADING 2 "Chap2"
+.TOC
+Text\&.
+.PP
+.HEADING 5 PARAHEAD "Title of paragraph"
+Text\&.
+.PP
+.FLOAT
+.TS
+allbox;
+l l .
+a	b
+.TE
+.CAPTION "Table1" TO_LIST TABLES
+.FLOAT OFF
+.PP
+Normal paragraph\&.
+.PP
+.HEADING 3 "Section1"
+Text\&.
+.PP
+.HEADING 4 "Subsection1"
+Text\&.
+.PP
+.HEADING 3 "Section2"
+Text\&.
+.PP
+.FLOAT
+.TS
+allbox;
+l l .
+c	d
+e	f
+.TE
+.CAPTION "Table2" TO_LIST TABLES
+.FLOAT OFF
+.HEADING 4 "Subsection2"
+Text\&.
+.PP
+.HEADING 1 "Part2"
+.HEADING 2 "Chap3"
+.TOC
+Text\&. Some cross-references:
+Section2
+Chap1
+Part2
+Abstract
+Table2
+Link to emphasized text
+.PP
+.HEADING 3 "Section3"
+Text\&.
+.PP
+.LIST_OF_TABLES

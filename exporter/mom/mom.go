@@ -2,6 +2,7 @@ package mom
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -50,7 +51,7 @@ func (exp *exporter) Init() {
 	ctx.Filters["escape"] = escape.Roff
 }
 
-func (exp *exporter) Reset() {
+func (exp *exporter) Reset() error {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
@@ -59,8 +60,7 @@ func (exp *exporter) Reset() {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "frundis:%v\n", err)
-			os.Exit(1)
+			return errors.New(fmt.Sprintf("frundis:%v\n", err))
 		}
 	}
 	if exp.curOutputFile == nil {
@@ -70,6 +70,7 @@ func (exp *exporter) Reset() {
 	if exp.Standalone {
 		exp.beginMomDocument()
 	}
+	return nil
 }
 
 func (exp *exporter) PostProcessing() {
@@ -369,7 +370,7 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 		return
 	}
 	ext := path.Ext(image)
-	if ext != "eps" && ext != "pdf" {
+	if ext != ".eps" && ext != ".pdf" {
 		bctx.Error("expected .eps or .pdf but got ", image)
 	}
 	image = escape.Roff(image)
@@ -406,8 +407,12 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 		bctx.Error("image not found:", image)
 		return
 	}
+	ext := path.Ext(image)
+	if ext != ".eps" && ext != ".pdf" {
+		bctx.Error("expected .eps or .pdf but got ", image)
+	}
 	image = escape.Roff(image)
-	fmt.Fprintf(w, ".PDF_IMAGE \"%s\"\n", image) // TODO: use punct
+	fmt.Fprintf(w, ".PDF_IMAGE \"%s\"", image) // TODO: use punct
 }
 
 func (exp *exporter) LkWithLabel(uri string, label string, punct string) {

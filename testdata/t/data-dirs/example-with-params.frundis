@@ -13,7 +13,12 @@
 .X set document-date 2042
 .X set lang en
 .Tc -summary -title "Summary" -nonum
+.#if -f xhtml,epub,latex
 .Im t/data-dirs/img/image.png
+.#;
+.#if -f mom
+.Im t/data-dirs/img/image.pdf
+.#;
 .Sh -nonum Abstract
 Text.
 .Sm -id label1 Emphasized text with a label .
