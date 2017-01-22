@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd January 21, 2017
+.Dd January 22, 2017
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -198,7 +198,7 @@ source file:
 define exporting parameters and tags:
 .Cm set | mtag | dtag | ftag
 .El
-.Ss Macros, variables and state control
+.Ss Macros, variables and conditionals
 .Bl -column "Brq, Bro, Brc" description
 .It Sx \&#de ,
 \&#.
@@ -1282,10 +1282,8 @@ checked and added automatically as necessary, unless a zero-width
 character is used between punctuation and text.
 .It Cm latex-preamble
 Path to a custom LaTeX preamble file (text before the
-.Sm
 .Qq \ebegin{document}
 ).
-.Sm
 Without this option, a simple preamble with just the necessary, using metadata
 from the
 .Cm document-author ,
@@ -1295,6 +1293,10 @@ and
 parameters, will be used.
 .It Cm latex-xelatex
 Use an automatic XeLaTeX preamble instead of a plain LaTeX one.
+.It Cm mom-preamble
+Path to a custom groff mom preamble file (text before
+.Qq \&.START
+).
 .It Cm nbsp
 Character to use for rendering non-breaking spaces.
 It defaults to
