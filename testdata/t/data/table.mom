@@ -30,6 +30,10 @@ a	b
 .TE
 .CAPTION "\f[I]Title\f[R]" TO_LIST TABLES
 .FLOAT OFF
+.TS
+allbox;
+.
+.TE
 .FLOAT
 .TS
 allbox;
