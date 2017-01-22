@@ -9,9 +9,7 @@ allbox;
 l l l .
 one	two	three
 a	b	c
-A	B 
-C	D
-E
+A	B  C	D E
 .TE
 .FLOAT
 .TS
@@ -32,10 +30,6 @@ a	b
 .TE
 .CAPTION "\f[I]Title\f[R]" TO_LIST TABLES
 .FLOAT OFF
-.TS
-allbox;
-.
-.TE
 .FLOAT
 .TS
 allbox;

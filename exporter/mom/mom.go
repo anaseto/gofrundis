@@ -2,6 +2,7 @@ package mom
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"net/url"
@@ -38,6 +39,7 @@ type exporter struct {
 	dominitoc     bool
 	minitoc       bool
 	verse         bool
+	inCell        bool
 	fontstack     []string
 }
 
@@ -205,6 +207,7 @@ func (exp *exporter) BeginTableCell() {
 	if ctx.TableCell > 1 {
 		fmt.Fprint(ctx.GetW(), "\t")
 	}
+	exp.inCell = true
 }
 
 func (exp *exporter) BeginTableRow() {
@@ -346,6 +349,7 @@ func (exp *exporter) EndTable(tableinfo *frundis.TableInfo) {
 }
 
 func (exp *exporter) EndTableCell() {
+	exp.inCell = false
 }
 
 func (exp *exporter) EndTableRow() {
@@ -365,6 +369,9 @@ func (exp *exporter) EndVerseLine() {
 }
 
 func (exp *exporter) FormatParagraph(text []byte) []byte {
+	if exp.inCell {
+		return bytes.Replace(text, []byte("\n"), []byte(" "), -1)
+	}
 	return text // TODO: do something?
 }
 
