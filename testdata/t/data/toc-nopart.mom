@@ -1,13 +1,10 @@
-.HEADING 2 "Chapter name"
-.PDF_TARGET "s:1"
+.HEADING 2 NAMED s:1 "Chapter name"
 Some introductory text\&.
 .PP
-.HEADING 3 "section name"
-.PDF_TARGET "s:2"
+.HEADING 3 NAMED s:2 "section name"
 Some section text\&.
 .PP
-.HEADING 4 "subsection name"
-.PDF_TARGET "s:3"
+.HEADING 4 NAMED s:3 "subsection name"
 Some subsection text\&.
 .PP
 .TOC

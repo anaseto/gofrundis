@@ -148,7 +148,9 @@ func (exp *exporter) BeginHeader(macro string, title string, numbered bool, rend
 	case "Ss":
 		level = 4
 	}
-	fmt.Fprintf(ctx.GetW(), ".HEADING %d \"", level)
+	toc, _ := ctx.LoXInfo["toc"]
+	entry, _ := toc[title]
+	fmt.Fprintf(ctx.GetW(), ".HEADING %d NAMED s:%d \"", level, entry.Count)
 }
 
 func (exp *exporter) BeginItem() {
@@ -295,9 +297,9 @@ func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleT
 	// if !numbered {
 	// 	fmt.Fprintf(w, "\\addcontentsline{toc}{%s}{%s}\n", cmd, titleText)
 	// }
-	toc, _ := ctx.LoXInfo["toc"]
-	entry, _ := toc[title]
-	fmt.Fprintf(w, ".PDF_TARGET \"s:%d\"\n", entry.Count)
+	//toc, _ := ctx.LoXInfo["toc"]
+	//entry, _ := toc[title]
+	//fmt.Fprintf(w, ".PDF_TARGET \"s:%d\"\n", entry.Count)
 }
 
 func (exp *exporter) EndItemList() {

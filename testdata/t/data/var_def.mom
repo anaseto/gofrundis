@@ -5,8 +5,7 @@ Some text\&. The date:42
 .PP
 Some text\&. The date:today
 .PP
-.HEADING 2 "today"
-.PDF_TARGET "s:1"
+.HEADING 2 NAMED s:1 "today"
 http://bardinflor\&.perso\&.aquilenet\&.fr/frundis/intro-en
 «\e»
 .PP

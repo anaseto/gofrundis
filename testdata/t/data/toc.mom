@@ -1,34 +1,26 @@
-.HEADING 2 "Prologue"
-.PDF_TARGET "s:1"
-.HEADING 2 "A first chapter"
-.PDF_TARGET "s:2"
+.HEADING 2 NAMED s:1 "Prologue"
+.HEADING 2 NAMED s:2 "A first chapter"
 .TOC
 .PP
 paragraph text\&.
 .PP
-.HEADING 3 "A first section"
-.PDF_TARGET "s:3"
+.HEADING 3 NAMED s:3 "A first section"
 paragraph text\&.
 .PP
-.HEADING 4 "A subsection"
-.PDF_TARGET "s:4"
+.HEADING 4 NAMED s:4 "A subsection"
 paragraph text\&.
 .PP
-.HEADING 4 "Another subsection"
-.PDF_TARGET "s:5"
+.HEADING 4 NAMED s:5 "Another subsection"
 paragraph text\&. A reference to the subsection
 .PDF_LINK "s:5" SUFFIX "\&." "Another subsection"
 .PDF_LINK "s:5" SUFFIX "" "Another subsection"
 .PDF_LINK "s:5" SUFFIX "\&." "link text to Another subsection"
 .PP
-.HEADING 3 "Another section"
-.PDF_TARGET "s:6"
+.HEADING 3 NAMED s:6 "Another section"
 paragraph text\&.
 .PP
-.HEADING 2 "A second \f[I]chapter\f[R]"
-.PDF_TARGET "s:7"
+.HEADING 2 NAMED s:7 "A second \f[I]chapter\f[R]"
 paragraph text\&.
 .PP
-.HEADING 3 "A last section"
-.PDF_TARGET "s:8"
+.HEADING 3 NAMED s:8 "A last section"
 .TOC

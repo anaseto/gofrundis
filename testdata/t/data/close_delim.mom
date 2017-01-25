@@ -1,5 +1,4 @@
-.HEADING 3 "section"
-.PDF_TARGET "s:1"
+.HEADING 3 NAMED s:1 "section"
 \f[I]Some text to markup with a delimiter\f[R]\&.
 And some more text
 \f[I]with another delimiter\f[R]?

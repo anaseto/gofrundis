@@ -1,5 +1,4 @@
-.HEADING 2 "An interesting chapter"
-.PDF_TARGET "s:1"
+.HEADING 2 NAMED s:1 "An interesting chapter"
 .LIST
 .ITEM
 I no see really why it is interesting\&.
@@ -25,8 +24,7 @@ trois
 .LIST OFF
 quatre\&.
 .PP
-.HEADING 2 "Another interesting chapter"
-.PDF_TARGET "s:2"
+.HEADING 2 NAMED s:2 "Another interesting chapter"
 It is an interesting chapter:
 .PP
 .LIST

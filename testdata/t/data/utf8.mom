@@ -1,7 +1,6 @@
 «text» «text»
 .PP
-.HEADING 2 "«text»"
-.PDF_TARGET "s:1"
+.HEADING 2 NAMED s:1 "«text»"
 «text» «text»
 «text» «text»
 «macro-text»
