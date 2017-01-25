@@ -1,3 +1,4 @@
+.NEWPAGE
 .HEADING 2 NAMED s:1 "An interesting chapter"
 .LIST
 .ITEM
@@ -24,6 +25,7 @@ trois
 .LIST OFF
 quatre\&.
 .PP
+.NEWPAGE
 .HEADING 2 NAMED s:2 "Another interesting chapter"
 It is an interesting chapter:
 .PP

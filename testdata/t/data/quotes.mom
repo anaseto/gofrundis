@@ -1,5 +1,10 @@
+.NEWPAGE
 .HEADING 2 NAMED s:1 "That is a quoted argument !"
+.NEWPAGE
 .HEADING 2 NAMED s:2 "Some empty quote"
+.NEWPAGE
 .HEADING 2 NAMED s:3 "Some literal \(dq \(cqinside quotes\(cq quote"
+.NEWPAGE
 .HEADING 2 NAMED s:4 "Some literal \(dq quotes at end"
+.NEWPAGE
 .HEADING 2 NAMED s:5 "Some more \(dq"

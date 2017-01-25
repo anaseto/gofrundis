@@ -150,7 +150,11 @@ func (exp *exporter) BeginHeader(macro string, title string, numbered bool, rend
 	}
 	toc, _ := ctx.LoXInfo["toc"]
 	entry, _ := toc[title]
-	fmt.Fprintf(ctx.GetW(), ".HEADING %d NAMED s:%d \"", level, entry.Count)
+	w := ctx.GetW()
+	if level < 3 {
+		fmt.Fprintf(w, ".NEWPAGE\n")
+	}
+	fmt.Fprintf(w, ".HEADING %d NAMED s:%d \"", level, entry.Count)
 }
 
 func (exp *exporter) BeginItem() {

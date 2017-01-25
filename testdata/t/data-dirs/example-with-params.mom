@@ -21,11 +21,14 @@ Text\&.
 .PDF_TARGET "label1"
 \f[I]Emphasized text with a label\f[R]\&.
 .PP
+.NEWPAGE
 .HEADING 1 NAMED s:2 "Part1"
 .TOC
+.NEWPAGE
 .HEADING 2 NAMED s:3 "Chap1"
 Text\&.
 .PP
+.NEWPAGE
 .HEADING 2 NAMED s:4 "Chap2"
 .TOC
 Text\&.
@@ -65,7 +68,9 @@ e	f
 .HEADING 4 NAMED s:8 "Subsection2"
 Text\&.
 .PP
+.NEWPAGE
 .HEADING 1 NAMED s:9 "Part2"
+.NEWPAGE
 .HEADING 2 NAMED s:10 "Chap3"
 .TOC
 Text\&. Some cross-references:

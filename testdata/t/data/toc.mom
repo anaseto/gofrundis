@@ -1,4 +1,6 @@
+.NEWPAGE
 .HEADING 2 NAMED s:1 "Prologue"
+.NEWPAGE
 .HEADING 2 NAMED s:2 "A first chapter"
 .TOC
 .PP
@@ -19,6 +21,7 @@ paragraph text\&. A reference to the subsection
 .HEADING 3 NAMED s:6 "Another section"
 paragraph text\&.
 .PP
+.NEWPAGE
 .HEADING 2 NAMED s:7 "A second \f[I]chapter\f[R]"
 paragraph text\&.
 .PP
