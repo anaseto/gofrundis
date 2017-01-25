@@ -118,6 +118,9 @@ func (exp *exporter) BeginDialogue() {
 func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
+	if id != "" {
+		fmt.Fprintf(w, ".PDF_TARGET \"%s\"\n", id)
+	}
 	if tag != "" {
 		dtag, ok := ctx.Dtags[tag]
 		var cmd string
@@ -128,9 +131,6 @@ func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 			fmt.Fprintf(w, ".%s\n", cmd)
 		}
 	}
-	//if id != "" { // TODO: not sure how to do this
-	//	fmt.Fprintf(w, "\\hypertarget{%s}{}\n", id)
-	//}
 }
 
 func (exp *exporter) BeginEnumList() {
@@ -168,9 +168,9 @@ func (exp *exporter) BeginItemList() {
 func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
-	//if id != "" { // XXX not sure how this works with groff
-	//	fmt.Fprintf(w, "\\hypertarget{%s}{", id)
-	//}
+	if id != "" {
+		fmt.Fprintf(w, ".PDF_TARGET \"%s\"\n", id)
+	}
 	mtag, okMtag := ctx.Mtags[tag]
 	exp.fontstack = append(exp.fontstack, mtag.Cmd)
 	if !okMtag {
@@ -233,10 +233,20 @@ func (exp *exporter) Context() *frundis.Context {
 }
 
 func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
-	// TODO: not sure how to do this with groff
 	ctx := exp.Context()
 	w := ctx.GetW()
-	fmt.Fprintf(w, "%s%s", name, punct)
+	switch {
+	case loXentry != nil:
+		fmt.Fprintf(w, ".PDF_LINK \"%s:%d\" SUFFIX \"%s\" \"%s\"", loXentry.Ref, loXentry.Count, punct, name)
+		// FIXME?: name could mess with surrounding markup if it has
+		// markup (the problem is groff \f[..] that cannot simply be
+		// reliably closed).
+	case id != "":
+		ref, _ := ctx.IDs[id] // we know that it's ok
+		fmt.Fprintf(w, ".PDF_LINK \"%s\" SUFFIX \"%s\" \"%s\"", ref, punct, name)
+	default:
+		fmt.Fprintf(w, "%s%s", name, punct)
+	}
 }
 
 func (exp *exporter) DescName(name string) {
@@ -281,14 +291,13 @@ func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleT
 	// TODO: rethink args (pass loxinfo?)
 	ctx := exp.Context()
 	w := ctx.GetW()
-	// cmd := momHeaderName(macro)
 	fmt.Fprint(w, "\"\n")
 	// if !numbered {
 	// 	fmt.Fprintf(w, "\\addcontentsline{toc}{%s}{%s}\n", cmd, titleText)
 	// }
-	// toc, _ := ctx.LoXInfo["toc"]
-	// entry, _ := toc[title]
-	// fmt.Fprintf(w, "\\label{s:%d}\n", entry.Count)
+	toc, _ := ctx.LoXInfo["toc"]
+	entry, _ := toc[title]
+	fmt.Fprintf(w, ".PDF_TARGET \"s:%d\"\n", entry.Count)
 }
 
 func (exp *exporter) EndItemList() {

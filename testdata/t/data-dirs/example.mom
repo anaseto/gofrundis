@@ -14,25 +14,33 @@
 .HEADING_STYLE 4 SIZE +2 SPACE_AFTER NUMBER
 .START
 .HEADING 1 "Part1"
+.PDF_TARGET "s:1"
 .HEADING 2 "Chap1"
+.PDF_TARGET "s:2"
 Text\&.
 .PP
 .HEADING 2 "Chap2"
+.PDF_TARGET "s:3"
 Text\&.
 .PP
 .HEADING 3 "Section1"
+.PDF_TARGET "s:4"
 Text\&.
 .PP
 .HEADING 3 "Section2"
+.PDF_TARGET "s:5"
 Text\&.
 .PP
 .HEADING 4 "Subsection1"
+.PDF_TARGET "s:6"
 Text\&.
 .PP
 .HEADING 1 "Part2"
+.PDF_TARGET "s:7"
 .HEADING 2 "Chap3"
+.PDF_TARGET "s:8"
 Text\&.
-Section2
-Chap1
-Part2
+.PDF_LINK "s:5" SUFFIX "" "Section2"
+.PDF_LINK "s:2" SUFFIX "" "Chap1"
+.PDF_LINK "s:7" SUFFIX "" "Part2"
 .PP

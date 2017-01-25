@@ -1,5 +1,7 @@
 .HEADING 1 "Primera parte"
+.PDF_TARGET "s:1"
 .HEADING 2 "Prólogo \f[I]muy corto\f[R]"
+.PDF_TARGET "s:2"
 Esta es la historia de Shaedra, pero en más breve, porque no tengo tiempo para
 escribir todo\&.
 .PP
@@ -9,6 +11,7 @@ Otro párrafo, que con uno no se hace
 \f[I]mucho\f[R]\&.
 .PP
 .HEADING 2 "Primer capítulo"
+.PDF_TARGET "s:3"
 Bueno, ¿\f[I]no\f[R]
 \f[I]@\f[R]
 vamos a escribir demasiado tampoco\&.
@@ -16,6 +19,7 @@ vamos a escribir demasiado tampoco\&.
 \f[I]« quoted string »\f[R]
 .PP
 .HEADING 2 "Nested spanning blocks"
+.PDF_TARGET "s:4"
 This
 \f[I]is a
 \f[I]nested\f[]\f[R]
@@ -25,6 +29,7 @@ block through\f[R]
 two paragraphs\&.
 .PP
 .HEADING 2 "Spanning block"
+.PDF_TARGET "s:5"
 \f[I]this is a\f[R]
 .PP
 \f[I]spanning block\f[R]
@@ -32,16 +37,20 @@ two paragraphs\&.
 .PP
 \f[I]spanning block\f[R]
 .PP
-Prólogo \f[I]muy corto\f[R]
+.PDF_LINK "s:2" SUFFIX "" "Prólogo \f[I]muy corto\f[R]"
 \f[I]arg1 arg2\f[R]
 Text\&.
 \f[B]Strong\f[R]\&.
 \f[I]\f[I]Text\f[]\f[R]\&.
 .PP
 .HEADING 2 "Some \f[I]important\f[R] thing"
+.PDF_TARGET "s:6"
 .HEADING 2 "More \f[I]emph\f[R] and \f[I]more\f[R]"
+.PDF_TARGET "s:7"
 .HEADING 3 "Bla \f[I]Emphblabla\f[R]Bla"
+.PDF_TARGET "s:8"
 .HEADING 4 "Bla \f[I]Emphblabla\f[R] Bla"
+.PDF_TARGET "s:9"
 .LIST USER ""
 .ITEM
 \f[B]\f[I]Blabla\f[R]\f[R]

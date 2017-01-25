@@ -1,4 +1,5 @@
 .HEADING 2 "An interesting chapter"
+.PDF_TARGET "s:1"
 .LIST
 .ITEM
 I no see really why it is interesting\&.
@@ -25,6 +26,7 @@ trois
 quatre\&.
 .PP
 .HEADING 2 "Another interesting chapter"
+.PDF_TARGET "s:2"
 It is an interesting chapter:
 .PP
 .LIST

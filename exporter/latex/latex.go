@@ -226,13 +226,15 @@ func (exp *exporter) Context() *frundis.Context {
 func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
-	if loXentry != nil {
-		fmt.Fprintf(w, "\\hyperref[%s:%d]{", loXentry.Ref, loXentry.Count)
-	} else if id != "" {
+	switch {
+	case loXentry != nil:
+		fmt.Fprintf(w, "\\hyperref[%s:%d]{%s}%s", loXentry.Ref, loXentry.Count, name, punct)
+	case id != "":
 		ref, _ := ctx.IDs[id] // we know that it's ok
-		fmt.Fprintf(w, "\\hyperlink{%s}{", ref)
+		fmt.Fprintf(w, "\\hyperlink{%s}{%s}%s", ref, name, punct)
+	default:
+		fmt.Fprintf(w, "%s%s", name, punct)
 	}
-	fmt.Fprintf(w, "%s}%s", name, punct)
 }
 
 func (exp *exporter) DescName(name string) {

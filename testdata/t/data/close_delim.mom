@@ -1,4 +1,5 @@
 .HEADING 3 "section"
+.PDF_TARGET "s:1"
 \f[I]Some text to markup with a delimiter\f[R]\&.
 And some more text
 \f[I]with another delimiter\f[R]?
@@ -9,6 +10,6 @@ That\(cqs it\&.
 \f[I]text\f[R]»
 label (url)\&.
 url\&.
-section\&.
-section \&.
+.PDF_LINK "s:1" SUFFIX "\&." "section"
+.PDF_LINK "s:1" SUFFIX " \&." "section"
 .PP

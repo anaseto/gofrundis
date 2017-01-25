@@ -13,6 +13,6 @@ a second \f[I]verse\f[R]
 a third verse
 
 .QUOTE OFF
-A poem
-A \f[I]poem\f[R]
+.PDF_LINK "poem:1" SUFFIX "" "A poem"
+.PDF_LINK "poem:2" SUFFIX "" "A \f[I]poem\f[R]"
 .PP

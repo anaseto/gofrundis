@@ -1,7 +1,9 @@
 .HEADING 3 "A section"
+.PDF_TARGET "s:1"
 Some text\&.
 .PP
 .HEADING 4 "A subsection"
+.PDF_TARGET "s:2"
 Some text
 .PP
 .HEADING 5 PARAHEAD "paragraph with title"

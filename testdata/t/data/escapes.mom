@@ -2,6 +2,7 @@ A backslash `\e\(cq is written `\ee\(cq\&. To begin a line with a period you can
 \&. use a zero-width `\e&\(cq character\&. {}
 .PP
 .HEADING 2 "\(dqtitle"
+.PDF_TARGET "s:1"
 A `~\(cqcharacter
 A non-breaking space !
 [bla]
@@ -23,7 +24,7 @@ Text\&. \e% #\(cq\(dq&$
 Text\&.
 %C2%AB%C2%BB#%5C
 %C2%AB%C2%BB#%5C)\&.
-\elolailo
+.PDF_LINK "s:1" SUFFIX "" "\elolailo"
 \f[I]Some     Text\f[R]
 \f[I]Some     \(dqText\f[R]
 .PP

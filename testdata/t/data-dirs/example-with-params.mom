@@ -17,15 +17,20 @@
 .PDF_IMAGE "t/data-dirs/img/image\&.pdf"
 .PP
 .HEADING 3 "Abstract"
+.PDF_TARGET "s:1"
 Text\&.
+.PDF_TARGET "label1"
 \f[I]Emphasized text with a label\f[R]\&.
 .PP
 .HEADING 1 "Part1"
+.PDF_TARGET "s:2"
 .TOC
 .HEADING 2 "Chap1"
+.PDF_TARGET "s:3"
 Text\&.
 .PP
 .HEADING 2 "Chap2"
+.PDF_TARGET "s:4"
 .TOC
 Text\&.
 .PP
@@ -44,12 +49,15 @@ a	b
 Normal paragraph\&.
 .PP
 .HEADING 3 "Section1"
+.PDF_TARGET "s:5"
 Text\&.
 .PP
 .HEADING 4 "Subsection1"
+.PDF_TARGET "s:6"
 Text\&.
 .PP
 .HEADING 3 "Section2"
+.PDF_TARGET "s:7"
 Text\&.
 .PP
 .FLOAT
@@ -62,20 +70,24 @@ e	f
 .CAPTION "Table2" TO_LIST TABLES
 .FLOAT OFF
 .HEADING 4 "Subsection2"
+.PDF_TARGET "s:8"
 Text\&.
 .PP
 .HEADING 1 "Part2"
+.PDF_TARGET "s:9"
 .HEADING 2 "Chap3"
+.PDF_TARGET "s:10"
 .TOC
 Text\&. Some cross-references:
-Section2
-Chap1
-Part2
-Abstract
-Table2
-Link to emphasized text
+.PDF_LINK "s:7" SUFFIX "" "Section2"
+.PDF_LINK "s:3" SUFFIX "" "Chap1"
+.PDF_LINK "s:9" SUFFIX "" "Part2"
+.PDF_LINK "s:1" SUFFIX "" "Abstract"
+.PDF_LINK "tbl:2" SUFFIX "" "Table2"
+.PDF_LINK "label1" SUFFIX "" "Link to emphasized text"
 .PP
 .HEADING 3 "Section3"
+.PDF_TARGET "s:11"
 Text\&.
 .PP
 .LIST_OF_TABLES
