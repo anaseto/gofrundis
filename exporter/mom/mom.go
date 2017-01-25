@@ -451,7 +451,9 @@ func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
 	} else {
 		u = escape.Roff(parsedURL.String())
 	}
-	fmt.Fprintf(w, "%s (%s)%s", escape.Roff(label), u, punct)
+	fmt.Fprintf(w, ".PDF_WWW_LINK %s SUFFIX \"%s\" \"%s\"", u, punct, escape.Roff(label))
+	// XXX warn if label ends with '*' or '+' ? (they have special meaning
+	// in mom at the end of the hotlink text)
 }
 
 func (exp *exporter) LkWithoutLabel(uri string, punct string) {
@@ -464,7 +466,8 @@ func (exp *exporter) LkWithoutLabel(uri string, punct string) {
 	} else {
 		u = escape.Roff(parsedURL.String())
 	}
-	fmt.Fprintf(w, "%s%s", u, punct) // XXX italic or something?
+	fmt.Fprintf(w, ".PDF_WWW_LINK %s SUFFIX \"%s\"", u, punct)
+	// XXX: -ns option should be invalid after...
 }
 
 func (exp *exporter) ParagraphTitle(title string) {

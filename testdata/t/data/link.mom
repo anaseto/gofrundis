@@ -1,6 +1,6 @@
-Frundis (http://bardinflor\&.perso\&.aquilenet/frundis/)
-http://bardinflor\&.perso\&.aquilenet/frundis/
-http://bardinflor\&.perso\&.aquilenet/har%C3%A9ka/#001
+.PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/frundis/ SUFFIX "" "Frundis"
+.PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/frundis/ SUFFIX ""
+.PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/har%C3%A9ka/#001 SUFFIX ""
 .PP
 .PDF_TARGET "label1"
 \f[I]Text\f[R]
@@ -8,5 +8,5 @@ http://bardinflor\&.perso\&.aquilenet/har%C3%A9ka/#001
 .PDF_TARGET "label2"
 \f[I]Text with label2\f[R]
 .PDF_LINK "label2" SUFFIX "" "link to label2"
-http://bardinflor\&.perso\&.aquilenet/forum/?bla=thing&blabla=
+.PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/forum/?bla=thing&blabla= SUFFIX ""
 .PP

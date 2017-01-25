@@ -21,8 +21,8 @@ Text\&. \e% #\(cq\(dq&$
 .PP
 .HEADING 5 PARAHEAD "strange title:\e%$#"
 Text\&.
-%C2%AB%C2%BB#%5C
-%C2%AB%C2%BB#%5C)\&.
+.PDF_WWW_LINK %C2%AB%C2%BB#%5C SUFFIX ""
+.PDF_WWW_LINK %C2%AB%C2%BB#%5C SUFFIX ")\&."
 .PDF_LINK "s:1" SUFFIX "" "\elolailo"
 \f[I]Some     Text\f[R]
 \f[I]Some     \(dqText\f[R]
