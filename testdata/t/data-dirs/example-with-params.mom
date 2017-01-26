@@ -13,7 +13,6 @@
 .HEADING_STYLE 3 SIZE +3 SPACE_AFTER NUMBER
 .HEADING_STYLE 4 SIZE +2 SPACE_AFTER NUMBER
 .START
-.TOC
 .PDF_IMAGE "t/data-dirs/img/image\&.pdf"
 .PP
 .HEADING 3 NAMED s:1 "Abstract"
@@ -23,14 +22,12 @@ Text\&.
 .PP
 .NEWPAGE
 .HEADING 1 NAMED s:2 "Part1"
-.TOC
 .NEWPAGE
 .HEADING 2 NAMED s:3 "Chap1"
 Text\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:4 "Chap2"
-.TOC
 Text\&.
 .PP
 .HEADING 5 PARAHEAD "Title of paragraph"
@@ -72,7 +69,6 @@ Text\&.
 .HEADING 1 NAMED s:9 "Part2"
 .NEWPAGE
 .HEADING 2 NAMED s:10 "Chap3"
-.TOC
 Text\&. Some cross-references:
 .PDF_LINK "s:7" SUFFIX "" "Section2"
 .PDF_LINK "s:3" SUFFIX "" "Chap1"
@@ -84,4 +80,3 @@ Text\&. Some cross-references:
 .HEADING 3 NAMED s:11 "Section3"
 Text\&.
 .PP
-.LIST_OF_TABLES

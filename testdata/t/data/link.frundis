@@ -21,3 +21,6 @@ Text with label2
 .Em
 .Sx -name "link to label2" -id label2
 .Lk http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=
+.Bm
+.Lk http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=
+.Em

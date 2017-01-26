@@ -2,7 +2,6 @@
 .HEADING 2 NAMED s:1 "Prologue"
 .NEWPAGE
 .HEADING 2 NAMED s:2 "A first chapter"
-.TOC
 .PP
 paragraph text\&.
 .PP
@@ -26,4 +25,3 @@ paragraph text\&.
 paragraph text\&.
 .PP
 .HEADING 3 NAMED s:8 "A last section"
-.TOC

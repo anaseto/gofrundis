@@ -1113,7 +1113,7 @@ func macroX(exp Exporter) {
 	}
 	cmd := bctx.InlinesToText(args[0])
 	args = args[1:]
-	bctx.macro += " " + cmd
+	bctx.Macro += " " + cmd
 	switch cmd {
 	case "dtag":
 		macroXdtag(exp, args)
@@ -1326,12 +1326,12 @@ func macroHeaderProcess(exp Exporter) {
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
 	endEventualParagraph(exp, false)
-	ctx.TocInfo.updateHeadersCount(bctx.macro, flags["nonum"])
+	ctx.TocInfo.updateHeadersCount(bctx.Macro, flags["nonum"])
 	titleText := processInlineMacros(exp, args)
-	exp.BeginHeader(bctx.macro, title, numbered, titleText)
+	exp.BeginHeader(bctx.Macro, title, numbered, titleText)
 	fmt.Fprint(ctx.GetW(), titleText)
 	closeUnclosedBlocks(exp, "Bm")
-	exp.EndHeader(bctx.macro, title, numbered, titleText)
+	exp.EndHeader(bctx.Macro, title, numbered, titleText)
 }
 
 func macroHeaderInfos(exp Exporter) {
@@ -1342,32 +1342,32 @@ func macroHeaderInfos(exp Exporter) {
 		// Error message while processing
 		return
 	}
-	ctx.TocInfo.updateHeadersCount(bctx.macro, flags["nonum"])
-	switch bctx.macro {
+	ctx.TocInfo.updateHeadersCount(bctx.Macro, flags["nonum"])
+	switch bctx.Macro {
 	case "Pt":
 		ctx.TocInfo.HasPart = true
 	case "Ch":
 		ctx.TocInfo.HasChapter = true
 	}
-	ref := exp.HeaderReference(bctx.macro)
+	ref := exp.HeaderReference(bctx.Macro)
 	title := renderArgs(exp, args)
 	tocInfo, ok := ctx.LoXInfo["toc"]
 	if !ok {
 		ctx.LoXInfo["toc"] = make(map[string]*LoXinfo)
 		tocInfo = ctx.LoXInfo["toc"]
 	}
-	num := ctx.TocInfo.HeaderNum(bctx.macro, flags["nonum"])
+	num := ctx.TocInfo.HeaderNum(bctx.Macro, flags["nonum"])
 	titleText := processInlineMacros(exp, args)
 	tocInfo[title] = &LoXinfo{
 		Count:     ctx.TocInfo.HeaderCount,
 		Ref:       ref,
 		RefPrefix: "s",
-		Macro:     bctx.macro,
+		Macro:     bctx.Macro,
 		Nonum:     flags["nonum"],
 		Title:     title,
 		TitleText: titleText,
 		Num:       num}
-	switch bctx.macro {
+	switch bctx.Macro {
 	case "Pt", "Ch":
 		ctx.LoXstack["nav"] = append(ctx.LoXstack["nav"], tocInfo[title])
 	}
@@ -1420,7 +1420,7 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 		}
 	}
 	loc := bctx.loc
-	curMacro := bctx.macro
+	curMacro := bctx.Macro
 	curArgs := bctx.args
 	ws := ctx.WantsSpace
 	oldpar := ctx.inpar
@@ -1431,7 +1431,7 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 	ctx.Process = true
 	defer func() {
 		bctx.loc = loc
-		bctx.macro = curMacro
+		bctx.Macro = curMacro
 		bctx.args = curArgs
 		ctx.WantsSpace = ws
 		ctx.Inline = false
@@ -1476,16 +1476,16 @@ func closeSpanningBlocks(exp Exporter) {
 func closeUnclosedBlocks(exp Exporter, macro string) {
 	bctx := exp.BaseContext()
 	if testForUnclosedBlock(exp, macro) {
-		curMacro := bctx.macro
+		curMacro := bctx.Macro
 		curArgs := bctx.args
 		bctx.args = [][]ast.Inline{}
 		defer func() {
-			bctx.macro = curMacro
+			bctx.Macro = curMacro
 			bctx.args = curArgs
 		}()
 		switch macro {
 		case "Bm":
-			bctx.macro = "Em"
+			bctx.Macro = "Em"
 			for len(bctx.scopes["Bm"]) > 0 {
 				s := bctx.scopes["Bm"][0]
 				if s.tag != "" {
@@ -1495,12 +1495,12 @@ func closeUnclosedBlocks(exp Exporter, macro string) {
 				macroEm(exp)
 			}
 		case "Bl":
-			bctx.macro = "El"
+			bctx.Macro = "El"
 			for len(bctx.scopes["Bl"]) > 0 {
 				macroEl(exp)
 			}
 		case "Bd":
-			bctx.macro = "Ed"
+			bctx.Macro = "Ed"
 			for len(bctx.scopes["Bd"]) > 0 {
 				s := bctx.scopes["Bd"][0]
 				if s.tag != "" {
@@ -1555,7 +1555,7 @@ func testForUnclosedBlock(exp Exporter, macro string) bool {
 			tag = " of type " + scope.tag
 		}
 		var msg string
-		var m = bctx.macro
+		var m = bctx.Macro
 		if !ctx.Inline {
 			msg = fmt.Sprintf("found %s while `.%s' macro %s%s isn't closed yet by a `.%s'",
 				m, beginmacro, tag, location, endmacro)
@@ -1619,7 +1619,7 @@ func testForUnclosedFormatBlock(exp Exporter) bool {
 		inUserMacro = " opened inside user macro"
 	}
 	msg := fmt.Sprintf("`.%s' not allowed inside scope of `.Bf' macro%s at line %d%s",
-		bctx.macro, inUserMacro, ctx.bfInfo.line, file)
+		bctx.Macro, inUserMacro, ctx.bfInfo.line, file)
 	bctx.Error(msg)
 	return true
 }

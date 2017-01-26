@@ -2,3 +2,9 @@
   day, if I have the time).
 + decide on an stable API to be able to use gofrundis as a library and extend
   it easily.
+
+groff mom issues:
+
++ Lk and Sx don't play well with spaces (-ns)
++ mom complains if ids contain non ascii characters in PDF_TARGET, but seems to
+  work nevertheless.

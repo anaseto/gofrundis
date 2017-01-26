@@ -8,4 +8,3 @@ Some section text\&.
 .HEADING 4 NAMED s:3 "subsection name"
 Some subsection text\&.
 .PP
-.TOC

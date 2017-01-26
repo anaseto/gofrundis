@@ -32,7 +32,7 @@ func (bctx *BaseContext) Error(msgs ...interface{}) {
 	} else {
 		s = fmt.Sprint("frundis:")
 	}
-	s += bctx.macro + ":"
+	s += bctx.Macro + ":"
 	s += fmt.Sprint(msgs...)
 	fmt.Fprintln(bctx.Werror, s)
 }

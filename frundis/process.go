@@ -26,7 +26,7 @@ func ProcessFrundisSource(exp Exporter, filename string) error {
 	if bctx.loc == nil {
 		bctx.loc = &location{curBlock: -1, curFile: filename}
 	}
-	bctx.macro = "End Of File"
+	bctx.Macro = "End Of File"
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
 	closeUnclosedBlocks(exp, "Bd")
@@ -65,7 +65,7 @@ func processBlocks(exp BaseExporter) {
 		switch b := b.(type) {
 		case *ast.Macro:
 			bctx.args = b.Args
-			bctx.macro = b.Name
+			bctx.Macro = b.Name
 			bctx.line = b.Line
 		case *ast.TextBlock:
 			bctx.text = b.Text
@@ -114,11 +114,13 @@ func processBlock(exp BaseExporter) {
 		_, ok = bctx.macros[b.Name]
 		if ok {
 			processUserMacro(exp)
+			bctx.PrevMacro = b.Name
 			return
 		}
 		builtinHandler, ok := bctx.builtins[b.Name]
 		if ok {
 			builtinHandler(exp)
+			bctx.PrevMacro = b.Name
 			return
 		}
 	}
@@ -176,8 +178,10 @@ func BlockHandler(exp Exporter) {
 		} else if b.Name != "" {
 			bctx.Error("unknown macro:", b.Name)
 		}
+		bctx.PrevMacro = b.Name
 	case *ast.TextBlock:
 		doText(exp)
+		bctx.PrevMacro = ""
 	}
 }
 
@@ -194,7 +198,9 @@ func MinimalBlockHandler(exp Exporter) {
 		} else if b.Name != "" {
 			bctx.Error("unknown macro:", b.Name)
 		}
+		bctx.PrevMacro = b.Name
 	case *ast.TextBlock:
 		doText(exp)
+		bctx.PrevMacro = ""
 	}
 }

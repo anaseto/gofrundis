@@ -7,4 +7,5 @@ label
 
 *Text* link to label *Text with label2* link to label2
 <http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=>
+*<http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=>*
 

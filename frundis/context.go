@@ -177,7 +177,8 @@ type BaseContext struct {
 	ifIgnore     int                           // whether in scope of an "#if" with false condition
 	line         int                           // current/last block line
 	loc          *location                     // location information
-	macro        string                        // current/last macro
+	Macro        string                        // current/last macro
+	PrevMacro    string                        // previous macro
 	macros       map[string]macroDefInfo       // user defined textual macros
 	scopes       map[string]([]*scope)         // scopes
 	text         []ast.Inline                  // current/last text block text

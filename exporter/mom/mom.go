@@ -317,6 +317,7 @@ func (exp *exporter) EndItem() {
 
 func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	ctx := exp.Context()
+	bctx := exp.BaseContext()
 	w := ctx.GetW()
 	mtag, okMtag := ctx.Mtags[tag]
 	if okMtag {
@@ -326,6 +327,12 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	cmd := "R"
 	if len(exp.fontstack) > 0 {
 		cmd = exp.fontstack[len(exp.fontstack)-1]
+	}
+	if bctx.Macro == "Em" && (bctx.PrevMacro == "Lk" || bctx.PrevMacro == "Sx") {
+		// NOTE: this is quite hacky because it will be triggered even
+		// if Lk and Sx have been redefined by the user and mean
+		// something different.
+		fmt.Fprintf(w, "\n")
 	}
 	fmt.Fprintf(w, "\\f[%s]%s", cmd, punct)
 }
@@ -487,19 +494,10 @@ func (exp *exporter) RenderText(text []ast.Inline) string {
 }
 
 func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {
-	w := exp.Context().GetW()
-	bctx := exp.BaseContext()
-	switch {
-	case flags["lof"]:
-		fmt.Fprint(w, ".LIST_OF_FIGURES\n")
-	case flags["lot"]:
-		fmt.Fprint(w, ".LIST_OF_TABLES\n")
-	case flags["lop"]:
-		// XXX: do something about this?
-		bctx.Error("list of poems not available for mom")
-	default:
-		fmt.Fprint(w, ".TOC\n")
-	}
+	// NOTE: mom table of contents does not play nicely with the frundis
+	// way of doing table of contents, so leave this work to the user (it
+	// is just a matter of adding a .TOC at the end of the document with a
+	// format specific block).
 }
 
 func (exp *exporter) TableOfContentsInfos(flags map[string]bool) {
