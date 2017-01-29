@@ -129,6 +129,7 @@ var specOptTc = map[string]Option{
 var specOptXdtag = map[string]Option{
 	"t": ArgOption,
 	"f": ArgOption,
+	"a": ArgOption,
 	"c": ArgOption}
 var specOptXftag = map[string]Option{
 	"t":      ArgOption,
@@ -140,6 +141,7 @@ var specOptXmtag = map[string]Option{
 	"t": ArgOption,
 	"f": ArgOption,
 	"c": ArgOption,
+	"a": ArgOption,
 	"b": ArgOption,
 	"e": ArgOption}
 var specOptXset = map[string]Option{"f": ArgOption}
