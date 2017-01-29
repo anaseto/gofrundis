@@ -85,7 +85,7 @@ func (p *Parser) parseBlock() (ast.Block, error) {
 	case token.EOF:
 		b = nil
 	default:
-		err = errors.New(fmt.Sprint("parser.parseBlock:unexpected token: %v\n", p.tok))
+		err = errors.New(fmt.Sprintf("parser.parseBlock:unexpected token: %v\n", p.tok))
 	}
 	//fmt.Fprintf(os.Stderr, "%#v\n", b)
 	return b, err
@@ -118,7 +118,7 @@ parse:
 		case token.MACRO_NAME, token.EOF:
 			break parse
 		default:
-			return nil, errors.New(fmt.Sprint("parser.parseText:unexpected token", p.tok))
+			return nil, errors.New(fmt.Sprint("parser.parseText:unexpected token:", p.tok))
 		}
 		var err error
 		p.tok, p.line, p.lit, err = p.scan.Scan()

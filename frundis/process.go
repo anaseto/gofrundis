@@ -114,7 +114,6 @@ func processBlock(exp BaseExporter) {
 		_, ok = bctx.macros[b.Name]
 		if ok {
 			processUserMacro(exp)
-			bctx.PrevMacro = b.Name
 			return
 		}
 		builtinHandler, ok := bctx.builtins[b.Name]

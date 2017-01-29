@@ -165,6 +165,8 @@ type Exporter interface {
 // BaseContext gathers context for BaseExporter.
 type BaseContext struct {
 	Format       string                        // export format name
+	Macro        string                        // current macro
+	PrevMacro    string                        // previous built-in macro called, or "" for text-block
 	Werror       io.Writer                     // where to write non-fatal errors (default os.Stderr)
 	args         [][]ast.Inline                // current/last args
 	builtins     map[string]func(BaseExporter) // builtins map (#de, #dv, etc.)
@@ -177,8 +179,6 @@ type BaseContext struct {
 	ifIgnore     int                           // whether in scope of an "#if" with false condition
 	line         int                           // current/last block line
 	loc          *location                     // location information
-	Macro        string                        // current/last macro
-	PrevMacro    string                        // previous macro
 	macros       map[string]macroDefInfo       // user defined textual macros
 	scopes       map[string]([]*scope)         // scopes
 	text         []ast.Inline                  // current/last text block text
