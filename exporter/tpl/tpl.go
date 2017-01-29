@@ -271,6 +271,7 @@ func (exp *exporter) Xftag(shell string) frundis.Ftag {
 	return frundis.Ftag{Shell: shell}
 }
 
-func (exp *exporter) Xmtag(cmd *string, begin string, end string) frundis.Mtag {
+func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
+	// NOTE: in contrast with other export formats, we don't escape begin and end.
 	return frundis.Mtag{Begin: begin, End: end}
 }

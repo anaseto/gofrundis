@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -322,4 +323,21 @@ func parEnd(exp Exporter) {
 // IsTrue returns true if string is empty or "0".
 func IsTrue(s string) bool {
 	return !(s == "" || s == "0")
+}
+
+// readPairs reads a string s of pairs delimited by occurrences of the first
+// character. It returns a list of strings of even length, or nil if s has not
+// the correct format.
+func readPairs(s string) ([]string, error) {
+	sr := strings.NewReader(s)
+	r, size, err := sr.ReadRune()
+	if err != nil {
+		return nil, err
+	}
+	s = s[size:]
+	repls := strings.Split(s, fmt.Sprintf("%c", r))
+	if len(repls) != 2 {
+		return nil, err
+	}
+	return repls, nil
 }

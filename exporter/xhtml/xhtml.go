@@ -263,22 +263,22 @@ func (exp *exporter) BeginItemList() {
 
 func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	ctx := exp.Context()
-	mtag, okMtag := ctx.Mtags[tag]
+	mtag, ok := ctx.Mtags[tag]
 	w := ctx.GetW()
-	if !okMtag {
+	if !ok {
 		fmt.Fprint(w, "<em")
 	} else {
-		if mtag.Cmd != "" {
-			fmt.Fprintf(w, "<%s class=\"%s\"", mtag.Cmd, tag)
-		}
+		fmt.Fprintf(w, "<%s class=\"%s\"", mtag.Cmd, tag)
+	}
+	pairs := mtag.Pairs
+	for i := 0; i < len(pairs)-1; i += 2 {
+		fmt.Fprintf(w, " %s=\"%s\"", html.EscapeString(pairs[i]), html.EscapeString(pairs[i+1]))
 	}
 	if id != "" {
 		fmt.Fprintf(w, " id=\"%s\"", id)
 	}
-	if !okMtag || mtag.Cmd != "" {
-		fmt.Fprint(w, ">")
-	}
-	if okMtag {
+	fmt.Fprint(w, ">")
+	if ok {
 		fmt.Fprint(w, mtag.Begin)
 	}
 }
@@ -425,9 +425,7 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 		fmt.Fprint(w, "</em>")
 	} else {
 		fmt.Fprint(w, mtag.End)
-		if mtag.Cmd != "" {
-			fmt.Fprint(w, "</"+mtag.Cmd+">")
-		}
+		fmt.Fprint(w, fmt.Sprint("</", mtag.Cmd, ">"))
 	}
 	fmt.Fprint(w, punct)
 }
@@ -645,12 +643,13 @@ func (exp *exporter) Xftag(shell string) frundis.Ftag {
 	return frundis.Ftag{Shell: shell}
 }
 
-func (exp *exporter) Xmtag(cmd *string, begin string, end string) frundis.Mtag {
+func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
 	var c string
 	if cmd == nil {
 		c = "em"
 	} else {
 		c = *cmd
 	}
-	return frundis.Mtag{Begin: html.EscapeString(begin), End: html.EscapeString(end), Cmd: c}
+	// TODO: perhaps process pairs here and do some error checking
+	return frundis.Mtag{Begin: html.EscapeString(begin), End: html.EscapeString(end), Cmd: c, Pairs: pairs}
 }

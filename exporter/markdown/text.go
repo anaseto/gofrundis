@@ -396,6 +396,6 @@ func (exp *exporter) Xftag(shell string) frundis.Ftag {
 	return frundis.Ftag{Shell: shell}
 }
 
-func (exp *exporter) Xmtag(cmd *string, begin string, end string) frundis.Mtag {
+func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
 	return frundis.Mtag{Begin: begin, End: end}
 }

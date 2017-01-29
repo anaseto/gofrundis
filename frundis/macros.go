@@ -1260,9 +1260,26 @@ func macroXmtag(exp Exporter, args [][]ast.Inline) {
 	var cmd *string
 	if t, ok := opts["c"]; ok {
 		s := bctx.InlinesToText(t)
+		if s == "" {
+			bctx.Error("empty string argument to -c option")
+		}
 		cmd = &s
 	}
-	ctx.Mtags[tag] = exp.Xmtag(cmd, b, e)
+	var pairs []string
+	if t, ok := opts["a"]; ok {
+		s := bctx.InlinesToText(t)
+		var err error
+		pairs, err = readPairs(s)
+		if err != nil {
+			bctx.Error("invalid -a argument (missing separator?)")
+		}
+		for i := 0; i < len(pairs)-1; i += 2 {
+			if pairs[i] == "" {
+				bctx.Error(fmt.Sprintf("key %d is empty in -a option", (i/2)+1))
+			}
+		}
+	}
+	ctx.Mtags[tag] = exp.Xmtag(cmd, b, e, pairs)
 }
 
 func macroXset(exp Exporter, args [][]ast.Inline) {

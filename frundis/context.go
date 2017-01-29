@@ -159,7 +159,8 @@ type Exporter interface {
 	Xftag(shell string) Ftag
 	// Xmtag builds a Mtag. The begin and end arguments are unescaped and
 	// may require processing. The cmd argument can benefit from checks.
-	Xmtag(cmd *string, begin string, end string) Mtag
+	// pairs is a list of even length of key=value pairs.
+	Xmtag(cmd *string, begin string, end string, pairs []string) Mtag
 }
 
 // BaseContext gathers context for BaseExporter.
@@ -309,9 +310,10 @@ type bfInfo struct {
 
 // Mtag represents tags set with "X mtag".
 type Mtag struct {
-	Begin string // "-b" option of "X mtag"
-	Cmd   string // "-c" option of "X mtag"
-	End   string // "-e" option of "X mtag"
+	Begin string   // "-b" option of "X mtag"
+	Cmd   string   // "-c" option of "X mtag"
+	End   string   // "-e" option of "X mtag"
+	Pairs []string // "-a" option of "X mtag" (list of pairs key=value)
 }
 
 // Dtag represents tags set with "X dtag".

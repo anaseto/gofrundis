@@ -164,15 +164,25 @@ func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	if id != "" {
 		fmt.Fprintf(w, "\\hypertarget{%s}{", id)
 	}
-	mtag, okMtag := ctx.Mtags[tag]
-	if !okMtag {
-		fmt.Fprint(w, "\\emph{")
+	mtag, ok := ctx.Mtags[tag]
+	if !ok {
+		fmt.Fprint(w, "\\emph")
 	} else {
-		if mtag.Cmd != "" {
-			fmt.Fprintf(w, "\\%s{", mtag.Cmd)
-		}
+		fmt.Fprintf(w, "\\%s", mtag.Cmd)
 	}
-	if okMtag {
+	pairs := mtag.Pairs
+	if len(pairs) > 0 {
+		fmt.Fprint(w, "[")
+		for i := 0; i < len(pairs)-1; i += 2 {
+			if i > 0 {
+				fmt.Print(",")
+			}
+			fmt.Fprintf(w, "%s=%s", escape.LaTeX(pairs[i]), escape.LaTeX(pairs[i+1]))
+		}
+		fmt.Fprint(w, "]")
+	}
+	fmt.Fprint(w, "{")
+	if ok {
 		fmt.Fprint(w, mtag.Begin)
 	}
 }
@@ -301,17 +311,11 @@ func (exp *exporter) EndItem() {
 func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
-	mtag, okMtag := ctx.Mtags[tag]
-	if okMtag {
+	mtag, ok := ctx.Mtags[tag]
+	if ok {
 		fmt.Fprint(w, mtag.End)
 	}
-	if !okMtag {
-		fmt.Fprint(w, "}")
-	} else {
-		if mtag.Cmd != "" {
-			fmt.Fprint(w, "}")
-		}
-	}
+	fmt.Fprint(w, "}")
 	if id != "" {
 		fmt.Fprint(w, "}")
 	}
@@ -511,12 +515,13 @@ func (exp *exporter) Xftag(shell string) frundis.Ftag {
 	return frundis.Ftag{Shell: shell}
 }
 
-func (exp *exporter) Xmtag(cmd *string, begin string, end string) frundis.Mtag {
+func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
 	var c string
 	if cmd == nil {
 		c = "emph"
 	} else {
 		c = *cmd
 	}
-	return frundis.Mtag{Begin: escape.LaTeX(begin), End: escape.LaTeX(end), Cmd: c}
+	// TODO: perhaps process pairs here and do some error checking
+	return frundis.Mtag{Begin: escape.LaTeX(begin), End: escape.LaTeX(end), Cmd: c, Pairs: pairs}
 }

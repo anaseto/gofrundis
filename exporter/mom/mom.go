@@ -182,9 +182,7 @@ func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	if !okMtag {
 		fmt.Fprint(w, "\\f[I]")
 	} else {
-		if mtag.Cmd != "" {
-			fmt.Fprintf(w, "\\f[%s]", mtag.Cmd)
-		}
+		fmt.Fprintf(w, "\\f[%s]", mtag.Cmd)
 	}
 	if okMtag {
 		fmt.Fprint(w, mtag.Begin)
@@ -329,9 +327,7 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 		cmd = exp.fontstack[len(exp.fontstack)-1]
 	}
 	if bctx.Macro == "Em" && (bctx.PrevMacro == "Lk" || bctx.PrevMacro == "Sx") {
-		// NOTE: this is quite hacky because it will be triggered even
-		// if Lk and Sx have been redefined by the user and mean
-		// something different.
+		// NOTE: this is quite hacky
 		fmt.Fprintf(w, "\n")
 	}
 	fmt.Fprintf(w, "\\f[%s]%s", cmd, punct)
@@ -511,7 +507,7 @@ func (exp *exporter) Xftag(shell string) frundis.Ftag {
 	return frundis.Ftag{Shell: shell}
 }
 
-func (exp *exporter) Xmtag(cmd *string, begin string, end string) frundis.Mtag {
+func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
 	var c string
 	if cmd == nil {
 		c = "I"
