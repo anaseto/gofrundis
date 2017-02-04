@@ -1271,11 +1271,19 @@ func macroXmtag(exp Exporter, args [][]ast.Inline) {
 		var err error
 		pairs, err = readPairs(s)
 		if err != nil {
-			bctx.Error("invalid -a argument (missing separator?)")
+			bctx.Error("invalid -a argument (missing separator?):", err)
 		}
 		for i := 0; i < len(pairs)-1; i += 2 {
 			if pairs[i] == "" {
-				bctx.Error(fmt.Sprintf("key %d is empty in -a option", (i/2)+1))
+				bctx.Error(fmt.Sprintf("in -a option:key %d is empty", (i/2)+1))
+			}
+			if strings.ContainsAny(pairs[i], "\"'>/=") {
+				bctx.Error(fmt.Sprintf("in -a option:key %d contains invalid characters", (i/2)+1))
+			}
+			for _, c := range pairs[i] {
+				if unicode.IsSpace(c) {
+					bctx.Error(fmt.Sprintf("in -a option:key %d contains space", (i/2)+1))
+				}
 			}
 		}
 	}

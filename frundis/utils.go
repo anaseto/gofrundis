@@ -1,6 +1,7 @@
 package frundis
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -336,8 +337,8 @@ func readPairs(s string) ([]string, error) {
 	}
 	s = s[size:]
 	repls := strings.Split(s, fmt.Sprintf("%c", r))
-	if len(repls) != 2 {
-		return nil, err
+	if len(repls)%2 != 0 {
+		return nil, errors.New(fmt.Sprintf("odd number of items in '%s'", s))
 	}
 	return repls, nil
 }

@@ -175,7 +175,7 @@ func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 		fmt.Fprint(w, "[")
 		for i := 0; i < len(pairs)-1; i += 2 {
 			if i > 0 {
-				fmt.Print(",")
+				fmt.Fprint(w, ",")
 			}
 			fmt.Fprintf(w, "%s=%s", escape.LaTeX(pairs[i]), escape.LaTeX(pairs[i+1]))
 		}

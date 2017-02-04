@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd January 29, 2017
+.Dd February 4, 2017
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -973,6 +973,7 @@ The syntax is as follows:
 .Op Fl c Ar cmd
 .Op Fl b Ar opening
 .Op Fl e Ar closing
+.Op Fl a Ar |key|value
 .br
 .Pf \. Sx \&X
 .Cm dtag
@@ -1041,6 +1042,12 @@ and
 .Ar closing
 arguments specify optional enclosing text within the scope of
 .Ar cmd .
+The
+.Fl a
+option allows to add a list of key/value attributes.
+The first character is used as separator.
+The attributes are used as standard attributes in html, and options between
+square brackets in LaTeX.
 .Pp
 The
 .Pf \. Sx \&X
