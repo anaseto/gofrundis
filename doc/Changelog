@@ -6,8 +6,10 @@ Changes with respect to the perl version:
   + \$@ can be used to interpolate all arguments of an user defined macro
   + -filter option should now be spelled -shell
   + Ft makes use of -t option too
-  + text (markdown-like) exporter (not polished)
-  + added restricted mode more template-friendly
+  + markdown exporter (not polished)
+  + groff mom exporter (not polished)
+  + added experimental restricted mode more template-friendly
   + added named arguments and flags to user defined macros
   + added simple substitution filters and regexp filters
+  + added attribute support
   + many minor fixes and improvements
