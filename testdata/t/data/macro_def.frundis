@@ -85,6 +85,11 @@ Text.
 \$@
 .#.
 .prefix one two three .
+.#de emptyargs
+.Sm START \$@
+.Sm -ns bla
+.#.
+.emptyargs
 .#de flags
 .#if \$?[flag]
 Got a flag.

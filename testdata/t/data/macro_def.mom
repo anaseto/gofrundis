@@ -25,6 +25,7 @@ Text\&.
 «»
 \f[I]START one two three\f[R]\&.
 one two three \&.
+\f[I]START\f[R]\f[I]bla\f[R]
 Got a flag\&.
 argument
 \f[I]otherargument\f[R]

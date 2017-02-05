@@ -14,6 +14,6 @@ of the Book\\%
 text
   ~ The Title of the Book Text.
 
-«» *START one two three*. one two three . Got a flag.
-argument *otherargument*
+«» *START one two three*. one two three . *START**bla*
+Got a flag. argument *otherargument*
 
