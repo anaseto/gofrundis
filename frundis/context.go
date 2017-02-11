@@ -168,7 +168,7 @@ type BaseContext struct {
 	Args         [][]ast.Inline                // current macro args
 	Format       string                        // export format name
 	Macro        string                        // current macro
-	PrevMacro    string                        // previous built-in macro called, or "" for text-block
+	PrevMacro    string                        // previous non-user macro called, or "" for text-block
 	Werror       io.Writer                     // where to write non-fatal errors (default os.Stderr)
 	builtins     map[string]func(BaseExporter) // builtins map (#de, #dv, etc.)
 	bufi2t       bytes.Buffer                  // buffer to avoid allocations
@@ -250,8 +250,6 @@ type Context struct {
 	FigCount   int                            // current figure number
 	Ftags      map[string]Ftag                // filter tags set with "X ftag"
 	Filters    map[string]func(string) string // function filters
-	HasImage   bool                           // whether there is an image in the source
-	HasVerse   bool                           // whether there is a poem in the source
 	IDs        map[string]string              // id information
 	Images     []string                       // list of image paths
 	Inline     bool                           // inline processing of Sm-like macros (e.g. in header)
@@ -263,6 +261,7 @@ type Context struct {
 	Process    bool                           // whether in processing or info pass
 	Table      TableInfo                      // table information
 	TocInfo    *Toc                           // Toc information
+	Verse      VerseInfo                      // whether there is a poem in the source
 	W          *bufio.Writer                  // where final output goes
 	WantsSpace bool                           // whether previous in-paragraph stuff reclaims a space
 	asIs       bool                           // treat current text as-is
@@ -272,7 +271,11 @@ type Context struct {
 	inpar      bool                           // whether currently inside a paragraph or not
 	itemScope  bool                           // whether currently inside a list item
 	rawText    bytes.Buffer                   // buffer for currently accumulated raw text (as-is text of Bf/Ef)
-	verseCount int
+}
+
+type VerseInfo struct {
+	Used       bool // wether there is a poem in the source
+	verseCount int  // current titled poem number
 }
 
 // TableInfo contains table information.

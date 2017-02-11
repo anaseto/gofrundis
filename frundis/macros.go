@@ -181,20 +181,20 @@ func macroBlInfos(exp Exporter) {
 	}
 	switch bctx.InlinesToText(tag) {
 	case "verse":
-		ctx.HasVerse = true
+		ctx.Verse.Used = true
 		title := renderArgs(exp, args)
 		if title == "" {
 			return
 		}
 		titleText := processInlineMacros(exp, args)
-		ctx.verseCount++
+		ctx.Verse.verseCount++
 		loXEntryInfos(exp, "lop",
 			&LoXinfo{
 				Title:     title,
 				TitleText: titleText,
-				Count:     ctx.verseCount,
+				Count:     ctx.Verse.verseCount,
 				RefPrefix: "poem"},
-			strconv.Itoa(ctx.verseCount))
+			strconv.Itoa(ctx.Verse.verseCount))
 	case "table":
 		ctx.Table.scope = true
 		title := renderArgs(exp, args)
@@ -251,9 +251,9 @@ func macroBlProcess(exp Exporter) {
 	case "verse":
 		title := processInlineMacros(exp, args)
 		if title != "" {
-			ctx.verseCount++
+			ctx.Verse.verseCount++
 		}
-		exp.BeginVerse(title, ctx.verseCount)
+		exp.BeginVerse(title, ctx.Verse.verseCount)
 	case "desc":
 		exp.BeginDescList()
 	case "item":
@@ -717,12 +717,12 @@ func macroImInfos(exp Exporter) {
 	args, _ = getClosePunct(exp, args)
 	var image string
 	if len(args) > 0 {
-		ctx.HasImage = true
 		image = bctx.InlinesToText(args[0])
 		ctx.Images = append(ctx.Images, image)
 	}
 	if len(args) > 1 {
-		ctx.HasImage = true
+		image = bctx.InlinesToText(args[0])
+		ctx.Images = append(ctx.Images, image)
 		label := exp.RenderText(args[1])
 		ctx.FigCount++
 		loXEntryInfos(exp, "lof",
