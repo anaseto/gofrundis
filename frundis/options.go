@@ -14,7 +14,7 @@ const (
 // ParseOptions takes a specification spec of options and a arguments slice
 // args and returns a mapping from option names to values, a mapping for flags
 // and an updated arguments slice.
-func (bctx *BaseContext) parseOptions(
+func (bctx *BaseContext) ParseOptions(
 	spec map[string]Option, args [][]ast.Inline) (
 	map[string][]ast.Inline, map[string]bool, [][]ast.Inline) {
 

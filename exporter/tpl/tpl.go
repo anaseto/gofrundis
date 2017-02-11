@@ -41,6 +41,7 @@ func (exp *exporter) Init() {
 	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout)}
 	exp.Ctx = ctx
 	ctx.Init()
+	ctx.Macros = frundis.MinimalExporterMacros()
 	switch bctx.Format {
 	case "xhtml":
 		ctx.Filters["escape"] = html.EscapeString
@@ -91,7 +92,7 @@ func (exp *exporter) BaseContext() *frundis.BaseContext {
 }
 
 func (exp *exporter) BlockHandler() {
-	frundis.MinimalBlockHandler(exp)
+	frundis.DefaultBlockHandler(exp)
 }
 
 func (exp *exporter) BeginDescList() {
@@ -211,7 +212,7 @@ func (exp *exporter) EndParagraphUnsoftly() {
 	// do nothing
 }
 
-func (exp *exporter) EndTable(tableinfo *frundis.TableInfo) {
+func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 }
 
 func (exp *exporter) EndTableCell() {

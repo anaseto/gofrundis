@@ -314,7 +314,7 @@ func (ctx *Context) GetW() io.Writer {
 	return ctx.W
 }
 
-func parEnd(exp Exporter) {
+func processParagraph(exp Exporter) {
 	ctx := exp.Context()
 	ctx.W.Write(exp.FormatParagraph(ctx.buf.Bytes()))
 	ctx.buf.Reset()

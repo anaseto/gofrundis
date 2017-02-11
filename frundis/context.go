@@ -98,16 +98,16 @@ type Exporter interface {
 	// EndParagraph ends a paragraph (e.g. "</p>").
 	EndParagraph()
 	// EndParagraph ends a paragraph softly. It can be the same as
-	// EndParagraph, and is called before lists and display blocks (usefull
+	// EndParagraph, and is called before lists and display blocks (useful
 	// for LaTeX, in which a list can be preceded by text in a same
 	// paragraph).
 	EndParagraphSoftly()
-	// EndParagraphUnsoftly ends an empty paragraph (e.g. usefull for
+	// EndParagraphUnsoftly ends an empty paragraph (e.g. useful for
 	// LaTeX, to force a real paragraph break (not a soft break) before a
 	// list)
 	EndParagraphUnsoftly()
 	// EndTable ends a table (e.g. "</table>").
-	EndTable(*TableInfo)
+	EndTable(*TableData)
 	// EndTableCell ends a table cell (e.g. "</td>").
 	EndTableCell()
 	// EndTableRow ends a table row (e.g. "</tr>").
@@ -165,11 +165,11 @@ type Exporter interface {
 
 // BaseContext gathers context for BaseExporter.
 type BaseContext struct {
+	Args         [][]ast.Inline                // current macro args
 	Format       string                        // export format name
 	Macro        string                        // current macro
 	PrevMacro    string                        // previous built-in macro called, or "" for text-block
 	Werror       io.Writer                     // where to write non-fatal errors (default os.Stderr)
-	args         [][]ast.Inline                // current/last args
 	builtins     map[string]func(BaseExporter) // builtins map (#de, #dv, etc.)
 	bufi2t       bytes.Buffer                  // buffer to avoid allocations
 	bufa2t       bytes.Buffer                  // buffer to avoid allocations
@@ -211,7 +211,7 @@ type macroDefInfo struct {
 	blocks []ast.Block // list of blocks defining the new macro
 }
 
-// Init initializes context (should be called just after creating a Basecontext struct).
+// Init initializes context (should be called just after creating a BaseContext struct).
 func (bctx *BaseContext) Init() {
 	bctx.callInfo = &userMacroCallInfo{depth: 0}
 	bctx.bufi2t = bytes.Buffer{}
@@ -246,8 +246,8 @@ func (bctx *BaseContext) Reset() {
 
 // Context gathers main context information for Exporter.
 type Context struct {
-	Dtags      map[string]Dtag // display block tags set with "X dtag"
-	FigCount   int
+	Dtags      map[string]Dtag                // display block tags set with "X dtag"
+	FigCount   int                            // current figure number
 	Ftags      map[string]Ftag                // filter tags set with "X ftag"
 	Filters    map[string]func(string) string // function filters
 	HasImage   bool                           // whether there is an image in the source
@@ -257,31 +257,37 @@ type Context struct {
 	Inline     bool                           // inline processing of Sm-like macros (e.g. in header)
 	LoXInfo    map[string]map[string]*LoXinfo // (list-type => ((title => information) map) map
 	LoXstack   map[string][]*LoXinfo          // (list-type => information list) map
+	Macros     map[string]func(Exporter)      // frundis macro handlers
 	Mtags      map[string]Mtag                // markup tags set with "X mtag"
 	Params     map[string]string              // parameters set with "X set"
 	Process    bool                           // whether in processing or info pass
-	TableCell  int                            // current table cell
-	TableCols  int                            // current table number of columns
-	TableCount int                            // current titled table number
-	TableNum   int                            // current table number (with or without title)
+	Table      TableInfo                      // table information
 	TocInfo    *Toc                           // Toc information
 	W          *bufio.Writer                  // where final output goes
 	WantsSpace bool                           // whether previous in-paragraph stuff reclaims a space
 	asIs       bool                           // treat current text as-is
 	bfInfo     *bfInfo                        // Bf/Ef block info
 	buf        bytes.Buffer                   // buffer for current paragraph-like generated text
-	frundisINC []string                       // list of paths where to search frundis source files
+	frundisINC []string                       // list of paths where to search for frundis source files
 	inpar      bool                           // whether currently inside a paragraph or not
 	itemScope  bool                           // whether currently inside a list item
 	rawText    bytes.Buffer                   // buffer for currently accumulated raw text (as-is text of Bf/Ef)
-	tableIn    bool                           // in any table
-	tableInfo  []*TableInfo                   // some non LoX information about tables (e.g. number of columns)
-	tableScope bool                           // in titled table
 	verseCount int
 }
 
-// TableInfo represents some table information.
+// TableInfo contains table information.
 type TableInfo struct {
+	Cell     int          // current table cell
+	Cols     int          // current table number of columns
+	Count    int          // current table number (with or without title)
+	TitCount int          // current titled table number
+	info     []*TableData // some non LoX information about tables (e.g. number of columns)
+	scope    bool         // whether currently in table scope
+	titScope bool         // whether currently in titled table scope
+}
+
+// TableData contains some table data.
+type TableData struct {
 	Title string // title of the table (empty if no title)
 	Cols  int    // number of columns
 }
@@ -334,11 +340,12 @@ func (ctx *Context) Init() {
 		ctx.IDs = make(map[string]string)
 		ctx.LoXInfo = make(map[string]map[string]*LoXinfo)
 		ctx.LoXstack = make(map[string][]*LoXinfo)
+		ctx.Macros = DefaultExporterMacros()
 		ctx.Mtags = make(map[string]Mtag)
 		ctx.Params = make(map[string]string)
 		ctx.TocInfo = &Toc{}
 		ctx.Filters = make(map[string]func(string) string)
-		ctx.tableInfo = []*TableInfo{}
+		ctx.Table.info = []*TableData{}
 		ctx.Params["lang"] = "en"
 	}
 
@@ -351,19 +358,21 @@ func (ctx *Context) Init() {
 
 // Reset resets a context, preserving only immutable information.
 func (ctx *Context) Reset() {
+	tableinfo := ctx.Table.info
 	*ctx = Context{
-		Dtags:     ctx.Dtags,
-		Ftags:     ctx.Ftags,
-		IDs:       ctx.IDs,
-		LoXInfo:   ctx.LoXInfo,
-		LoXstack:  ctx.LoXstack,
-		Mtags:     ctx.Mtags,
-		Params:    ctx.Params,
-		TocInfo:   ctx.TocInfo,
-		W:         ctx.W,
-		Images:    ctx.Images,
-		Filters:   ctx.Filters,
-		tableInfo: ctx.tableInfo}
+		Dtags:    ctx.Dtags,
+		Ftags:    ctx.Ftags,
+		IDs:      ctx.IDs,
+		LoXInfo:  ctx.LoXInfo,
+		LoXstack: ctx.LoXstack,
+		Macros:   ctx.Macros,
+		Mtags:    ctx.Mtags,
+		Params:   ctx.Params,
+		TocInfo:  ctx.TocInfo,
+		W:        ctx.W,
+		Images:   ctx.Images,
+		Filters:  ctx.Filters}
+	ctx.Table.info = tableinfo
 	ctx.TocInfo.resetCounters()
 	ctx.Process = true
 	ctx.Init()

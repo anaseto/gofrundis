@@ -173,7 +173,7 @@ func (exp *exporter) BaseContext() *frundis.BaseContext {
 }
 
 func (exp *exporter) BlockHandler() {
-	frundis.BlockHandler(exp)
+	frundis.DefaultBlockHandler(exp)
 }
 
 func (exp *exporter) BeginDescList() {
@@ -443,7 +443,7 @@ func (exp *exporter) EndParagraphUnsoftly() {
 	// do nothing
 }
 
-func (exp *exporter) EndTable(tableinfo *frundis.TableInfo) {
+func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 	w := exp.Context().GetW()
 	fmt.Fprint(w, "</table>\n")
 	if tableinfo != nil {

@@ -90,7 +90,7 @@ func (exp *exporter) BaseContext() *frundis.BaseContext {
 }
 
 func (exp *exporter) BlockHandler() {
-	frundis.BlockHandler(exp)
+	frundis.DefaultBlockHandler(exp)
 }
 
 func (exp *exporter) BeginDescList() {
@@ -206,7 +206,7 @@ func (exp *exporter) BeginTable(title string, count int, ncols int) {
 
 func (exp *exporter) BeginTableCell() {
 	ctx := exp.Context()
-	if ctx.TableCell > 1 {
+	if ctx.Table.Cell > 1 {
 		fmt.Fprint(ctx.GetW(), " & ")
 	}
 }
@@ -337,13 +337,13 @@ func (exp *exporter) EndParagraphUnsoftly() {
 	fmt.Fprint(w, "\n")
 }
 
-func (exp *exporter) EndTable(tableinfo *frundis.TableInfo) {
+func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprint(w, "\\end{tabular}\n")
 	if tableinfo != nil {
 		fmt.Fprintf(w, "\\caption{%s}\n", tableinfo.Title)
-		fmt.Fprintf(w, "\\label{tbl:%d}\n", ctx.TableCount)
+		fmt.Fprintf(w, "\\label{tbl:%d}\n", ctx.Table.TitCount)
 		fmt.Fprint(w, "\\end{table}\n")
 	}
 }

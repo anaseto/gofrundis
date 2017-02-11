@@ -66,7 +66,7 @@ func hasBlankLine(s string) bool {
 func macroBd(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	opts, flags, args := bctx.parseOptions(specOptBd, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptBd, bctx.Args)
 	var id string
 	if t, ok := opts["id"]; ok {
 		id = exp.RenderText(t)
@@ -99,7 +99,7 @@ func macroBd(exp Exporter) {
 	if ctx.Dtags[tag].Cmd != "" {
 		softbreak = true
 	}
-	endEventualParagraph(exp, softbreak)
+	endParagraph(exp, softbreak)
 
 	bctx.pushScope(&scope{name: "Bd", tag: tag, id: id, tagRequired: flags["r"]})
 
@@ -118,7 +118,7 @@ func macroBf(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	opts, flags, args := bctx.parseOptions(specOptBf, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptBf, bctx.Args)
 	if len(args) > 0 {
 		bctx.Error("useless arguments")
 	}
@@ -174,7 +174,7 @@ func macroBl(exp Exporter) {
 func macroBlInfos(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	opts, _, args := bctx.parseOptions(specOptBl, bctx.args)
+	opts, _, args := bctx.ParseOptions(specOptBl, bctx.Args)
 	tag, ok := opts["t"]
 	if !ok {
 		return
@@ -196,28 +196,28 @@ func macroBlInfos(exp Exporter) {
 				RefPrefix: "poem"},
 			strconv.Itoa(ctx.verseCount))
 	case "table":
-		ctx.tableIn = true
+		ctx.Table.scope = true
 		title := renderArgs(exp, args)
 		if title == "" {
 			return
 		}
 		titleText := processInlineMacros(exp, args)
-		ctx.TableCount++
-		ctx.tableScope = true
+		ctx.Table.TitCount++
+		ctx.Table.titScope = true
 		loXEntryInfos(exp, "lot",
 			&LoXinfo{
 				Title:     title,
 				TitleText: titleText,
-				Count:     ctx.TableCount,
+				Count:     ctx.Table.TitCount,
 				RefPrefix: "tbl"},
-			strconv.Itoa(ctx.TableCount))
+			strconv.Itoa(ctx.Table.TitCount))
 	}
 }
 
 func macroBlProcess(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	opts, _, args := bctx.parseOptions(specOptBl, bctx.args)
+	opts, _, args := bctx.ParseOptions(specOptBl, bctx.Args)
 	var tag string
 	if t, ok := opts["t"]; ok {
 		tag = bctx.InlinesToText(t)
@@ -239,10 +239,10 @@ func macroBlProcess(exp Exporter) {
 			return
 		}
 		if ctx.inpar {
-			parEnd(exp)
+			processParagraph(exp)
 		}
 	} else {
-		endEventualParagraph(exp, true)
+		endParagraph(exp, true)
 	}
 
 	bctx.pushScope(&scope{name: "Bl", tag: tag})
@@ -262,12 +262,12 @@ func macroBlProcess(exp Exporter) {
 		exp.BeginEnumList()
 	case "table":
 		title := processInlineMacros(exp, args)
-		ctx.tableIn = true
+		ctx.Table.scope = true
 		if title != "" {
-			ctx.TableCount++
-			ctx.tableScope = true
+			ctx.Table.TitCount++
+			ctx.Table.titScope = true
 		}
-		exp.BeginTable(title, ctx.TableCount, ctx.tableInfo[ctx.TableNum].Cols)
+		exp.BeginTable(title, ctx.Table.TitCount, ctx.Table.info[ctx.Table.Count].Cols)
 	}
 	ctx.itemScope = false
 }
@@ -275,7 +275,7 @@ func macroBlProcess(exp Exporter) {
 func macroBm(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	opts, flags, args := bctx.parseOptions(specOptBm, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptBm, bctx.Args)
 	var id string
 	if t, ok := opts["id"]; ok {
 		id = exp.RenderText(t)
@@ -315,7 +315,7 @@ func macroBm(exp Exporter) {
 
 func macroD(exp Exporter) {
 	bctx := exp.BaseContext()
-	_, _, args := bctx.parseOptions(specOptD, bctx.args)
+	_, _, args := bctx.ParseOptions(specOptD, bctx.Args)
 	if len(args) > 0 {
 		bctx.Error("useless arguments")
 	}
@@ -325,7 +325,7 @@ func macroD(exp Exporter) {
 	}
 	if ctx.inpar {
 		closeSpanningBlocks(exp)
-		parEnd(exp)
+		processParagraph(exp)
 		exp.EndParagraph()
 	}
 	exp.BeginParagraph()
@@ -341,7 +341,7 @@ func macroEd(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	opts, _, args := bctx.parseOptions(specOptEd, bctx.args)
+	opts, _, args := bctx.ParseOptions(specOptEd, bctx.Args)
 	if len(args) > 0 {
 		bctx.Error("useless arguments")
 	}
@@ -363,7 +363,9 @@ func macroEd(exp Exporter) {
 	if ctx.Dtags[scope.tag].Cmd != "" {
 		softbreak = true
 	}
-	endEventualParagraph(exp, softbreak)
+	closeUnclosedBlocks(exp, "Bm")
+	closeUnclosedBlocks(exp, "Bl")
+	endParagraph(exp, softbreak)
 	exp.EndDisplayBlock(scope.tag)
 
 	ctx.WantsSpace = false
@@ -375,7 +377,7 @@ func macroEf(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	_, flags, args := bctx.parseOptions(specOptEf, bctx.args)
+	_, flags, args := bctx.ParseOptions(specOptEf, bctx.Args)
 	if len(args) > 0 {
 		bctx.Error("useless arguments")
 	}
@@ -390,7 +392,7 @@ func macroEf(exp Exporter) {
 			if ok {
 				text = filter(ctx.rawText.String())
 			} else {
-				bctx.Error("invalid filter tag:", tag) // XXX improve message
+				bctx.Error("invalid filter tag:", tag)
 				text = ctx.rawText.String()
 			}
 		} else {
@@ -420,16 +422,16 @@ func macroEl(exp Exporter) {
 
 func macroElInfos(exp Exporter) {
 	ctx := exp.Context()
-	if ctx.tableIn {
-		if ctx.TableCols == 0 {
-			ctx.TableCols = ctx.TableCell
+	if ctx.Table.scope {
+		if ctx.Table.Cols == 0 {
+			ctx.Table.Cols = ctx.Table.Cell
 		}
-		ctx.tableInfo = append(ctx.tableInfo, &TableInfo{Cols: ctx.TableCols})
-		ctx.tableIn = false
-		ctx.tableScope = false
-		ctx.TableCell = 0
-		ctx.TableCols = 0
-		ctx.TableNum++
+		ctx.Table.info = append(ctx.Table.info, &TableData{Cols: ctx.Table.Cols})
+		ctx.Table.scope = false
+		ctx.Table.titScope = false
+		ctx.Table.Cell = 0
+		ctx.Table.Cols = 0
+		ctx.Table.Count++
 	}
 }
 
@@ -441,7 +443,7 @@ func macroElProcess(exp Exporter) {
 		bctx.Error("no corresponding `.Bl'")
 		return
 	}
-	_, _, args := bctx.parseOptions(specOptEl, bctx.args)
+	_, _, args := bctx.ParseOptions(specOptEl, bctx.Args)
 	if len(args) > 0 {
 		bctx.Error("useless arguments")
 	}
@@ -465,44 +467,49 @@ func macroElProcess(exp Exporter) {
 
 	switch scope.tag {
 	case "verse":
-		parEnd(exp)
+		processParagraph(exp)
+		closeUnclosedBlocks(exp, "Bm")
 		exp.EndParagraph()
 		exp.EndVerse()
 	case "desc":
-		parEnd(exp)
+		processParagraph(exp)
+		closeUnclosedBlocks(exp, "Bm")
 		exp.EndDescValue()
 		exp.EndDescList()
 	case "enum":
-		parEnd(exp)
+		processParagraph(exp)
+		closeUnclosedBlocks(exp, "Bm")
 		exp.EndEnumItem()
 		exp.EndEnumList()
 	case "item":
-		parEnd(exp)
+		processParagraph(exp)
+		closeUnclosedBlocks(exp, "Bm")
 		exp.EndItem()
 		exp.EndItemList()
 	case "table":
 		// allow empty table
 		if ctx.itemScope {
-			parEnd(exp)
+			processParagraph(exp)
+			closeUnclosedBlocks(exp, "Bm")
 			exp.EndTableCell()
 			exp.EndTableRow()
 		}
-		var tableinfo *TableInfo
-		if ctx.tableScope {
+		var tableinfo *TableData
+		if ctx.Table.titScope {
 			info, ok := ctx.LoXstack["lot"]
 			if ok {
-				tableinfo = &TableInfo{Title: info[ctx.TableCount-1].TitleText}
+				tableinfo = &TableData{Title: info[ctx.Table.TitCount-1].TitleText}
 			} else {
-				tableinfo = &TableInfo{}
+				tableinfo = &TableData{}
 				bctx.Error("internal error about table info")
 			}
 		}
 		exp.EndTable(tableinfo)
-		ctx.tableScope = false
-		ctx.tableIn = false
-		ctx.TableCell = 0
-		ctx.TableCols = 0
-		ctx.TableNum++
+		ctx.Table.titScope = false
+		ctx.Table.scope = false
+		ctx.Table.Cell = 0
+		ctx.Table.Cols = 0
+		ctx.Table.Count++
 	}
 	scopes, ok := bctx.scopes["Bl"]
 	if ok && len(scopes) > 0 {
@@ -520,7 +527,7 @@ func macroEm(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	opts, _, args := bctx.parseOptions(specOptEm, bctx.args)
+	opts, _, args := bctx.ParseOptions(specOptEm, bctx.Args)
 	scope := bctx.popScope("Bm")
 	if scope == nil {
 		bctx.Error("no corresponding `.Bm'")
@@ -562,7 +569,7 @@ func macroFt(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	opts, flags, args := bctx.parseOptions(specOptFt, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptFt, bctx.Args)
 	format, okFmt := opts["f"]
 	if okFmt {
 		formats := strings.Split(bctx.InlinesToText(format), ",")
@@ -606,7 +613,7 @@ func macroFt(exp Exporter) {
 func macroIncludeFile(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	opts, flags, args := bctx.parseOptions(specOptIncludeFile, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptIncludeFile, bctx.Args)
 	if format, ok := opts["f"]; ok {
 		formats := strings.Split(bctx.InlinesToText(format), ",")
 		bctx.checkFormats(formats)
@@ -674,7 +681,7 @@ func macroIm(exp Exporter) {
 func macroImProcess(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	opts, flags, args := bctx.parseOptions(specOptIm, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptIm, bctx.Args)
 	args, punct := getClosePunct(exp, args)
 	var link string
 	if t, ok := opts["link"]; ok {
@@ -695,7 +702,7 @@ func macroImProcess(exp Exporter) {
 	case 2:
 		closeUnclosedBlocks(exp, "Bm")
 		closeUnclosedBlocks(exp, "Bl")
-		endEventualParagraph(exp, false)
+		endParagraph(exp, false)
 		image := bctx.InlinesToText(args[0])
 		label := exp.RenderText(args[1])
 		ctx.FigCount++
@@ -706,7 +713,7 @@ func macroImProcess(exp Exporter) {
 func macroImInfos(exp Exporter) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
-	_, _, args := bctx.parseOptions(specOptIm, bctx.args)
+	_, _, args := bctx.ParseOptions(specOptIm, bctx.Args)
 	args, _ = getClosePunct(exp, args)
 	var image string
 	if len(args) > 0 {
@@ -739,18 +746,18 @@ func macroIt(exp Exporter) {
 
 func macroItInfos(exp Exporter) {
 	ctx := exp.Context()
-	if ctx.tableIn {
-		if ctx.TableCols == 0 {
-			ctx.TableCols = ctx.TableCell
+	if ctx.Table.scope {
+		if ctx.Table.Cols == 0 {
+			ctx.Table.Cols = ctx.Table.Cell
 		}
-		ctx.TableCell = 1
+		ctx.Table.Cell = 1
 	}
 }
 
 func macroItProcess(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	_, _, args := bctx.parseOptions(specOptIt, bctx.args)
+	_, _, args := bctx.ParseOptions(specOptIt, bctx.Args)
 	scopes, ok := bctx.scopes["Bl"]
 	if !ok || len(scopes) == 0 {
 		bctx.Error("outside `.Bl' macro scope")
@@ -776,7 +783,7 @@ func macroItDesc(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	if ctx.itemScope {
-		parEnd(exp)
+		processParagraph(exp)
 		exp.EndDescValue()
 	}
 	if len(args) == 0 {
@@ -792,7 +799,7 @@ func macroItDesc(exp Exporter, args [][]ast.Inline) {
 func macroItemenum(exp Exporter, args [][]ast.Inline, tag string) {
 	ctx := exp.Context()
 	if ctx.itemScope {
-		parEnd(exp)
+		processParagraph(exp)
 		switch tag {
 		case "item":
 			exp.EndItem()
@@ -819,17 +826,17 @@ func macroItTable(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	if ctx.itemScope {
-		parEnd(exp)
+		processParagraph(exp)
 		exp.EndTableCell()
 		exp.EndTableRow()
 	}
-	if ctx.TableCols == 0 {
-		ctx.TableCols = ctx.TableCell
+	if ctx.Table.Cols == 0 {
+		ctx.Table.Cols = ctx.Table.Cell
 	}
-	if ctx.TableCols > ctx.TableCell {
+	if ctx.Table.Cols > ctx.Table.Cell {
 		bctx.Error("not enough cells in previous row")
 	}
-	ctx.TableCell = 1
+	ctx.Table.Cell = 1
 	exp.BeginTableRow()
 	exp.BeginTableCell()
 	ctx.inpar = true
@@ -861,7 +868,7 @@ func macroLk(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	_, flags, args := bctx.parseOptions(specOptLk, bctx.args)
+	_, flags, args := bctx.ParseOptions(specOptLk, bctx.Args)
 	var punct string
 	if len(args) > 1 {
 		args, punct = getClosePunct(exp, args)
@@ -892,10 +899,10 @@ func macroP(exp Exporter) {
 		return
 	}
 	bctx := exp.BaseContext()
-	_, _, args := bctx.parseOptions(specOptP, bctx.args)
+	_, _, args := bctx.ParseOptions(specOptP, bctx.Args)
 	if ctx.inpar {
 		closeSpanningBlocks(exp)
-		parEnd(exp)
+		processParagraph(exp)
 		exp.EndParagraph()
 	} else {
 		exp.EndParagraphUnsoftly()
@@ -914,7 +921,7 @@ func macroP(exp Exporter) {
 func macroSm(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	opts, flags, args := bctx.parseOptions(specOptSm, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptSm, bctx.Args)
 	var id string
 	if t, ok := opts["id"]; ok {
 		id = exp.RenderText(t)
@@ -960,7 +967,7 @@ func macroSx(exp Exporter) {
 		return
 	}
 	bctx := exp.BaseContext()
-	opts, flags, args := bctx.parseOptions(specOptSx, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptSx, bctx.Args)
 	tag := "toc" // default value
 	if t, ok := opts["t"]; ok {
 		tag = bctx.InlinesToText(t)
@@ -1018,13 +1025,13 @@ func macroTa(exp Exporter) {
 
 func macroTaInfos(exp Exporter) {
 	ctx := exp.Context()
-	ctx.TableCell++
+	ctx.Table.Cell++
 }
 
 func macroTaProcess(exp Exporter) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	_, _, args := bctx.parseOptions(specOptTa, bctx.args)
+	_, _, args := bctx.ParseOptions(specOptTa, bctx.Args)
 	scopes, hasBl := bctx.scopes["Bl"]
 	if !hasBl || len(scopes) == 0 {
 		bctx.Error("outside `.Bl -t table' scope")
@@ -1040,9 +1047,9 @@ func macroTaProcess(exp Exporter) {
 		return
 	}
 	closeUnclosedBlocks(exp, "Bm")
-	parEnd(exp)
+	processParagraph(exp)
 	exp.EndTableCell()
-	ctx.TableCell++
+	ctx.Table.Cell++
 	exp.BeginTableCell()
 	ctx.inpar = true
 	if len(args) > 0 {
@@ -1065,7 +1072,7 @@ func macroTc(exp Exporter) {
 
 func macroTcInfos(exp Exporter) {
 	bctx := exp.BaseContext()
-	_, flags, _ := bctx.parseOptions(specOptTc, bctx.args)
+	_, flags, _ := bctx.ParseOptions(specOptTc, bctx.Args)
 	exp.TableOfContentsInfos(flags)
 }
 
@@ -1073,11 +1080,11 @@ func macroTcProcess(exp Exporter) {
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
 	bctx := exp.BaseContext()
-	opts, flags, args := bctx.parseOptions(specOptTc, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptTc, bctx.Args)
 	if len(args) > 0 {
 		bctx.Error("useless arguments")
 	}
-	endEventualParagraph(exp, flags["ns"])
+	endParagraph(exp, flags["ns"])
 	var toc, lof, lot, lop = flags["toc"], flags["lof"], flags["lot"], flags["lop"]
 	if !(toc || lof || lot || lop) {
 		toc = true
@@ -1106,7 +1113,7 @@ func macroX(exp Exporter) {
 		return
 	}
 	bctx := exp.BaseContext()
-	args := bctx.args
+	args := bctx.Args
 	if len(args) == 0 {
 		bctx.Error("you should specify arguments")
 		return
@@ -1130,7 +1137,7 @@ func macroXdtag(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	var opts map[string][]ast.Inline
-	opts, _, args = bctx.parseOptions(specOptXdtag, args)
+	opts, _, args = bctx.ParseOptions(specOptXdtag, args)
 	var formats []string
 	if format, okFmt := opts["f"]; okFmt {
 		formats = strings.Split(bctx.InlinesToText(format), ",")
@@ -1161,7 +1168,7 @@ func macroXftag(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	var opts map[string][]ast.Inline
-	opts, _, args = bctx.parseOptions(specOptXftag, args)
+	opts, _, args = bctx.ParseOptions(specOptXftag, args)
 	if format, ok := opts["f"]; ok {
 		formats := strings.Split(bctx.InlinesToText(format), ",")
 		bctx.checkFormats(formats)
@@ -1233,7 +1240,7 @@ func macroXmtag(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
 	var opts map[string][]ast.Inline
-	opts, _, args = bctx.parseOptions(specOptXmtag, args)
+	opts, _, args = bctx.ParseOptions(specOptXmtag, args)
 	var formats []string
 	if format, okFmt := opts["f"]; okFmt {
 		formats = strings.Split(bctx.InlinesToText(format), ",")
@@ -1294,7 +1301,7 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	var opts map[string][]ast.Inline
-	opts, _, args = bctx.parseOptions(specOptXset, args)
+	opts, _, args = bctx.ParseOptions(specOptXset, args)
 	var formats []string
 	if format, okFmt := opts["f"]; okFmt {
 		formats = strings.Split(bctx.InlinesToText(format), ",")
@@ -1341,7 +1348,7 @@ func macroHeader(exp Exporter) {
 func macroHeaderProcess(exp Exporter) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
-	_, flags, args := bctx.parseOptions(specOptHeader, bctx.args)
+	_, flags, args := bctx.ParseOptions(specOptHeader, bctx.Args)
 	if len(args) == 0 {
 		bctx.Error("arguments required")
 		return
@@ -1350,7 +1357,7 @@ func macroHeaderProcess(exp Exporter) {
 	title := renderArgs(exp, args)
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
-	endEventualParagraph(exp, false)
+	endParagraph(exp, false)
 	ctx.TocInfo.updateHeadersCount(bctx.Macro, flags["nonum"])
 	titleText := processInlineMacros(exp, args)
 	exp.BeginHeader(bctx.Macro, title, numbered, titleText)
@@ -1362,7 +1369,7 @@ func macroHeaderProcess(exp Exporter) {
 func macroHeaderInfos(exp Exporter) {
 	ctx := exp.Context()
 	bctx := exp.BaseContext()
-	_, flags, args := bctx.parseOptions(specOptHeader, bctx.args)
+	_, flags, args := bctx.ParseOptions(specOptHeader, bctx.Args)
 	if len(args) == 0 {
 		// Error message while processing
 		return
@@ -1446,7 +1453,7 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 	}
 	loc := bctx.loc
 	curMacro := bctx.Macro
-	curArgs := bctx.args
+	curArgs := bctx.Args
 	ws := ctx.WantsSpace
 	oldpar := ctx.inpar
 	proc := ctx.Process
@@ -1457,7 +1464,7 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 	defer func() {
 		bctx.loc = loc
 		bctx.Macro = curMacro
-		bctx.args = curArgs
+		bctx.Args = curArgs
 		ctx.WantsSpace = ws
 		ctx.Inline = false
 		ctx.inpar = oldpar
@@ -1502,11 +1509,11 @@ func closeUnclosedBlocks(exp Exporter, macro string) {
 	bctx := exp.BaseContext()
 	if testForUnclosedBlock(exp, macro) {
 		curMacro := bctx.Macro
-		curArgs := bctx.args
-		bctx.args = [][]ast.Inline{}
+		curArgs := bctx.Args
+		bctx.Args = [][]ast.Inline{}
 		defer func() {
 			bctx.Macro = curMacro
-			bctx.args = curArgs
+			bctx.Args = curArgs
 		}()
 		switch macro {
 		case "Bm":
@@ -1514,10 +1521,11 @@ func closeUnclosedBlocks(exp Exporter, macro string) {
 			for len(bctx.scopes["Bm"]) > 0 {
 				s := bctx.scopes["Bm"][0]
 				if s.tag != "" {
-					bctx.args = append(bctx.args,
+					bctx.Args = append(bctx.Args,
 						[]ast.Inline{ast.Text("-t")}, []ast.Inline{ast.Text(s.tag)})
 				}
 				macroEm(exp)
+				bctx.Args = bctx.Args[:0]
 			}
 		case "Bl":
 			bctx.Macro = "El"
@@ -1529,10 +1537,11 @@ func closeUnclosedBlocks(exp Exporter, macro string) {
 			for len(bctx.scopes["Bd"]) > 0 {
 				s := bctx.scopes["Bd"][0]
 				if s.tag != "" {
-					bctx.args = append(bctx.args,
+					bctx.Args = append(bctx.Args,
 						[]ast.Inline{ast.Text("-t")}, []ast.Inline{ast.Text(s.tag)})
 				}
 				macroEd(exp)
+				bctx.Args = bctx.Args[:0]
 			}
 		}
 	}
@@ -1541,10 +1550,10 @@ func closeUnclosedBlocks(exp Exporter, macro string) {
 // endEventualParagraph ends an eventual paragraph. The break can be ``soft''
 // (for example in LaTeX this allows a list to belong to a surrounding
 // paragraph).
-func endEventualParagraph(exp Exporter, softbreak bool) {
+func endParagraph(exp Exporter, softbreak bool) {
 	ctx := exp.Context()
 	if ctx.inpar {
-		parEnd(exp)
+		processParagraph(exp)
 		if softbreak {
 			exp.EndParagraphSoftly()
 		} else {

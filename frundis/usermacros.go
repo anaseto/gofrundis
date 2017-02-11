@@ -100,7 +100,7 @@ func processUserMacro(exp BaseExporter) {
 		bctx.Error("undefined macro:", mb.Name) // XXX useless (should not happen)
 		return
 	}
-	opts, flags, args := bctx.parseOptions(m.opts, mb.Args)
+	opts, flags, args := bctx.ParseOptions(m.opts, mb.Args)
 
 	if len(args) > m.argsc {
 		bctx.Error("too many arguments")

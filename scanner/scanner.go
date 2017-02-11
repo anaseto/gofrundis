@@ -301,7 +301,7 @@ func (s *Scanner) scanInterpolation(next bool, t namedEscapeType) (token.Token, 
 func (s *Scanner) scanArgInterpolation() (token.Token, string) {
 	// s.ch == '$'
 	s.next()
-	if !unicode.IsDigit(s.ch) {
+	if s.ch <= '0' || '9' < s.ch {
 		switch s.ch {
 		case '@':
 			return token.ESCAPE, "$@"
@@ -310,11 +310,7 @@ func (s *Scanner) scanArgInterpolation() (token.Token, string) {
 		case '?':
 			return s.scanInterpolation(true, namedFlag)
 		}
-		s.error("argument interpolation: expecting digit")
-		return token.ILLEGAL, ""
-	}
-	if s.ch == '0' {
-		s.error("argument interpolation: digit should be in range 1-9")
+		s.error("argument interpolation: expecting digit in range 1-9")
 		return token.ILLEGAL, ""
 	}
 	// XXX allow more than one digit?

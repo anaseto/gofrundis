@@ -18,7 +18,7 @@ func macroDefStart(exp BaseExporter) {
 			bctx.defInfo.line, " of file ", bctx.defInfo.file)
 		return
 	}
-	opts, _, args := bctx.parseOptions(specOptIf, bctx.args)
+	opts, _, args := bctx.ParseOptions(specOptIf, bctx.Args)
 	if len(args) < 1 {
 		bctx.Error("'.#de' requires name argument")
 		return
@@ -126,7 +126,7 @@ func macroIfStart(exp BaseExporter) {
 		bctx.ifIgnore++
 		return
 	}
-	opts, flags, args := bctx.parseOptions(specOptIf, bctx.args)
+	opts, flags, args := bctx.ParseOptions(specOptIf, bctx.Args)
 	fmt, ok := opts["f"]
 	if !(len(args) > 0) && !ok {
 		bctx.Error("useless `.#if' invocation")
@@ -172,7 +172,7 @@ func macroIfEnd(exp BaseExporter) {
 func macroDefVar(exp BaseExporter) {
 	// macro .#dv
 	bctx := exp.BaseContext()
-	opts, _, args := bctx.parseOptions(specOptDefVar, bctx.args)
+	opts, _, args := bctx.ParseOptions(specOptDefVar, bctx.Args)
 	if len(args) == 0 {
 		bctx.Error("requires a name argument")
 		return
@@ -199,7 +199,7 @@ func macroDefVar(exp BaseExporter) {
 func macroSource(exp BaseExporter) {
 	// macro .#so
 	bctx := exp.BaseContext()
-	args := bctx.args
+	args := bctx.Args
 	if len(args) < 1 {
 		bctx.Error("filename argument required")
 		return

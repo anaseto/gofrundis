@@ -33,7 +33,7 @@ func ProcessFrundisSource(exp Exporter, filename string) error {
 	testForUnclosedBlock(exp, "#if")
 	_ = testForUnclosedFormatBlock(exp)
 	testForUnclosedDe(exp)
-	endEventualParagraph(exp, false)
+	endParagraph(exp, false)
 	exp.PostProcessing()
 	return nil
 }
@@ -64,7 +64,7 @@ func processBlocks(exp BaseExporter) {
 		bctx.loc.curBlock = i
 		switch b := b.(type) {
 		case *ast.Macro:
-			bctx.args = b.Args
+			bctx.Args = b.Args
 			bctx.Macro = b.Name
 			bctx.line = b.Line
 		case *ast.TextBlock:
@@ -126,72 +126,60 @@ func processBlock(exp BaseExporter) {
 	exp.BlockHandler()
 }
 
-var exporterMacros = map[string]func(Exporter){
-	"Bd": macroBd,
-	"Bf": macroBf,
-	"Bl": macroBl,
-	"Bm": macroBm,
-	"Ch": macroHeader,
-	"D":  macroD,
-	"Ed": macroEd,
-	"Ef": macroEf,
-	"El": macroEl,
-	"Em": macroEm,
-	"Ft": macroFt,
-	"If": macroIncludeFile,
-	"Im": macroIm,
-	"It": macroIt,
-	"Lk": macroLk,
-	"P":  macroP,
-	"Pt": macroHeader,
-	"Sh": macroHeader,
-	"Sm": macroSm,
-	"Ss": macroHeader,
-	"Sx": macroSx,
-	"Ta": macroTa,
-	"Tc": macroTc,
-	"X":  macroX}
-
-var minimalMacros = map[string]func(Exporter){
-	"Bd": macroBd,
-	"Bf": macroBf,
-	"Bm": macroBm,
-	"Ed": macroEd,
-	"Ef": macroEf,
-	"Em": macroEm,
-	"Ft": macroFt,
-	"If": macroIncludeFile,
-	"Sm": macroSm,
-	"X":  macroX}
-
-// BlockHandler is as handler for Exporter method BlockHandler (all
-// frundis macros activated).
-func BlockHandler(exp Exporter) {
-	bctx := exp.BaseContext()
-	b := bctx.block()
-	switch b := b.(type) {
-	case *ast.Macro:
-		handler, ok := exporterMacros[b.Name]
-		if ok {
-			handler(exp)
-		} else if b.Name != "" {
-			bctx.Error("unknown macro:", b.Name)
-		}
-		bctx.PrevMacro = b.Name
-	case *ast.TextBlock:
-		doText(exp)
-		bctx.PrevMacro = ""
-	}
+// DefaultExporterMacros returns a mapping from macros to handling functions,
+// with the standard set of frundis macros.
+func DefaultExporterMacros() map[string]func(Exporter) {
+	return map[string]func(Exporter){
+		"Bd": macroBd,
+		"Bf": macroBf,
+		"Bl": macroBl,
+		"Bm": macroBm,
+		"Ch": macroHeader,
+		"D":  macroD,
+		"Ed": macroEd,
+		"Ef": macroEf,
+		"El": macroEl,
+		"Em": macroEm,
+		"Ft": macroFt,
+		"If": macroIncludeFile,
+		"Im": macroIm,
+		"It": macroIt,
+		"Lk": macroLk,
+		"P":  macroP,
+		"Pt": macroHeader,
+		"Sh": macroHeader,
+		"Sm": macroSm,
+		"Ss": macroHeader,
+		"Sx": macroSx,
+		"Ta": macroTa,
+		"Tc": macroTc,
+		"X":  macroX}
 }
 
-// MinimalBlockHandler is as handler for Exporter method BlockHandler
-// (Bd,Bf,Bm,Ed,Ef,Em,Ft,If,Sm,X macros only).
-func MinimalBlockHandler(exp Exporter) {
+// MinimalExporterMacros returns a mapping from macros to handling functions,
+// with only the following macros: Bd, Bf, Bm, Ed, Ef, Em, Ft, If, Sm, X.
+func MinimalExporterMacros() map[string]func(Exporter) {
+	return map[string]func(Exporter){
+		"Bd": macroBd,
+		"Bf": macroBf,
+		"Bm": macroBm,
+		"Ed": macroEd,
+		"Ef": macroEf,
+		"Em": macroEm,
+		"Ft": macroFt,
+		"If": macroIncludeFile,
+		"Sm": macroSm,
+		"X":  macroX}
+}
+
+// DefaultBlockHandler is as handler for Exporter method BlockHandler.
+func DefaultBlockHandler(exp Exporter) {
 	bctx := exp.BaseContext()
 	b := bctx.block()
 	switch b := b.(type) {
 	case *ast.Macro:
-		handler, ok := minimalMacros[b.Name]
+		macros := exp.Context().Macros
+		handler, ok := macros[b.Name]
 		if ok {
 			handler(exp)
 		} else if b.Name != "" {
