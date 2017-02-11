@@ -980,6 +980,7 @@ The syntax is as follows:
 .Fl f Ar formats
 .Fl t Ar tag
 .Op Fl c Ar cmd
+.Op Fl a Ar |key|value
 .br
 .Pf \. Sx \&X
 .Cm ftag
@@ -1075,6 +1076,12 @@ is specified, the block will be rendered without environment in LaTeX (just a bl
 line before and after the block), and as a
 .Dq div
 element in html.
+The
+.Fl a
+option behaves in the same way as with the
+.Pf \. Sx \& X
+.Cm mtag
+form.
 .Pp
 The
 .Pf \. Sx \&X
