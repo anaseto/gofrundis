@@ -253,7 +253,7 @@ func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[str
 func (exp *exporter) TableOfContentsInfos(flags map[string]bool) {
 }
 
-func (exp *exporter) Xdtag(cmd string) frundis.Dtag {
+func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 	return frundis.Dtag{}
 }
 

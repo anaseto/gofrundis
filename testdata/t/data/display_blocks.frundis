@@ -1,9 +1,9 @@
-.X dtag -f xhtml -t mytag
-.X dtag -f latex -t mytag -c center
+.X dtag -f xhtml -t mytag -a |key1|value1|key2|value2
+.X dtag -f latex -t mytag -c center -a |key1|value1|key2|value2
 .X dtag -f markdown -t mytag
 .X dtag -f mom -t mytag
-.X dtag -f xhtml -t tag2 -c footer
-.X dtag -f latex -t tag2
+.X dtag -f xhtml -t tag2 -c footer -a |key1|value&1
+.X dtag -f latex -t tag2 -c footer -a |key1|value&1 \" footer does not exists, it is just a test
 .X dtag -f markdown -t tag2
 .X dtag -f mom -t tag2
 .X dtag -t center -f latex -c center
@@ -29,6 +29,9 @@ display block
 .Bd -t mytag
 Some centered text
 .Ed -t mytag
+.Bd -t tag2
+Some footer text
+.Ed -t tag2
 .P
 Some text that is outside blocks
 .Bd

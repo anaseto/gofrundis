@@ -218,7 +218,10 @@ func shellFilter(exp Exporter, shellcmd string, text string) string {
 	file, err := ioutil.TempFile("", "frundis-")
 	defer func() {
 		file.Close()
-		os.Remove(file.Name())
+		err := os.Remove(file.Name())
+		if err != nil {
+			ctx.Error("could not remove temporary file:", file.Name())
+		}
 	}()
 	if err != nil {
 		ctx.Error(err)
@@ -341,4 +344,20 @@ func readPairs(s string) ([]string, error) {
 		return nil, errors.New(fmt.Sprintf("odd number of items in '%s'", s))
 	}
 	return repls, nil
+}
+
+func testPairs(ctx *Context, pairs []string) {
+	for i := 0; i < len(pairs)-1; i += 2 {
+		if pairs[i] == "" {
+			ctx.Error(fmt.Sprintf("in -a option:key %d is empty", (i/2)+1))
+		}
+		if strings.ContainsAny(pairs[i], "\"'>/=") {
+			ctx.Error(fmt.Sprintf("in -a option:key %d contains invalid characters", (i/2)+1))
+		}
+		for _, c := range pairs[i] {
+			if unicode.IsSpace(c) {
+				ctx.Error(fmt.Sprintf("in -a option:key %d contains space", (i/2)+1))
+			}
+		}
+	}
 }

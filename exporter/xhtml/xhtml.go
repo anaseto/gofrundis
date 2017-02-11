@@ -190,8 +190,8 @@ func (exp *exporter) BeginDialogue() {
 func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
-	if tag != "" {
-		dtag, ok := ctx.Dtags[tag]
+	dtag, ok := ctx.Dtags[tag]
+	if ok {
 		var cmd string
 		if ok {
 			cmd = dtag.Cmd
@@ -202,6 +202,10 @@ func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 		fmt.Fprintf(w, "<%s class=\"%s\"", cmd, tag)
 	} else {
 		fmt.Fprint(w, "<div")
+	}
+	pairs := dtag.Pairs
+	for i := 0; i < len(pairs)-1; i += 2 {
+		fmt.Fprintf(w, " %s=\"%s\"", html.EscapeString(pairs[i]), html.EscapeString(pairs[i+1]))
 	}
 	if id != "" {
 		fmt.Fprintf(w, " id=\"%s\"", id)
@@ -622,8 +626,8 @@ func (exp *exporter) TableOfContentsInfos(flags map[string]bool) {
 	// (dominitoc, etc.) (useless for html)
 }
 
-func (exp *exporter) Xdtag(cmd string) frundis.Dtag {
-	return frundis.Dtag{Cmd: cmd}
+func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
+	return frundis.Dtag{Cmd: cmd, Pairs: pairs}
 }
 
 func (exp *exporter) Xftag(shell string) frundis.Ftag {

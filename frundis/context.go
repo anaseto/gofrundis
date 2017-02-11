@@ -157,7 +157,7 @@ type Exporter interface {
 	BaseExporter
 	Renderer
 	// Xdtag builds a Dtag (e.g. frundis.Dtag{Cmd: cmd}).
-	Xdtag(cmd string) Dtag
+	Xdtag(cmd string, pairs []string) Dtag
 	// Xftag builds a Ftag.
 	Xftag(shell string) Ftag
 	// Xmtag builds a Mtag. The begin and end arguments are unescaped and
@@ -293,7 +293,8 @@ type Mtag struct {
 
 // Dtag represents tags set with "X dtag".
 type Dtag struct {
-	Cmd string // "-c" option of "X dtag"
+	Cmd   string   // "-c" option of "X dtag"
+	Pairs []string // "-a" option of "X dtag" (list of pairs key=value)
 }
 
 // Ftag represents tags set with "X ftag".

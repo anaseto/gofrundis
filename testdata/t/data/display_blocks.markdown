@@ -8,6 +8,8 @@ display block
 
 Some centered text
 
+Some footer text
+
 Some text that is outside blocks
 
 And now in a block.

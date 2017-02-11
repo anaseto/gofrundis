@@ -105,15 +105,25 @@ func (exp *exporter) BeginDialogue() {
 func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
-	if tag != "" {
-		dtag, ok := ctx.Dtags[tag]
-		var cmd string
-		if ok {
-			cmd = dtag.Cmd
+	dtag, ok := ctx.Dtags[tag]
+	var cmd string
+	if ok {
+		cmd = dtag.Cmd
+	}
+	if cmd != "" {
+		fmt.Fprintf(w, "\\begin{%s}", cmd)
+		pairs := dtag.Pairs
+		if len(pairs) > 0 {
+			fmt.Fprint(w, "[")
+			for i := 0; i < len(pairs)-1; i += 2 {
+				if i > 0 {
+					fmt.Fprint(w, ",")
+				}
+				fmt.Fprintf(w, "%s=%s", escape.LaTeX(pairs[i]), escape.LaTeX(pairs[i+1]))
+			}
+			fmt.Fprint(w, "]")
 		}
-		if cmd != "" {
-			fmt.Fprintf(w, "\\begin{%s}\n", cmd)
-		}
+		fmt.Fprint(w, "\n")
 	}
 	if id != "" {
 		fmt.Fprintf(w, "\\hypertarget{%s}{}\n", id)
@@ -495,8 +505,8 @@ func (exp *exporter) TableOfContentsInfos(flags map[string]bool) {
 	}
 }
 
-func (exp *exporter) Xdtag(cmd string) frundis.Dtag {
-	return frundis.Dtag{Cmd: cmd}
+func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
+	return frundis.Dtag{Cmd: cmd, Pairs: pairs}
 }
 
 func (exp *exporter) Xftag(shell string) frundis.Ftag {

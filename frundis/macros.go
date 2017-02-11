@@ -1135,8 +1135,18 @@ func macroXdtag(exp Exporter, args [][]ast.Inline) {
 		ctx.Error("-t option should be specified")
 		return
 	}
+	var pairs []string
+	if t, ok := opts["a"]; ok {
+		s := ctx.InlinesToText(t)
+		var err error
+		pairs, err = readPairs(s)
+		if err != nil {
+			ctx.Error("invalid -a argument (missing separator?):", err)
+		}
+		testPairs(ctx, pairs)
+	}
 	cmd := ctx.InlinesToText(opts["c"])
-	ctx.Dtags[tag] = exp.Xdtag(cmd)
+	ctx.Dtags[tag] = exp.Xdtag(cmd, pairs)
 }
 
 func macroXftag(exp Exporter, args [][]ast.Inline) {
@@ -1253,19 +1263,7 @@ func macroXmtag(exp Exporter, args [][]ast.Inline) {
 		if err != nil {
 			ctx.Error("invalid -a argument (missing separator?):", err)
 		}
-		for i := 0; i < len(pairs)-1; i += 2 {
-			if pairs[i] == "" {
-				ctx.Error(fmt.Sprintf("in -a option:key %d is empty", (i/2)+1))
-			}
-			if strings.ContainsAny(pairs[i], "\"'>/=") {
-				ctx.Error(fmt.Sprintf("in -a option:key %d contains invalid characters", (i/2)+1))
-			}
-			for _, c := range pairs[i] {
-				if unicode.IsSpace(c) {
-					ctx.Error(fmt.Sprintf("in -a option:key %d contains space", (i/2)+1))
-				}
-			}
-		}
+		testPairs(ctx, pairs)
 	}
 	ctx.Mtags[tag] = exp.Xmtag(cmd, b, e, pairs)
 }
