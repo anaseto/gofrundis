@@ -34,7 +34,7 @@ type exporter struct {
 }
 
 func (exp *exporter) Init() {
-	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout), Format: exp.Format}
+	ctx := &frundis.Context{Wout: bufio.NewWriter(os.Stdout), Format: exp.Format}
 	exp.Ctx = ctx
 	ctx.Init()
 	ctx.Macros = frundis.MinimalExporterMacros()
@@ -65,13 +65,13 @@ func (exp *exporter) Reset() error {
 	if exp.curOutputFile == nil {
 		exp.curOutputFile = os.Stdout
 	}
-	ctx.W = bufio.NewWriter(exp.curOutputFile)
+	ctx.Wout = bufio.NewWriter(exp.curOutputFile)
 	return nil
 }
 
 func (exp *exporter) PostProcessing() {
 	ctx := exp.Context()
-	ctx.W.Flush()
+	ctx.Wout.Flush()
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
@@ -113,7 +113,7 @@ func (exp *exporter) BeginItemList() {
 
 func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	mtag, ok := ctx.Mtags[tag]
 	if ok {
 		fmt.Fprint(w, mtag.Begin)
@@ -180,7 +180,7 @@ func (exp *exporter) EndItem() {
 
 func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	mtag, ok := ctx.Mtags[tag]
 	if ok {
 		fmt.Fprint(w, mtag.End)
@@ -189,7 +189,7 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 }
 
 func (exp *exporter) EndParagraph() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\n")
 }
 

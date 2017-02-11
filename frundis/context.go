@@ -188,7 +188,7 @@ type Context struct {
 	Table         TableInfo                      // table information
 	Toc           *TocInfo                       // Toc information
 	Verse         VerseInfo                      // whether there is a poem in the source
-	W             *bufio.Writer                  // where final output goes
+	Wout          *bufio.Writer                  // where final output goes
 	WantsSpace    bool                           // whether previous in-paragraph stuff reclaims a space
 	Werror        io.Writer                      // where to write non-fatal errors (default os.Stderr)
 	asIs          bool                           // treat current text as-is
@@ -362,7 +362,7 @@ func (ctx *Context) Reset() {
 		files:    ctx.files,
 		Format:   ctx.Format,
 		Toc:      ctx.Toc,
-		W:        ctx.W,
+		Wout:     ctx.Wout,
 		Images:   ctx.Images,
 		Filters:  ctx.Filters}
 	ctx.Table.info = tableinfo

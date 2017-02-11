@@ -301,7 +301,7 @@ func macroBm(exp Exporter) {
 		if !ctx.Inline {
 			ctx.Error("useless arguments")
 		} else {
-			w := ctx.GetW()
+			w := ctx.W()
 			fmt.Fprint(w, renderArgs(exp, args))
 		}
 	}
@@ -389,7 +389,7 @@ func macroEf(exp Exporter) {
 		} else {
 			text = ctx.rawText.String()
 		}
-		w := ctx.GetW()
+		w := ctx.W()
 		fmt.Fprint(w, text)
 		if ctx.parScope && !flags["ns"] {
 			ctx.WantsSpace = true
@@ -545,7 +545,7 @@ func macroEm(exp Exporter) {
 		if !ctx.Inline {
 			ctx.Error("useless args in macro `.Em'")
 		} else {
-			w := ctx.GetW()
+			w := ctx.W()
 			fmt.Fprint(w, renderArgs(exp, args))
 		}
 	}
@@ -594,7 +594,7 @@ func macroFt(exp Exporter) {
 	} else {
 		text = argsToText(exp, args, " ")
 	}
-	w := ctx.GetW()
+	w := ctx.W()
 	fmt.Fprint(w, text)
 }
 
@@ -640,7 +640,7 @@ func macroIncludeFile(exp Exporter) {
 		} else {
 			text = string(source)
 		}
-		w := ctx.GetW()
+		w := ctx.W()
 		fmt.Fprint(w, text)
 	} else {
 		// frundis source file
@@ -799,7 +799,7 @@ func macroItemenum(exp Exporter, args [][]ast.Inline, tag string) {
 	ctx.parScope = true
 	ctx.WantsSpace = false
 	if len(args) > 0 {
-		w := ctx.GetW()
+		w := ctx.W()
 		fmt.Fprint(w, processInlineMacros(exp, args))
 		ctx.WantsSpace = true
 	}
@@ -823,7 +823,7 @@ func macroItTable(exp Exporter, args [][]ast.Inline) {
 	exp.BeginTableCell()
 	ctx.parScope = true
 	if len(args) > 0 {
-		w := ctx.GetW()
+		w := ctx.W()
 		fmt.Fprint(w, processInlineMacros(exp, args))
 		ctx.WantsSpace = true
 	}
@@ -838,7 +838,7 @@ func macroItVerse(exp Exporter, args [][]ast.Inline) {
 		exp.EndVerseLine()
 	}
 	if len(args) > 0 {
-		w := ctx.GetW()
+		w := ctx.W()
 		fmt.Fprint(w, processInlineMacros(exp, args))
 		ctx.WantsSpace = true
 	}
@@ -934,7 +934,7 @@ func macroSm(exp Exporter) {
 		}
 	}
 	exp.BeginMarkupBlock(tag, id)
-	w := ctx.GetW()
+	w := ctx.W()
 	fmt.Fprint(w, renderArgs(exp, args))
 	exp.EndMarkupBlock(tag, id, punct)
 	ctx.WantsSpace = true
@@ -1030,7 +1030,7 @@ func macroTaProcess(exp Exporter) {
 	exp.BeginTableCell()
 	ctx.parScope = true
 	if len(args) > 0 {
-		w := ctx.GetW()
+		w := ctx.W()
 		fmt.Fprint(w, processInlineMacros(exp, args))
 		ctx.WantsSpace = true
 	} else {
@@ -1330,7 +1330,7 @@ func macroHeaderProcess(exp Exporter) {
 	ctx.Toc.updateHeadersCount(ctx.Macro, flags["nonum"])
 	titleText := processInlineMacros(exp, args)
 	exp.BeginHeader(ctx.Macro, title, numbered, titleText)
-	fmt.Fprint(ctx.GetW(), titleText)
+	fmt.Fprint(ctx.W(), titleText)
 	closeUnclosedBlocks(exp, "Bm")
 	exp.EndHeader(ctx.Macro, title, numbered, titleText)
 }
@@ -1593,7 +1593,7 @@ func beginPhrasingMacro(exp Exporter, nospace bool) {
 func BeginPhrasingMacroInParagraph(exp Exporter, nospace bool) {
 	ctx := exp.Context()
 	if ctx.WantsSpace && !nospace {
-		w := ctx.GetW()
+		w := ctx.W()
 		if ctx.Inline {
 			fmt.Fprint(w, " ")
 		} else {

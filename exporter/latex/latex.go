@@ -38,7 +38,7 @@ type exporter struct {
 }
 
 func (exp *exporter) Init() {
-	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout), Format: "latex"}
+	ctx := &frundis.Context{Wout: bufio.NewWriter(os.Stdout), Format: "latex"}
 	exp.Ctx = ctx
 	ctx.Init()
 	ctx.Filters["escape"] = escape.LaTeX
@@ -57,7 +57,7 @@ func (exp *exporter) Reset() error {
 	if exp.curOutputFile == nil {
 		exp.curOutputFile = os.Stdout
 	}
-	ctx.W = bufio.NewWriter(exp.curOutputFile)
+	ctx.Wout = bufio.NewWriter(exp.curOutputFile)
 	if exp.Standalone {
 		exp.beginLatexDocument()
 	}
@@ -69,7 +69,7 @@ func (exp *exporter) PostProcessing() {
 	if exp.Standalone {
 		exp.EndLatexDocument()
 	}
-	ctx.W.Flush()
+	ctx.Wout.Flush()
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
@@ -83,7 +83,7 @@ func (exp *exporter) BlockHandler() {
 }
 
 func (exp *exporter) BeginDescList() {
-	exp.Context().W.WriteString("\\begin{description}\n")
+	exp.Context().Wout.WriteString("\\begin{description}\n")
 }
 
 func (exp *exporter) BeginDescValue() {
@@ -92,7 +92,7 @@ func (exp *exporter) BeginDescValue() {
 
 func (exp *exporter) BeginDialogue() {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	dmark, ok := ctx.Params["dmark"]
 	if !ok {
 		dmark = "---"
@@ -104,7 +104,7 @@ func (exp *exporter) BeginDialogue() {
 
 func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	dtag, ok := ctx.Dtags[tag]
 	var cmd string
 	if ok {
@@ -131,7 +131,7 @@ func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 }
 
 func (exp *exporter) BeginEnumList() {
-	exp.Context().W.WriteString("\\begin{enumerate}\n")
+	exp.Context().Wout.WriteString("\\begin{enumerate}\n")
 }
 
 func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
@@ -140,26 +140,26 @@ func (exp *exporter) BeginHeader(macro string, title string, numbered bool, rend
 	if !numbered {
 		cmd += "*"
 	}
-	fmt.Fprintf(ctx.GetW(), "\\%s{", cmd)
+	fmt.Fprintf(ctx.W(), "\\%s{", cmd)
 }
 
 func (exp *exporter) BeginItem() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\\item ")
 }
 
 func (exp *exporter) BeginEnumItem() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\\item ")
 }
 
 func (exp *exporter) BeginItemList() {
-	exp.Context().W.WriteString("\\begin{itemize}\n")
+	exp.Context().Wout.WriteString("\\begin{itemize}\n")
 }
 
 func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	if id != "" {
 		fmt.Fprintf(w, "\\hypertarget{%s}{", id)
 	}
@@ -195,7 +195,7 @@ func (exp *exporter) BeginPhrasingMacroInParagraph(nospace bool) {
 }
 
 func (exp *exporter) BeginTable(title string, count int, ncols int) {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	if title != "" {
 		fmt.Fprint(w, "\\begin{table}[htbp]\n")
 	}
@@ -206,7 +206,7 @@ func (exp *exporter) BeginTable(title string, count int, ncols int) {
 func (exp *exporter) BeginTableCell() {
 	ctx := exp.Context()
 	if ctx.Table.Cell > 1 {
-		fmt.Fprint(ctx.GetW(), " & ")
+		fmt.Fprint(ctx.W(), " & ")
 	}
 }
 
@@ -215,7 +215,7 @@ func (exp *exporter) BeginTableRow() {
 }
 
 func (exp *exporter) BeginVerse(title string, count int) {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	if title != "" {
 		fmt.Fprintf(w, "\\poemtitle{%s}\n", title)
 		fmt.Fprintf(w, "\\label{poem:%d}\n", count)
@@ -234,7 +234,7 @@ func (exp *exporter) Context() *frundis.Context {
 
 func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	switch {
 	case loXentry != nil:
 		fmt.Fprintf(w, "\\hyperref[%s:%d]{%s}%s", loXentry.Ref, loXentry.Count, name, punct)
@@ -247,23 +247,23 @@ func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.Lo
 }
 
 func (exp *exporter) DescName(name string) {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprintf(w, "\\item[%s] ", name)
 }
 
 func (exp *exporter) EndDescList() {
-	exp.Context().W.WriteString("\\end{description}\n")
+	exp.Context().Wout.WriteString("\\end{description}\n")
 }
 
 func (exp *exporter) EndDescValue() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) EndDisplayBlock(tag string) {
 	if tag != "" {
 		ctx := exp.Context()
-		w := ctx.GetW()
+		w := ctx.W()
 		dtag, ok := ctx.Dtags[tag]
 		var cmd string
 		if ok {
@@ -276,18 +276,18 @@ func (exp *exporter) EndDisplayBlock(tag string) {
 }
 
 func (exp *exporter) EndEnumList() {
-	exp.Context().W.WriteString("\\end{enumerate}\n")
+	exp.Context().Wout.WriteString("\\end{enumerate}\n")
 }
 
 func (exp *exporter) EndEnumItem() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
 	// TODO: rethink args (pass loxinfo?)
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	cmd := latexHeaderName(macro)
 	fmt.Fprint(w, "}\n")
 	if !numbered {
@@ -299,17 +299,17 @@ func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleT
 }
 
 func (exp *exporter) EndItemList() {
-	exp.Context().W.WriteString("\\end{itemize}\n")
+	exp.Context().Wout.WriteString("\\end{itemize}\n")
 }
 
 func (exp *exporter) EndItem() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	mtag, ok := ctx.Mtags[tag]
 	if ok {
 		fmt.Fprint(w, mtag.End)
@@ -322,23 +322,23 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 }
 
 func (exp *exporter) EndParagraph() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\n\n")
 }
 
 func (exp *exporter) EndParagraphSoftly() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) EndParagraphUnsoftly() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	fmt.Fprint(w, "\\end{tabular}\n")
 	if tableinfo != nil {
 		fmt.Fprintf(w, "\\caption{%s}\n", tableinfo.Title)
@@ -351,17 +351,17 @@ func (exp *exporter) EndTableCell() {
 }
 
 func (exp *exporter) EndTableRow() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, " \\\\\n")
 }
 
 func (exp *exporter) EndVerse() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, "\\end{verse}\n")
 }
 
 func (exp *exporter) EndVerseLine() {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprint(w, " \\\\\n")
 }
 
@@ -375,7 +375,7 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 		ctx.Error("path argument and label should not contain the characters `{', or `}")
 		return
 	}
-	w := ctx.GetW()
+	w := ctx.W()
 	_, err := os.Stat(image)
 	if err != nil {
 		ctx.Error("image not found:", image)
@@ -409,7 +409,7 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 		ctx.Error("path argument and label should not contain the characters `{', or `}")
 		return
 	}
-	w := ctx.GetW()
+	w := ctx.W()
 	_, err := os.Stat(image)
 	if err != nil {
 		ctx.Error("image not found:", image)
@@ -421,7 +421,7 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 
 func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	parsedURL, err := url.Parse(uri)
 	var u string
 	if err != nil {
@@ -434,7 +434,7 @@ func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
 
 func (exp *exporter) LkWithoutLabel(uri string, punct string) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	parsedURL, err := url.Parse(uri)
 	var u string
 	if err != nil {
@@ -446,7 +446,7 @@ func (exp *exporter) LkWithoutLabel(uri string, punct string) {
 }
 
 func (exp *exporter) ParagraphTitle(title string) {
-	w := exp.Context().GetW()
+	w := exp.Context().W()
 	fmt.Fprintf(w, "\\paragraph{%s}\n", title)
 }
 
@@ -459,7 +459,7 @@ func (exp *exporter) RenderText(text []ast.Inline) string {
 
 func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {
 	ctx := exp.Context()
-	w := ctx.GetW()
+	w := ctx.W()
 	if flags["summary"] {
 		fmt.Fprint(w, "\\setcounter{tocdepth}{0}\n")
 	} else {

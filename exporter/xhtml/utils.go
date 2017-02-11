@@ -334,11 +334,11 @@ var indexTranslations = map[string]string{
 func (exp *exporter) xhtmlFileOutputChange(title string) {
 	ctx := exp.Context()
 	if ctx.Format == "xhtml" && exp.xhtmlNavigationText.Len() > 0 {
-		ctx.W.Write(exp.xhtmlNavigationText.Bytes())
+		ctx.Wout.Write(exp.xhtmlNavigationText.Bytes())
 		exp.xhtmlNavigationText.Reset()
 	}
-	exp.XHTMLdocumentFooter(ctx.W)
-	ctx.W.Flush()
+	exp.XHTMLdocumentFooter(ctx.Wout)
+	ctx.Wout.Flush()
 	var outFile string
 	switch ctx.Format {
 	case "epub":
@@ -360,12 +360,12 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 		ctx.Error("create file:", err)
 	}
 	if exp.curOutputFile != nil {
-		ctx.W = bufio.NewWriter(exp.curOutputFile)
+		ctx.Wout = bufio.NewWriter(exp.curOutputFile)
 	} else {
-		ctx.W = bufio.NewWriter(ioutil.Discard)
+		ctx.Wout = bufio.NewWriter(ioutil.Discard)
 		exp.curOutputFile = os.Stdout // XXX
 	}
-	exp.XHTMLdocumentHeader(ctx.W, title)
+	exp.XHTMLdocumentHeader(ctx.Wout, title)
 
 	if ctx.Format == "epub" {
 		return
@@ -410,7 +410,7 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 	exp.xhtmlNavigationText.WriteString(`      </ul>
     </div>
 `)
-	ctx.W.Write(exp.xhtmlNavigationText.Bytes())
+	ctx.Wout.Write(exp.xhtmlNavigationText.Bytes())
 }
 
 func (exp *exporter) xhtmlTitlePage() {
@@ -419,17 +419,17 @@ func (exp *exporter) xhtmlTitlePage() {
 		return
 	}
 	if title := html.EscapeString(ctx.Params["document-title"]); title != "" {
-		fmt.Fprintf(ctx.W, "<h1 class=\"title\">%s</h1>\n", title)
+		fmt.Fprintf(ctx.Wout, "<h1 class=\"title\">%s</h1>\n", title)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document title specified")
 	}
 	if author := html.EscapeString(ctx.Params["document-author"]); author != "" {
-		fmt.Fprintf(ctx.W, "<h2 class=\"author\">%s</h2>\n", author)
+		fmt.Fprintf(ctx.Wout, "<h2 class=\"author\">%s</h2>\n", author)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document author specified")
 	}
 	if date := html.EscapeString(ctx.Params["document-date"]); date != "" {
-		fmt.Fprintf(ctx.W, "<h3 class=\"date\">%s</h3>\n", date)
+		fmt.Fprintf(ctx.Wout, "<h3 class=\"date\">%s</h3>\n", date)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document date specified")
 	}

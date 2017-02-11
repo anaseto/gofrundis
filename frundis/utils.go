@@ -309,17 +309,17 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 	return newtext
 }
 
-// GetW returns a writer to be used in place of ctx.W in macro methods.
-func (ctx *Context) GetW() io.Writer {
+// W returns a writer to be used in place of ctx.W in macro methods.
+func (ctx *Context) W() io.Writer {
 	if ctx.parScope {
 		return &ctx.buf
 	}
-	return ctx.W
+	return ctx.Wout
 }
 
 func processParagraph(exp Exporter) {
 	ctx := exp.Context()
-	ctx.W.Write(exp.FormatParagraph(ctx.buf.Bytes()))
+	ctx.Wout.Write(exp.FormatParagraph(ctx.buf.Bytes()))
 	ctx.buf.Reset()
 	ctx.parScope = false
 }

@@ -24,20 +24,20 @@ func (exp *exporter) beginMomDocument() {
 			if err != nil {
 				ctx.Error(err)
 			} else {
-				ctx.W.Write(source)
-				ctx.W.WriteString(".START\n")
+				ctx.Wout.Write(source)
+				ctx.Wout.WriteString(".START\n")
 				return
 			}
 		}
 	}
 	switch ctx.Params["lang"] {
 	case "fr":
-		fmt.Fprintf(ctx.W, ".do hla fr\n")
-		fmt.Fprintf(ctx.W, ".do hpf hyphen.fr\n")
+		fmt.Fprintf(ctx.Wout, ".do hla fr\n")
+		fmt.Fprintf(ctx.Wout, ".do hpf hyphen.fr\n")
 	default:
-		fmt.Fprintf(ctx.W, ".do hla us\n")
-		fmt.Fprintf(ctx.W, ".do hpf hyphen.us\n")
-		fmt.Fprintf(ctx.W, ".do hpfa hyphenex.us\n")
+		fmt.Fprintf(ctx.Wout, ".do hla us\n")
+		fmt.Fprintf(ctx.Wout, ".do hpf hyphen.us\n")
+		fmt.Fprintf(ctx.Wout, ".do hpfa hyphenex.us\n")
 	}
 	data := &struct {
 		Title  string
@@ -63,9 +63,9 @@ func (exp *exporter) beginMomDocument() {
 		ctx.Error("internal error:", err)
 		return
 	}
-	err = tmpl.Execute(ctx.W, data)
+	err = tmpl.Execute(ctx.Wout, data)
 	if err != nil {
 		ctx.Error(err)
 	}
-	ctx.W.WriteString(".START\n")
+	ctx.Wout.WriteString(".START\n")
 }

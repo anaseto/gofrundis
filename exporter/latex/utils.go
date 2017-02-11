@@ -146,8 +146,8 @@ func (exp *exporter) beginLatexDocument() {
 			if err != nil {
 				ctx.Error(err)
 			} else {
-				ctx.W.Write(source)
-				err = tmplBeginDocument.Execute(ctx.W, data)
+				ctx.Wout.Write(source)
+				err = tmplBeginDocument.Execute(ctx.Wout, data)
 				if err != nil {
 					ctx.Error("internal error:", err)
 				}
@@ -190,11 +190,11 @@ func (exp *exporter) beginLatexDocument() {
 		ctx.Error("internal error:", err)
 		return
 	}
-	err = tmpl.Execute(ctx.W, data)
+	err = tmpl.Execute(ctx.Wout, data)
 	if err != nil {
 		ctx.Error(err)
 	}
-	err = tmplBeginDocument.Execute(ctx.W, data)
+	err = tmplBeginDocument.Execute(ctx.Wout, data)
 	if err != nil {
 		ctx.Error("internal error:", err)
 	}
@@ -202,5 +202,5 @@ func (exp *exporter) beginLatexDocument() {
 
 func (exp *exporter) EndLatexDocument() {
 	ctx := exp.Context()
-	ctx.W.WriteString("\n\\end{document}\n")
+	ctx.Wout.WriteString("\n\\end{document}\n")
 }
