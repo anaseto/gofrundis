@@ -26,7 +26,6 @@ func NewExporter(opts *Options) frundis.Exporter {
 }
 
 type exporter struct {
-	Bctx          *frundis.BaseContext
 	Ctx           *frundis.Context
 	Format        string
 	OutputFile    string
@@ -35,14 +34,11 @@ type exporter struct {
 }
 
 func (exp *exporter) Init() {
-	bctx := &frundis.BaseContext{Format: exp.Format}
-	exp.Bctx = bctx
-	bctx.Init()
-	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout)}
+	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout), Format: exp.Format}
 	exp.Ctx = ctx
 	ctx.Init()
 	ctx.Macros = frundis.MinimalExporterMacros()
-	switch bctx.Format {
+	switch ctx.Format {
 	case "xhtml":
 		ctx.Filters["escape"] = html.EscapeString
 	case "latex":
@@ -57,10 +53,8 @@ func (exp *exporter) Init() {
 }
 
 func (exp *exporter) Reset() error {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
-	bctx.Reset()
 	if exp.OutputFile != "" {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
@@ -76,19 +70,14 @@ func (exp *exporter) Reset() error {
 }
 
 func (exp *exporter) PostProcessing() {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.W.Flush()
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
-			bctx.Error(err)
+			ctx.Error(err)
 		}
 	}
-}
-
-func (exp *exporter) BaseContext() *frundis.BaseContext {
-	return exp.Bctx
 }
 
 func (exp *exporter) BlockHandler() {
@@ -255,7 +244,7 @@ func (exp *exporter) ParagraphTitle(title string) {
 }
 
 func (exp *exporter) RenderText(text []ast.Inline) string {
-	return exp.escape(exp.BaseContext().InlinesToText(text))
+	return exp.escape(exp.Context().InlinesToText(text))
 }
 
 func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {

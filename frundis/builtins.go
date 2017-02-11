@@ -12,55 +12,55 @@ import (
 
 func macroDefStart(exp BaseExporter) {
 	// macro .#de
-	bctx := exp.BaseContext()
-	if bctx.defInfo != nil {
-		bctx.Error("not allowed in the scope of a previous `.#de' at line ",
-			bctx.defInfo.line, " of file ", bctx.defInfo.file)
+	ctx := exp.Context()
+	if ctx.uMacroDef != nil {
+		ctx.Error("not allowed in the scope of a previous `.#de' at line ",
+			ctx.uMacroDef.line, " of file ", ctx.uMacroDef.file)
 		return
 	}
-	opts, _, args := bctx.ParseOptions(specOptIf, bctx.Args)
+	opts, _, args := ctx.ParseOptions(specOptIf, ctx.Args)
 	if len(args) < 1 {
-		bctx.Error("'.#de' requires name argument")
+		ctx.Error("'.#de' requires name argument")
 		return
 	}
 	ignore := false
 	if fmt, okFmt := opts["f"]; okFmt {
-		formats := strings.Split(bctx.InlinesToText(fmt), ",")
-		bctx.checkFormats(formats)
-		if bctx.notExportFormat(formats) {
+		formats := strings.Split(ctx.InlinesToText(fmt), ",")
+		ctx.checkFormats(formats)
+		if ctx.notExportFormat(formats) {
 			ignore = true
 		}
 	}
-	name := bctx.InlinesToText(args[0])
-	bctx.defInfo = &macroDefInfo{
+	name := ctx.InlinesToText(args[0])
+	ctx.uMacroDef = &uMacroDefInfo{
 		name:   name,
 		blocks: []ast.Block{},
-		line:   bctx.line,
+		line:   ctx.line,
 		ignore: ignore,
-		file:   bctx.loc.curFile}
+		file:   ctx.loc.curFile}
 }
 
 func macroDefEnd(exp BaseExporter) {
 	// macro .#.
-	bctx := exp.BaseContext()
-	if bctx.defInfo == nil {
-		bctx.Error("found '.#.' without previous '.#de'")
+	ctx := exp.Context()
+	if ctx.uMacroDef == nil {
+		ctx.Error("found '.#.' without previous '.#de'")
 		return
 	}
-	if !bctx.defInfo.ignore {
-		bctx.defInfo.argsc, bctx.defInfo.opts = bctx.searchArgInBlocks(bctx.defInfo.blocks)
-		bctx.macros[bctx.defInfo.name] = *bctx.defInfo
+	if !ctx.uMacroDef.ignore {
+		ctx.uMacroDef.argsc, ctx.uMacroDef.opts = ctx.searchArgInBlocks(ctx.uMacroDef.blocks)
+		ctx.uMacros[ctx.uMacroDef.name] = *ctx.uMacroDef
 	}
-	bctx.defInfo = nil
+	ctx.uMacroDef = nil
 }
 
 // searchArgInBlocks returns the greatest number N of an $N argument, as well
 // as a specification of macro options found.
-func (bctx *BaseContext) searchArgInBlocks(blocks []ast.Block) (int, map[string]Option) {
+func (ctx *Context) searchArgInBlocks(blocks []ast.Block) (int, map[string]Option) {
 	max := 0
 	opts := make(map[string]Option)
 	for _, b := range blocks {
-		m := bctx.searchArgInBlock(b, opts)
+		m := ctx.searchArgInBlock(b, opts)
 		if m > max {
 			max = m
 		}
@@ -68,18 +68,18 @@ func (bctx *BaseContext) searchArgInBlocks(blocks []ast.Block) (int, map[string]
 	return max, opts
 }
 
-func (bctx *BaseContext) searchArgInBlock(b ast.Block, opts map[string]Option) int {
+func (ctx *Context) searchArgInBlock(b ast.Block, opts map[string]Option) int {
 	max := 0
 	switch b := b.(type) {
 	case *ast.Macro:
 		for _, arg := range b.Args {
-			m := bctx.searchArgInText(arg, opts)
+			m := ctx.searchArgInText(arg, opts)
 			if m > max {
 				max = m
 			}
 		}
 	case *ast.TextBlock:
-		m := bctx.searchArgInText(b.Text, opts)
+		m := ctx.searchArgInText(b.Text, opts)
 		if m > max {
 			max = m
 		}
@@ -87,7 +87,7 @@ func (bctx *BaseContext) searchArgInBlock(b ast.Block, opts map[string]Option) i
 	return max
 }
 
-func (bctx *BaseContext) searchArgInText(text []ast.Inline, opts map[string]Option) int {
+func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) int {
 	max := 0
 	for _, elt := range text {
 		switch elt := elt.(type) {
@@ -100,14 +100,14 @@ func (bctx *BaseContext) searchArgInText(text []ast.Inline, opts map[string]Opti
 			if !ok {
 				opts[string(elt)] = ArgOption
 			} else if opt != ArgOption {
-				bctx.Error("both as flag and option with argument:", elt)
+				ctx.Error("both as flag and option with argument:", elt)
 			}
 		case ast.NamedFlagEscape:
 			opt, ok := opts[string(elt)]
 			if !ok {
 				opts[string(elt)] = FlagOption
 			} else if opt != FlagOption {
-				bctx.Error("both as flag and option with argument:", elt)
+				ctx.Error("both as flag and option with argument:", elt)
 			}
 		case ast.Escape:
 			if elt == ast.Escape("$@") {
@@ -120,31 +120,31 @@ func (bctx *BaseContext) searchArgInText(text []ast.Inline, opts map[string]Opti
 
 func macroIfStart(exp BaseExporter) {
 	// macro .#if
-	bctx := exp.BaseContext()
-	bctx.pushScope(&scope{name: "#if"})
-	if bctx.ifIgnore > 0 {
-		bctx.ifIgnore++
+	ctx := exp.Context()
+	ctx.pushScope(&scope{name: "#if"})
+	if ctx.ifIgnoreDepth > 0 {
+		ctx.ifIgnoreDepth++
 		return
 	}
-	opts, flags, args := bctx.ParseOptions(specOptIf, bctx.Args)
+	opts, flags, args := ctx.ParseOptions(specOptIf, ctx.Args)
 	fmt, ok := opts["f"]
 	if !(len(args) > 0) && !ok {
-		bctx.Error("useless `.#if' invocation")
+		ctx.Error("useless `.#if' invocation")
 	}
 	if ok {
-		formats := strings.Split(bctx.InlinesToText(fmt), ",")
-		bctx.checkFormats(formats)
-		if bctx.notExportFormat(formats) {
-			bctx.ifIgnore = 1
+		formats := strings.Split(ctx.InlinesToText(fmt), ",")
+		ctx.checkFormats(formats)
+		if ctx.notExportFormat(formats) {
+			ctx.ifIgnoreDepth = 1
 			return
 		}
 	}
 	if len(args) > 0 {
 		if len(args) > 1 {
-			bctx.Error("too many arguments")
+			ctx.Error("too many arguments")
 		}
 		var flag int
-		switch bctx.InlinesToText(args[0]) {
+		switch ctx.InlinesToText(args[0]) {
 		case "0", "":
 			flag = 0
 		default:
@@ -153,60 +153,60 @@ func macroIfStart(exp BaseExporter) {
 		if flags["not"] {
 			flag = 1 - flag
 		}
-		bctx.ifIgnore = 1 - flag
+		ctx.ifIgnoreDepth = 1 - flag
 	}
 }
 
 func macroIfEnd(exp BaseExporter) {
 	// macro .#;
-	bctx := exp.BaseContext()
-	if bctx.ifIgnore > 0 {
-		bctx.ifIgnore--
+	ctx := exp.Context()
+	if ctx.ifIgnoreDepth > 0 {
+		ctx.ifIgnoreDepth--
 	}
-	scope := bctx.popScope("#if")
+	scope := ctx.popScope("#if")
 	if scope == nil {
-		bctx.Error("no corresponding `.#if'")
+		ctx.Error("no corresponding `.#if'")
 	}
 }
 
 func macroDefVar(exp BaseExporter) {
 	// macro .#dv
-	bctx := exp.BaseContext()
-	opts, _, args := bctx.ParseOptions(specOptDefVar, bctx.Args)
+	ctx := exp.Context()
+	opts, _, args := ctx.ParseOptions(specOptDefVar, ctx.Args)
 	if len(args) == 0 {
-		bctx.Error("requires a name argument")
+		ctx.Error("requires a name argument")
 		return
 	}
 	if fmt, ok := opts["f"]; ok {
-		formats := strings.Split(bctx.InlinesToText(fmt), ",")
-		bctx.checkFormats(formats)
-		if bctx.notExportFormat(formats) {
+		formats := strings.Split(ctx.InlinesToText(fmt), ",")
+		ctx.checkFormats(formats)
+		if ctx.notExportFormat(formats) {
 			return
 		}
 	}
-	name := bctx.InlinesToText(args[0])
+	name := ctx.InlinesToText(args[0])
 	args = args[1:]
 	buf := bytes.Buffer{}
 	for i, arg := range args {
 		if i > 0 {
 			buf.WriteRune(' ')
 		}
-		buf.WriteString(bctx.InlinesToText(arg))
+		buf.WriteString(ctx.InlinesToText(arg))
 	}
-	bctx.vars[name] = buf.String()
+	ctx.ivars[name] = buf.String()
 }
 
 func macroSource(exp BaseExporter) {
 	// macro .#so
-	bctx := exp.BaseContext()
-	args := bctx.Args
+	ctx := exp.Context()
+	args := ctx.Args
 	if len(args) < 1 {
-		bctx.Error("filename argument required")
+		ctx.Error("filename argument required")
 		return
 	}
-	filename := bctx.InlinesToText(args[0])
+	filename := ctx.InlinesToText(args[0])
 	err := processFile(exp, filename)
 	if err != nil {
-		bctx.Error(err)
+		ctx.Error(err)
 	}
 }

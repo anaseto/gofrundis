@@ -22,11 +22,11 @@ func ProcessFrundisSource(exp Exporter, filename string) error {
 	if err != nil {
 		return err
 	}
-	bctx := exp.BaseContext()
-	if bctx.loc == nil {
-		bctx.loc = &location{curBlock: -1, curFile: filename}
+	ctx := exp.Context()
+	if ctx.loc == nil {
+		ctx.loc = &location{curBlock: -1, curFile: filename}
 	}
-	bctx.Macro = "End Of File"
+	ctx.Macro = "End Of File"
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
 	closeUnclosedBlocks(exp, "Bd")
@@ -40,8 +40,8 @@ func ProcessFrundisSource(exp Exporter, filename string) error {
 
 // processFile does one pass through a file with a given exporter.
 func processFile(exp BaseExporter, filename string) error {
-	bctx := exp.BaseContext()
-	blocks, ok := bctx.files[filename]
+	ctx := exp.Context()
+	blocks, ok := ctx.files[filename]
 	if !ok {
 		var err error
 		p := parser.Parser{}
@@ -49,36 +49,36 @@ func processFile(exp BaseExporter, filename string) error {
 		if err != nil {
 			return err
 		}
-		bctx.files[filename] = blocks
+		ctx.files[filename] = blocks
 	}
-	loc := bctx.loc
-	defer func() { bctx.loc = loc }()
-	bctx.loc = &location{curBlocks: blocks, curFile: filename}
+	loc := ctx.loc
+	defer func() { ctx.loc = loc }()
+	ctx.loc = &location{curBlocks: blocks, curFile: filename}
 	processBlocks(exp)
 	return nil
 }
 
 func processBlocks(exp BaseExporter) {
-	bctx := exp.BaseContext()
-	for i, b := range bctx.loc.curBlocks {
-		bctx.loc.curBlock = i
+	ctx := exp.Context()
+	for i, b := range ctx.loc.curBlocks {
+		ctx.loc.curBlock = i
 		switch b := b.(type) {
 		case *ast.Macro:
-			bctx.Args = b.Args
-			bctx.Macro = b.Name
-			bctx.line = b.Line
+			ctx.Args = b.Args
+			ctx.Macro = b.Name
+			ctx.line = b.Line
 		case *ast.TextBlock:
-			bctx.text = b.Text
-			bctx.line = b.Line
+			ctx.text = b.Text
+			ctx.line = b.Line
 		}
 		processBlock(exp)
 	}
 }
 
 func processBlock(exp BaseExporter) {
-	bctx := exp.BaseContext()
-	b := bctx.block()
-	if bctx.ifIgnore > 0 {
+	ctx := exp.Context()
+	b := ctx.block()
+	if ctx.ifIgnoreDepth > 0 {
 		b, ok := b.(*ast.Macro)
 		if ok {
 			switch b.Name {
@@ -91,35 +91,35 @@ func processBlock(exp BaseExporter) {
 		}
 		return
 	}
-	if bctx.defInfo != nil {
+	if ctx.uMacroDef != nil {
 		switch b := b.(type) {
 		case *ast.Macro:
 			switch b.Name {
 			case "#.":
 				macroDefEnd(exp)
 			default:
-				if !bctx.defInfo.ignore {
-					bctx.defInfo.blocks = append(bctx.defInfo.blocks, b)
+				if !ctx.uMacroDef.ignore {
+					ctx.uMacroDef.blocks = append(ctx.uMacroDef.blocks, b)
 				}
 			}
 		case *ast.TextBlock:
-			if !bctx.defInfo.ignore {
-				bctx.defInfo.blocks = append(bctx.defInfo.blocks, b)
+			if !ctx.uMacroDef.ignore {
+				ctx.uMacroDef.blocks = append(ctx.uMacroDef.blocks, b)
 			}
 		}
 		return
 	}
 
 	if b, ok := b.(*ast.Macro); ok {
-		_, ok = bctx.macros[b.Name]
+		_, ok = ctx.uMacros[b.Name]
 		if ok {
 			processUserMacro(exp)
 			return
 		}
-		builtinHandler, ok := bctx.builtins[b.Name]
+		builtinHandler, ok := ctx.builtins[b.Name]
 		if ok {
 			builtinHandler(exp)
-			bctx.PrevMacro = b.Name
+			ctx.PrevMacro = b.Name
 			return
 		}
 	}
@@ -174,20 +174,20 @@ func MinimalExporterMacros() map[string]func(Exporter) {
 
 // DefaultBlockHandler is as handler for Exporter method BlockHandler.
 func DefaultBlockHandler(exp Exporter) {
-	bctx := exp.BaseContext()
-	b := bctx.block()
+	ctx := exp.Context()
+	b := ctx.block()
 	switch b := b.(type) {
 	case *ast.Macro:
-		macros := exp.Context().Macros
+		macros := ctx.Macros
 		handler, ok := macros[b.Name]
 		if ok {
 			handler(exp)
 		} else if b.Name != "" {
-			bctx.Error("unknown macro:", b.Name)
+			ctx.Error("unknown macro:", b.Name)
 		}
-		bctx.PrevMacro = b.Name
+		ctx.PrevMacro = b.Name
 	case *ast.TextBlock:
 		doText(exp)
-		bctx.PrevMacro = ""
+		ctx.PrevMacro = ""
 	}
 }

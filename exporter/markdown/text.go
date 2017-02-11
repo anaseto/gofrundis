@@ -24,7 +24,7 @@ func NewExporter(opts *Options) frundis.Exporter {
 }
 
 type exporter struct {
-	Bctx          *frundis.BaseContext
+	Bctx          *frundis.Context
 	Ctx           *frundis.Context
 	Format        string
 	OutputFile    string
@@ -34,20 +34,15 @@ type exporter struct {
 }
 
 func (exp *exporter) Init() {
-	bctx := &frundis.BaseContext{Format: "markdown"}
-	exp.Bctx = bctx
-	bctx.Init()
-	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout)}
+	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout), Format: "markdown"}
 	exp.Ctx = ctx
 	ctx.Init()
 	ctx.Filters["escape"] = escape.Markdown
 }
 
 func (exp *exporter) Reset() error {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
-	bctx.Reset()
 	if exp.OutputFile != "" {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
@@ -63,19 +58,14 @@ func (exp *exporter) Reset() error {
 }
 
 func (exp *exporter) PostProcessing() {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.W.Flush()
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
-			bctx.Error(err)
+			ctx.Error(err)
 		}
 	}
-}
-
-func (exp *exporter) BaseContext() *frundis.BaseContext {
-	return exp.Bctx
 }
 
 func (exp *exporter) BlockHandler() {
@@ -109,7 +99,7 @@ func (exp *exporter) BeginEnumList() {
 func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedText string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
-	num := ctx.TocInfo.HeaderLevel(macro)
+	num := ctx.Toc.HeaderLevel(macro)
 	switch num {
 	case 3:
 		fmt.Fprint(w, "### ")
@@ -119,7 +109,8 @@ func (exp *exporter) BeginHeader(macro string, title string, numbered bool, rend
 }
 
 func (exp *exporter) BeginItem() {
-	w := exp.Context().GetW()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	var item string
 	if exp.nesting%6 == 0 {
 		item = "* "
@@ -132,22 +123,21 @@ func (exp *exporter) BeginItem() {
 		// should allways be the case
 		fmt.Fprint(w, strings.Repeat(" ", exp.nesting-2))
 	} else {
-		bctx := exp.BaseContext()
-		bctx.Error("unexpected nesting")
+		ctx.Error("unexpected nesting")
 	}
 	fmt.Fprint(w, item)
 }
 
 func (exp *exporter) BeginEnumItem() {
-	w := exp.Context().GetW()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	var item string
 	item = "1. "
 	if exp.nesting >= 3 {
 		// should allways be the case
 		fmt.Fprint(w, strings.Repeat(" ", exp.nesting-3))
 	} else {
-		bctx := exp.BaseContext()
-		bctx.Error("unexpected nesting")
+		ctx.Error("unexpected nesting")
 	}
 	fmt.Fprint(w, item)
 }
@@ -250,7 +240,7 @@ func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleT
 	w := ctx.GetW()
 	fmt.Fprint(w, "\n")
 	var uc string
-	num := ctx.TocInfo.HeaderLevel(macro)
+	num := ctx.Toc.HeaderLevel(macro)
 	switch num {
 	case 1:
 		uc = "="
@@ -378,7 +368,7 @@ func (exp *exporter) RenderText(text []ast.Inline) string {
 	if exp.Context().Params["lang"] == "fr" {
 		text = frundis.InsertNbsps(exp, text)
 	}
-	return escape.Markdown(exp.BaseContext().InlinesToText(text))
+	return escape.Markdown(exp.Context().InlinesToText(text))
 }
 
 func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {

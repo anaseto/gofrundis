@@ -24,16 +24,15 @@ const (
 
 func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.Inline, flags map[string]bool) {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	tocStack := ctx.LoXstack["toc"]
 	if len(tocStack) == 0 {
-		bctx.Error("warning:no TOC information found, skipping TOC generation")
+		ctx.Error("warning:no TOC information found, skipping TOC generation")
 		return
 	}
 	flags["toc"] = true
 	start := 0
 	miniMacro := "Ch"
-	tocInfo := ctx.TocInfo
+	tocInfo := ctx.Toc
 	if flags["mini"] && tocInfo.NavCount() > 0 {
 		navEntry := ctx.LoXstack["nav"][tocInfo.NavCount()-1]
 		start = navEntry.Count
@@ -107,7 +106,7 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 				}
 			}
 		}
-		titleLevel := ctx.TocInfo.HeaderLevel(macro)
+		titleLevel := ctx.Toc.HeaderLevel(macro)
 
 		// Computation of level and previousTitleLevel
 		switch {
@@ -189,16 +188,15 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 
 func (exp *exporter) xhtmlLoX(w io.Writer, class string) {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	switch class {
 	case "lot", "lof", "lop":
 	default:
-		bctx.Error(fmt.Sprintf("warning:unknown List-of-X class:%s", class))
+		ctx.Error(fmt.Sprintf("warning:unknown List-of-X class:%s", class))
 		return
 	}
 	tocStack := ctx.LoXstack[class]
 	if len(tocStack) == 0 {
-		bctx.Error(fmt.Sprintf("warning:no '%s' information found, skipping '%s' generation", class, class))
+		ctx.Error(fmt.Sprintf("warning:no '%s' information found, skipping '%s' generation", class, class))
 		return
 	}
 	fmt.Fprintf(w, "<div class=\"%s\">\n", class)
@@ -246,24 +244,23 @@ func (exp *exporter) getID(entry *frundis.LoXinfo) string {
 }
 
 func (exp *exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	epub3 := strings.HasPrefix(ctx.Params["epub-version"], "3")
 	var xmlnsepub string
-	if bctx.Format == "epub" && epub3 {
+	if ctx.Format == "epub" && epub3 {
 		fmt.Fprint(w, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
 		xmlnsepub = "xmlns:epub=\"http://www.idpf.org/2007/ops\" "
 		xmlnsepub += fmt.Sprintf("xml:lang=\"%s\" ", ctx.Params["lang"])
 	}
-	if bctx.Format == "epub" && epub3 ||
-		bctx.Format == "xhtml" && frundis.IsTrue(ctx.Params["xhtml5"]) {
+	if ctx.Format == "epub" && epub3 ||
+		ctx.Format == "xhtml" && frundis.IsTrue(ctx.Params["xhtml5"]) {
 		fmt.Fprint(w, "<!DOCTYPE html>\n")
-	} else if bctx.Format == "xhtml" || !epub3 {
+	} else if ctx.Format == "xhtml" || !epub3 {
 		fmt.Fprint(w, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n")
 	}
 	fmt.Fprintf(w, "<html xmlns=\"http://www.w3.org/1999/xhtml\" %slang=\"%s\">\n", xmlnsepub, ctx.Params["lang"])
 	fmt.Fprint(w, "  <head>\n")
-	if bctx.Format == "epub" && epub3 {
+	if ctx.Format == "epub" && epub3 {
 		fmt.Fprint(w, "    <meta charset=\"utf-8\" />\n")
 	} else {
 		fmt.Fprint(w, "    <meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\" />\n")
@@ -272,7 +269,6 @@ func (exp *exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
 
 func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	exp.XHTMLandEPUBcommonHeader(w)
 	if title != "" {
 		fmt.Fprintf(w, "    <title>%s</title>\n", title)
@@ -280,7 +276,7 @@ func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 	if favicon, ok := ctx.Params["favicon"]; ok {
 		fmt.Fprintf(w, "    <link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"%s\" />\n", favicon)
 	}
-	switch bctx.Format {
+	switch ctx.Format {
 	case "epub":
 		if _, ok := ctx.Params["epub-css"]; ok {
 			fmt.Fprint(w, "    <link rel=\"stylesheet\" href=\"stylesheet.css\" />\n")
@@ -293,14 +289,14 @@ func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 	fmt.Fprint(w, `  </head>
   <body>
 `)
-	if xhtmltop, ok := ctx.Params["xhtml-top"]; ok && bctx.Format == "xhtml" {
+	if xhtmltop, ok := ctx.Params["xhtml-top"]; ok && ctx.Format == "xhtml" {
 		f, ok := frundis.SearchIncFile(exp, xhtmltop)
 		if !ok {
-			bctx.Error("latex preamble:", xhtmltop, ":no such file")
+			ctx.Error("latex preamble:", xhtmltop, ":no such file")
 		} else {
 			data, err := ioutil.ReadFile(f)
 			if err != nil {
-				bctx.Error("xhtml-top:", f, ":", err)
+				ctx.Error("xhtml-top:", f, ":", err)
 				return
 			}
 			w.Write(data)
@@ -310,15 +306,14 @@ func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 
 func (exp *exporter) XHTMLdocumentFooter(w io.Writer) {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
-	if xhtmlbottom, ok := ctx.Params["xhtml-bottom"]; ok && bctx.Format == "xhtml" {
+	if xhtmlbottom, ok := ctx.Params["xhtml-bottom"]; ok && ctx.Format == "xhtml" {
 		f, ok := frundis.SearchIncFile(exp, xhtmlbottom)
 		if !ok {
-			bctx.Error("latex preamble:", xhtmlbottom, ":no such file")
+			ctx.Error("latex preamble:", xhtmlbottom, ":no such file")
 		} else {
 			data, err := ioutil.ReadFile(f)
 			if err != nil {
-				bctx.Error("xhtml-bottom:", f, ":", err)
+				ctx.Error("xhtml-bottom:", f, ":", err)
 				return
 			}
 			w.Write(data)
@@ -337,33 +332,32 @@ var indexTranslations = map[string]string{
 	"fr": "Index"}
 
 func (exp *exporter) xhtmlFileOutputChange(title string) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	if bctx.Format == "xhtml" && exp.xhtmlNavigationText.Len() > 0 {
+	if ctx.Format == "xhtml" && exp.xhtmlNavigationText.Len() > 0 {
 		ctx.W.Write(exp.xhtmlNavigationText.Bytes())
 		exp.xhtmlNavigationText.Reset()
 	}
 	exp.XHTMLdocumentFooter(ctx.W)
 	ctx.W.Flush()
 	var outFile string
-	switch bctx.Format {
+	switch ctx.Format {
 	case "epub":
 		outFile = path.Join(exp.OutputFile, "EPUB",
-			fmt.Sprintf("body-%d-%d.xhtml", ctx.TocInfo.PartCount, ctx.TocInfo.ChapterCount))
+			fmt.Sprintf("body-%d-%d.xhtml", ctx.Toc.PartCount, ctx.Toc.ChapterCount))
 	case "xhtml":
 		outFile = path.Join(exp.OutputFile,
-			fmt.Sprintf("body-%d-%d.html", ctx.TocInfo.PartCount, ctx.TocInfo.ChapterCount))
+			fmt.Sprintf("body-%d-%d.html", ctx.Toc.PartCount, ctx.Toc.ChapterCount))
 	}
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
-			bctx.Error("closing file:", err)
+			ctx.Error("closing file:", err)
 		}
 	}
 	var err error
 	exp.curOutputFile, err = os.Create(outFile)
 	if err != nil {
-		bctx.Error("create file:", err)
+		ctx.Error("create file:", err)
 	}
 	if exp.curOutputFile != nil {
 		ctx.W = bufio.NewWriter(exp.curOutputFile)
@@ -373,11 +367,11 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 	}
 	exp.XHTMLdocumentHeader(ctx.W, title)
 
-	if bctx.Format == "epub" {
+	if ctx.Format == "epub" {
 		return
 	}
 	// IF NOT EPUB
-	toc := ctx.TocInfo
+	toc := ctx.Toc
 	navLoX := ctx.LoXstack["nav"]
 	var previous *frundis.LoXinfo
 	if !(toc.NavCount() <= 1) {
@@ -421,24 +415,23 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 
 func (exp *exporter) xhtmlTitlePage() {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	if !frundis.IsTrue(ctx.Params["title-page"]) {
 		return
 	}
 	if title := html.EscapeString(ctx.Params["document-title"]); title != "" {
 		fmt.Fprintf(ctx.W, "<h1 class=\"title\">%s</h1>\n", title)
 	} else {
-		bctx.Error("warning:parameter ``title-page'' set to true value but no document title specified")
+		ctx.Error("warning:parameter ``title-page'' set to true value but no document title specified")
 	}
 	if author := html.EscapeString(ctx.Params["document-author"]); author != "" {
 		fmt.Fprintf(ctx.W, "<h2 class=\"author\">%s</h2>\n", author)
 	} else {
-		bctx.Error("warning:parameter ``title-page'' set to true value but no document author specified")
+		ctx.Error("warning:parameter ``title-page'' set to true value but no document author specified")
 	}
 	if date := html.EscapeString(ctx.Params["document-date"]); date != "" {
 		fmt.Fprintf(ctx.W, "<h3 class=\"date\">%s</h3>\n", date)
 	} else {
-		bctx.Error("warning:parameter ``title-page'' set to true value but no document date specified")
+		ctx.Error("warning:parameter ``title-page'' set to true value but no document date specified")
 	}
 }
 

@@ -14,14 +14,12 @@ const (
 // ParseOptions takes a specification spec of options and a arguments slice
 // args and returns a mapping from option names to values, a mapping for flags
 // and an updated arguments slice.
-func (bctx *BaseContext) ParseOptions(
+func (ctx *Context) ParseOptions(
 	spec map[string]Option, args [][]ast.Inline) (
 	map[string][]ast.Inline, map[string]bool, [][]ast.Inline) {
 
 	var opts map[string][]ast.Inline
 	var flags map[string]bool
-	//opts := make(map[string][]ast.Inline)
-	//flags := make(map[string]bool)
 scanOptions:
 	for len(args) > 0 {
 		flag := args[0]
@@ -36,16 +34,16 @@ scanOptions:
 		default:
 			break scanOptions
 		}
-		name := bctx.InlinesToText(flag)[1:]
+		name := ctx.InlinesToText(flag)[1:]
 		args = args[1:]
 		optionType, ok := spec[name]
 		if !ok {
-			bctx.Error("unrecognized option: -", name)
+			ctx.Error("unrecognized option: -", name)
 			continue scanOptions
 		}
 		if optionType == ArgOption {
 			if len(args) == 0 {
-				bctx.Error("option -", name, " requires an argument")
+				ctx.Error("option -", name, " requires an argument")
 				continue scanOptions
 			}
 			arg := args[0]

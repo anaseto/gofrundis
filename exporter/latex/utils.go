@@ -76,7 +76,6 @@ func Init() {
 
 func (exp *exporter) beginLatexDocument() {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	lang := ctx.Params["lang"]
 	langBabel := babelLangs[lang]
 	if langBabel == "" {
@@ -109,7 +108,7 @@ func (exp *exporter) beginLatexDocument() {
 		Title:     title,
 		Author:    author,
 		Date:      date,
-		Book:      ctx.TocInfo.HasPart || ctx.TocInfo.HasChapter,
+		Book:      ctx.Toc.HasPart || ctx.Toc.HasChapter,
 		XeLaTeX:   frundis.IsTrue(ctx.Params["latex-xelatex"]),
 		MiniToc:   exp.minitoc,
 		HasVerse:  ctx.Verse.Used,
@@ -135,22 +134,22 @@ func (exp *exporter) beginLatexDocument() {
 {{end -}}
 `)
 	if err != nil {
-		bctx.Error("internal error:", err)
+		ctx.Error("internal error:", err)
 		return
 	}
 	if preamble != "" {
 		p, ok := frundis.SearchIncFile(exp, preamble)
 		if !ok {
-			bctx.Error("latex preamble:", preamble, ":no such file")
+			ctx.Error("latex preamble:", preamble, ":no such file")
 		} else {
 			source, err := ioutil.ReadFile(p)
 			if err != nil {
-				bctx.Error(err)
+				ctx.Error(err)
 			} else {
 				ctx.W.Write(source)
 				err = tmplBeginDocument.Execute(ctx.W, data)
 				if err != nil {
-					bctx.Error("internal error:", err)
+					ctx.Error("internal error:", err)
 				}
 				return
 			}
@@ -188,16 +187,16 @@ func (exp *exporter) beginLatexDocument() {
 \date{ {{- .Date -}} }
 `)
 	if err != nil {
-		bctx.Error("internal error:", err)
+		ctx.Error("internal error:", err)
 		return
 	}
 	err = tmpl.Execute(ctx.W, data)
 	if err != nil {
-		bctx.Error(err)
+		ctx.Error(err)
 	}
 	err = tmplBeginDocument.Execute(ctx.W, data)
 	if err != nil {
-		bctx.Error("internal error:", err)
+		ctx.Error("internal error:", err)
 	}
 }
 

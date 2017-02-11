@@ -27,7 +27,6 @@ func NewExporter(opts *Options) frundis.Exporter {
 }
 
 type exporter struct {
-	Bctx          *frundis.BaseContext
 	Ctx           *frundis.Context
 	OutputFile    string
 	curOutputFile *os.File
@@ -39,20 +38,15 @@ type exporter struct {
 }
 
 func (exp *exporter) Init() {
-	bctx := &frundis.BaseContext{Format: "latex"}
-	exp.Bctx = bctx
-	bctx.Init()
-	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout)}
+	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout), Format: "latex"}
 	exp.Ctx = ctx
 	ctx.Init()
 	ctx.Filters["escape"] = escape.LaTeX
 }
 
 func (exp *exporter) Reset() error {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
-	bctx.Reset()
 	if exp.OutputFile != "" {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
@@ -72,7 +66,6 @@ func (exp *exporter) Reset() error {
 
 func (exp *exporter) PostProcessing() {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	if exp.Standalone {
 		exp.EndLatexDocument()
 	}
@@ -80,13 +73,9 @@ func (exp *exporter) PostProcessing() {
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
-			bctx.Error(err)
+			ctx.Error(err)
 		}
 	}
-}
-
-func (exp *exporter) BaseContext() *frundis.BaseContext {
-	return exp.Bctx
 }
 
 func (exp *exporter) BlockHandler() {
@@ -371,16 +360,15 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 }
 
 func (exp *exporter) FigureImage(image string, label string, link string) {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	if strings.ContainsAny(image, "{}") || strings.ContainsAny(label, "{}") {
-		bctx.Error("path argument and label should not contain the characters `{', or `}")
+		ctx.Error("path argument and label should not contain the characters `{', or `}")
 		return
 	}
-	ctx := exp.Context()
 	w := ctx.GetW()
 	_, err := os.Stat(image)
 	if err != nil {
-		bctx.Error("image not found:", image)
+		ctx.Error("image not found:", image)
 		return
 	}
 	image = escape.LaTeXPercent(image)
@@ -406,15 +394,15 @@ func (exp *exporter) HeaderReference(macro string) string {
 }
 
 func (exp *exporter) InlineImage(image string, link string, punct string) {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	if strings.ContainsAny(image, "{}") {
-		bctx.Error("path argument and label should not contain the characters `{', or `}")
+		ctx.Error("path argument and label should not contain the characters `{', or `}")
 		return
 	}
-	w := exp.Context().GetW()
+	w := ctx.GetW()
 	_, err := os.Stat(image)
 	if err != nil {
-		bctx.Error("image not found:", image)
+		ctx.Error("image not found:", image)
 		return
 	}
 	image = escape.LaTeXPercent(image)
@@ -422,12 +410,12 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 }
 
 func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
-	bctx := exp.BaseContext()
-	w := exp.Context().GetW()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	parsedURL, err := url.Parse(uri)
 	var u string
 	if err != nil {
-		bctx.Error("invalid url or path:", uri)
+		ctx.Error("invalid url or path:", uri)
 	} else {
 		u = escape.LaTeXPercent(parsedURL.String())
 	}
@@ -435,12 +423,12 @@ func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
 }
 
 func (exp *exporter) LkWithoutLabel(uri string, punct string) {
-	bctx := exp.BaseContext()
-	w := exp.Context().GetW()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	parsedURL, err := url.Parse(uri)
 	var u string
 	if err != nil {
-		bctx.Error("invalid url or path:", uri)
+		ctx.Error("invalid url or path:", uri)
 	} else {
 		u = escape.LaTeXPercent(parsedURL.String())
 	}
@@ -456,12 +444,12 @@ func (exp *exporter) RenderText(text []ast.Inline) string {
 	if exp.Context().Params["lang"] == "fr" {
 		text = frundis.InsertNbsps(exp, text)
 	}
-	return escape.LaTeX(exp.BaseContext().InlinesToText(text))
+	return escape.LaTeX(exp.Context().InlinesToText(text))
 }
 
 func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {
-	w := exp.Context().GetW()
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	if flags["summary"] {
 		fmt.Fprint(w, "\\setcounter{tocdepth}{0}\n")
 	} else {
@@ -484,7 +472,7 @@ func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[str
 			fmt.Fprint(w, "\\listoftables\n")
 		case flags["lop"]:
 			// XXX: do something about this?
-			bctx.Error("list of poems not available for LaTeX")
+			ctx.Error("list of poems not available for LaTeX")
 		default:
 			fmt.Fprint(w, "\\tableofcontents\n")
 		}

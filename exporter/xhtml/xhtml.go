@@ -33,7 +33,6 @@ func NewExporter(opts *Options) frundis.Exporter {
 }
 
 type exporter struct {
-	Bctx                *frundis.BaseContext
 	Ctx                 *frundis.Context
 	Format              string // "epub" or "xhtml"
 	AllInOneFile        bool
@@ -44,10 +43,7 @@ type exporter struct {
 }
 
 func (exp *exporter) Init() {
-	bctx := &frundis.BaseContext{Format: exp.Format}
-	exp.Bctx = bctx
-	bctx.Init()
-	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout)}
+	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout), Format: exp.Format}
 	exp.Ctx = ctx
 	ctx.Init()
 	ctx.Params["xhtml-index"] = "full"
@@ -56,10 +52,8 @@ func (exp *exporter) Init() {
 }
 
 func (exp *exporter) Reset() error {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
-	bctx.Reset()
 	switch exp.Format {
 	case "xhtml":
 		if exp.OutputFile != "" && !exp.AllInOneFile {
@@ -146,9 +140,8 @@ func makeDirectory(filename string) error {
 }
 
 func (exp *exporter) PostProcessing() {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	switch bctx.Format {
+	switch ctx.Format {
 	case "xhtml":
 		if exp.xhtmlNavigationText.Len() > 0 {
 			ctx.W.Write(exp.xhtmlNavigationText.Bytes())
@@ -163,13 +156,9 @@ func (exp *exporter) PostProcessing() {
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
-			bctx.Error(err)
+			ctx.Error(err)
 		}
 	}
-}
-
-func (exp *exporter) BaseContext() *frundis.BaseContext {
-	return exp.Bctx
 }
 
 func (exp *exporter) BlockHandler() {
@@ -227,12 +216,11 @@ func (exp *exporter) BeginEnumList() {
 }
 
 func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	num := ctx.TocInfo.HeaderLevel(macro)
+	num := ctx.Toc.HeaderLevel(macro)
 	switch macro {
 	case "Pt", "Ch":
-		if bctx.Format == "epub" || !exp.AllInOneFile {
+		if ctx.Format == "epub" || !exp.AllInOneFile {
 			exp.xhtmlFileOutputChange(renderedTitle)
 		}
 	}
@@ -319,18 +307,18 @@ func (exp *exporter) BeginVerse(title string, count int) {
 }
 
 func (exp *exporter) CheckParamAssignement(param string, value string) bool {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	switch param {
 	case "xhtml-index":
 		switch value {
 		case "full", "summary", "none":
 		default:
-			bctx.Error("xhtml-index parameter:unknown value:", value)
+			ctx.Error("xhtml-index parameter:unknown value:", value)
 			return false
 		}
 	case "epub-version":
 		if value != "2" && value != "3" {
-			bctx.Error("epub-version parameter should be 2 or 3 but got ", value)
+			ctx.Error("epub-version parameter should be 2 or 3 but got ", value)
 			return false
 		}
 	}
@@ -402,7 +390,7 @@ func (exp *exporter) EndEnumItem() {
 func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
 	ctx := exp.Context()
 	w := ctx.GetW()
-	num := ctx.TocInfo.HeaderLevel(macro)
+	num := ctx.Toc.HeaderLevel(macro)
 	fmt.Fprintf(w, "</h%d>\n", num)
 }
 
@@ -476,26 +464,25 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 }
 
 func (exp *exporter) FigureImage(image string, label string, link string) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	w := ctx.GetW()
 	fmt.Fprintf(w, "<div id=\"fig%d\" class=\"figure\">\n", ctx.FigCount)
-	if bctx.Format == "epub" {
+	if ctx.Format == "epub" {
 		image = path.Base(image)
 	}
 	parsedURL, err := url.Parse(image)
 	var u string
 	if err != nil {
-		bctx.Error("invalid url or path:", image)
+		ctx.Error("invalid url or path:", image)
 	} else {
 		u = html.EscapeString(parsedURL.String())
 	}
-	if bctx.Format == "epub" {
+	if ctx.Format == "epub" {
 		u = path.Join("images", u)
 	}
 	image = html.EscapeString(image)
 	link = exp.processLink(link)
-	if link != "" && bctx.Format == "xhtml" {
+	if link != "" && ctx.Format == "xhtml" {
 		fmt.Fprintf(w, "  <a href=\"%s\"><img src=\"%s\" alt=\"%s\" /></a>\n", link, u, image)
 	} else {
 		fmt.Fprintf(w, "  <img src=\"%s\" alt=\"%s\" />\n", u, image)
@@ -505,16 +492,15 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 }
 
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
-	toc := ctx.TocInfo
+	toc := ctx.Toc
 	var href string
 	switch {
 	case exp.AllInOneFile:
 		href = fmt.Sprintf("#%s%s", prefix, id)
 	default:
 		var suffix string
-		if bctx.Format == "epub" {
+		if ctx.Format == "epub" {
 			suffix = ".xhtml"
 		} else {
 			suffix = ".html"
@@ -532,7 +518,7 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 
 func (exp *exporter) HeaderReference(macro string) string {
 	ctx := exp.Context()
-	toc := ctx.TocInfo
+	toc := ctx.Toc
 	var href string
 	switch macro {
 	case "Pt", "Ch":
@@ -548,13 +534,13 @@ func (exp *exporter) HeaderReference(macro string) string {
 }
 
 func (exp *exporter) processLink(link string) string {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	if link == "" {
 		return link
 	}
 	parsedURL, err := url.Parse(link)
 	if err != nil {
-		bctx.Error("invalid url or path:", link)
+		ctx.Error("invalid url or path:", link)
 		link = ""
 	} else {
 		link = html.EscapeString(parsedURL.String())
@@ -563,24 +549,24 @@ func (exp *exporter) processLink(link string) string {
 }
 
 func (exp *exporter) InlineImage(image string, link string, punct string) {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	w := exp.Context().GetW()
-	if bctx.Format == "epub" {
+	if ctx.Format == "epub" {
 		image = path.Base(image)
 	}
 	parsedURL, err := url.Parse(image)
 	var u string
 	if err != nil {
-		bctx.Error("invalid url or path:", image)
+		ctx.Error("invalid url or path:", image)
 	} else {
 		u = html.EscapeString(parsedURL.String())
 	}
-	if bctx.Format == "epub" {
+	if ctx.Format == "epub" {
 		u = path.Join("images", u)
 	}
 	image = html.EscapeString(image)
 	link = exp.processLink(link)
-	if link != "" && bctx.Format == "xhtml" {
+	if link != "" && ctx.Format == "xhtml" {
 		fmt.Fprintf(w, "<a href=\"%s\"><img src=\"%s\" alt=\"%s\" /></a>%s", link, u, image, punct)
 	} else {
 		fmt.Fprintf(w, "<img src=\"%s\" alt=\"%s\" />%s", u, image, punct)
@@ -588,12 +574,12 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 }
 
 func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
-	bctx := exp.BaseContext()
-	w := exp.Context().GetW()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	parsedURL, err := url.Parse(uri)
 	var u string
 	if err != nil {
-		bctx.Error("invalid url or path:", uri)
+		ctx.Error("invalid url or path:", uri)
 	} else {
 		u = html.EscapeString(parsedURL.String())
 	}
@@ -611,10 +597,11 @@ func (exp *exporter) ParagraphTitle(title string) {
 }
 
 func (exp *exporter) RenderText(text []ast.Inline) string {
-	if exp.Context().Params["lang"] == "fr" {
+	ctx := exp.Context()
+	if ctx.Params["lang"] == "fr" {
 		text = frundis.InsertNbsps(exp, text)
 	}
-	return html.EscapeString(exp.BaseContext().InlinesToText(text))
+	return html.EscapeString(ctx.InlinesToText(text))
 }
 
 func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {

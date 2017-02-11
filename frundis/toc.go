@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-type Toc struct {
+type TocInfo struct {
 	HasPart         bool
 	HasChapter      bool
 	HeaderCount     int
@@ -19,12 +19,12 @@ type Toc struct {
 	SubsectionNum   int
 }
 
-func (t *Toc) NavCount() int {
+func (t *TocInfo) NavCount() int {
 	return t.PartCount + t.ChapterCount
 }
 
 // resetCounters resets toc-related counters.
-func (t *Toc) resetCounters() {
+func (t *TocInfo) resetCounters() {
 	t.HeaderCount = 0
 	t.PartCount = 0
 	t.ChapterCount = 0
@@ -38,7 +38,7 @@ func (t *Toc) resetCounters() {
 
 // HeaderNum returns a string representing the number of a given header macro
 // at current place.
-func (t *Toc) HeaderNum(macro string, nonum bool) (num string) {
+func (t *TocInfo) HeaderNum(macro string, nonum bool) (num string) {
 	if nonum {
 		num = ""
 		return
@@ -67,7 +67,7 @@ func (t *Toc) HeaderNum(macro string, nonum bool) (num string) {
 // HeaderLevel returns the level of the header. Natural order between part,
 // chapter, section and subsection is preserved. Level starts at 1 (which can
 // be for a part, a chapter or a section, depending on the document).
-func (t *Toc) HeaderLevel(macro string) int {
+func (t *TocInfo) HeaderLevel(macro string) int {
 	level := -1
 	if t.HasPart {
 		level = 1
@@ -91,7 +91,7 @@ func (t *Toc) HeaderLevel(macro string) int {
 
 // updateHeadersCount updates header-related counters, according to a new
 // header whose specific type is given by macro.
-func (t *Toc) updateHeadersCount(macro string, nonum bool) {
+func (t *TocInfo) updateHeadersCount(macro string, nonum bool) {
 	switch macro {
 	case "Pt":
 		t.PartCount++

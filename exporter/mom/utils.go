@@ -11,7 +11,6 @@ import (
 
 func (exp *exporter) beginMomDocument() {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	title := ctx.Params["document-title"]
 	author := ctx.Params["document-author"]
 	date := ctx.Params["document-date"]
@@ -19,11 +18,11 @@ func (exp *exporter) beginMomDocument() {
 	if preamble != "" {
 		p, ok := frundis.SearchIncFile(exp, preamble)
 		if !ok {
-			bctx.Error("mom preamble:", preamble, ":no such file")
+			ctx.Error("mom preamble:", preamble, ":no such file")
 		} else {
 			source, err := ioutil.ReadFile(p)
 			if err != nil {
-				bctx.Error(err)
+				ctx.Error(err)
 			} else {
 				ctx.W.Write(source)
 				ctx.W.WriteString(".START\n")
@@ -61,12 +60,12 @@ func (exp *exporter) beginMomDocument() {
 .HEADING_STYLE 4 SIZE +2 SPACE_AFTER NUMBER
 `)
 	if err != nil {
-		bctx.Error("internal error:", err)
+		ctx.Error("internal error:", err)
 		return
 	}
 	err = tmpl.Execute(ctx.W, data)
 	if err != nil {
-		bctx.Error(err)
+		ctx.Error(err)
 	}
 	ctx.W.WriteString(".START\n")
 }

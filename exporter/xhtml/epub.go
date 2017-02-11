@@ -21,13 +21,12 @@ func (exp *exporter) epubCopyImages() {
 	if len(ctx.Images) == 0 && ctx.Params["epub-cover"] == "" {
 		return
 	}
-	bctx := exp.BaseContext()
 	imagesDir := path.Join(exp.OutputFile, "EPUB", "images")
 	info, err := os.Stat(imagesDir)
 	if err != nil || !info.Mode().IsDir() {
 		err := os.Mkdir(imagesDir, 0755) // XXX really 0755 ? (umask probably 022 anyway)
 		if err != nil {
-			bctx.Error(imagesDir, ":", err)
+			ctx.Error(imagesDir, ":", err)
 			return
 		}
 	}
@@ -39,7 +38,7 @@ func (exp *exporter) epubCopyImages() {
 		var ok bool
 		image, ok = frundis.SearchIncFile(exp, image)
 		if !ok {
-			bctx.Error("image copy:", image, ":no such file")
+			ctx.Error("image copy:", image, ":no such file")
 			continue
 		}
 		newImage := path.Join(imagesDir, imageName)
@@ -48,23 +47,22 @@ func (exp *exporter) epubCopyImages() {
 		}
 		data, err := ioutil.ReadFile(image)
 		if err != nil {
-			bctx.Error("image copy:reading image:", image, ":", err)
+			ctx.Error("image copy:reading image:", image, ":", err)
 			continue
 		}
 		err = ioutil.WriteFile(newImage, data, 0644)
 		if err != nil {
-			bctx.Error("image copy:writing image to:", newImage, ":", err)
+			ctx.Error("image copy:writing image to:", newImage, ":", err)
 		}
 	}
 }
 
 func (exp *exporter) epubGen() {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	var title string
 	title, ok := ctx.Params["document-title"]
 	if !ok {
-		bctx.Error("EPUB requires document-title parameter to be set")
+		ctx.Error("EPUB requires document-title parameter to be set")
 	}
 	title = html.EscapeString(title)
 	lang := ctx.Params["lang"]
@@ -90,7 +88,7 @@ func (exp *exporter) epubGen() {
 }
 
 func (exp *exporter) epubGenContainer() {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	containerXML := path.Join(exp.OutputFile, "META-INF", "container.xml")
 	err := ioutil.WriteFile(containerXML, []byte(
 		`<?xml version="1.0" encoding="utf-8"?>
@@ -101,7 +99,7 @@ func (exp *exporter) epubGenContainer() {
 </container>
 `), 0644)
 	if err != nil {
-		bctx.Error("writing container.xml at:", containerXML, ":", err)
+		ctx.Error("writing container.xml at:", containerXML, ":", err)
 	}
 }
 
@@ -119,7 +117,6 @@ func genuuid() (string, error) {
 }
 
 func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	contentOpf := path.Join(exp.OutputFile, "EPUB", "content.opf")
 	buf := &bytes.Buffer{}
@@ -131,7 +128,7 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 	} else {
 		uuid, err := genuuid()
 		if err != nil {
-			bctx.Error("error generating epub uuid")
+			ctx.Error("error generating epub uuid")
 			ctx.Params["epub-uuid"] = "urn:uuid:"
 		} else {
 			ctx.Params["epub-uuid"] = "urn:uuid:" + uuid
@@ -173,12 +170,12 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 	if em, ok := ctx.Params["epub-metadata"]; ok {
 		f, ok := frundis.SearchIncFile(exp, em)
 		if !ok {
-			bctx.Error("no such file:", em)
+			ctx.Error("no such file:", em)
 			return
 		}
 		epubMetadata, err := ioutil.ReadFile(f)
 		if err != nil {
-			bctx.Error("error reading epub metadata file:", f)
+			ctx.Error("error reading epub metadata file:", f)
 		} else {
 			buf.Write(epubMetadata)
 		}
@@ -272,12 +269,12 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 `)
 	err := ioutil.WriteFile(contentOpf, buf.Bytes(), 0644)
 	if err != nil {
-		bctx.Error("writing opf file:", contentOpf, ":", err)
+		ctx.Error("writing opf file:", contentOpf, ":", err)
 	}
 }
 
 func (exp *exporter) epubGenCover(title string, cover string) {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	coverXhtml := path.Join(exp.OutputFile, "EPUB", "cover.xhtml")
 	buf := &bytes.Buffer{}
 	buf.WriteString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
@@ -296,12 +293,11 @@ func (exp *exporter) epubGenCover(title string, cover string) {
 
 	err := ioutil.WriteFile(coverXhtml, buf.Bytes(), 0644)
 	if err != nil {
-		bctx.Error("writing cover file:", coverXhtml, ":", err)
+		ctx.Error("writing cover file:", coverXhtml, ":", err)
 	}
 }
 
 func (exp *exporter) epubGenCSS() {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	stylesheetCSS := path.Join(exp.OutputFile, "EPUB", "stylesheet.css")
 	buf := &bytes.Buffer{}
@@ -310,12 +306,12 @@ func (exp *exporter) epubGenCSS() {
 		var ok bool
 		epubCSS, ok = frundis.SearchIncFile(exp, epubCSS)
 		if !ok {
-			bctx.Error("no such file:", epubCSS)
+			ctx.Error("no such file:", epubCSS)
 			return
 		}
 		contents, err := ioutil.ReadFile(epubCSS)
 		if err != nil {
-			bctx.Error("reading epub css:", epubCSS, ":", err)
+			ctx.Error("reading epub css:", epubCSS, ":", err)
 			return
 		}
 		buf.Write(contents)
@@ -323,21 +319,20 @@ func (exp *exporter) epubGenCSS() {
 
 	err := ioutil.WriteFile(stylesheetCSS, buf.Bytes(), 0644)
 	if err != nil {
-		bctx.Error("writing css file:", stylesheetCSS, ":", err)
+		ctx.Error("writing css file:", stylesheetCSS, ":", err)
 	}
 }
 
 func (exp *exporter) epubGenMimetype() {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	mimetype := path.Join(exp.OutputFile, "mimetype")
 	err := ioutil.WriteFile(mimetype, []byte("application/epub+zip"), 0644)
 	if err != nil {
-		bctx.Error("writing mimetype file:", mimetype, ":", err)
+		ctx.Error("writing mimetype file:", mimetype, ":", err)
 	}
 }
 
 func (exp *exporter) epubGenNav(title string) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	navFile := path.Join(exp.OutputFile, "EPUB", "nav.xhtml")
 	buf := &bytes.Buffer{}
@@ -361,7 +356,7 @@ func (exp *exporter) epubGenNav(title string) {
 	if landmarks, ok := ctx.Params["epub-nav-landmarks"]; ok {
 		data, err := ioutil.ReadFile(landmarks)
 		if err != nil {
-			bctx.Error("epub-nav-lanmarks:", landmarks, ":", err)
+			ctx.Error("epub-nav-lanmarks:", landmarks, ":", err)
 			return
 		}
 		buf.Write(data)
@@ -373,12 +368,11 @@ func (exp *exporter) epubGenNav(title string) {
 
 	err := ioutil.WriteFile(navFile, buf.Bytes(), 0644)
 	if err != nil {
-		bctx.Error("writing nav file:", navFile, ":", err)
+		ctx.Error("writing nav file:", navFile, ":", err)
 	}
 }
 
 func (exp *exporter) epubGenNCX(title string) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ncxFile := path.Join(exp.OutputFile, "EPUB", "toc.ncx")
 	buf := &bytes.Buffer{}
@@ -403,6 +397,6 @@ func (exp *exporter) epubGenNCX(title string) {
 
 	err := ioutil.WriteFile(ncxFile, buf.Bytes(), 0644)
 	if err != nil {
-		bctx.Error("writing ncx file:", ncxFile, ":", err)
+		ctx.Error("writing ncx file:", ncxFile, ":", err)
 	}
 }

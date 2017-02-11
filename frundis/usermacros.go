@@ -10,7 +10,7 @@ import (
 
 // argsSubst returns inline text where numbered arguments are substituted with
 // values from args
-func (bctx *BaseContext) argsSubstText(
+func (ctx *Context) argsSubstText(
 	args [][]ast.Inline, opts map[string][]ast.Inline,
 	flags map[string]bool, text []ast.Inline) []ast.Inline {
 
@@ -20,7 +20,7 @@ scanText:
 		switch elt := elt.(type) {
 		case ast.ArgEscape:
 			if int(elt) > len(args) || int(elt) <= 0 {
-				bctx.Error("missing argument:$", elt)
+				ctx.Error("missing argument:$", elt)
 				res = append(res, ast.Text(fmt.Sprint("\\$", int(elt))))
 				continue scanText
 			}
@@ -28,7 +28,7 @@ scanText:
 		case ast.NamedArgEscape:
 			arg, ok := opts[string(elt)]
 			if !ok {
-				bctx.Error("missing named argument:$[", elt, "]")
+				ctx.Error("missing named argument:$[", elt, "]")
 				continue scanText
 			}
 			res = append(res, arg...)
@@ -57,7 +57,7 @@ scanText:
 	return res
 }
 
-func (bctx *BaseContext) argsSubstBlock(
+func (ctx *Context) argsSubstBlock(
 	args [][]ast.Inline, opts map[string][]ast.Inline,
 	flags map[string]bool, b ast.Block) ast.Block {
 
@@ -70,7 +70,7 @@ func (bctx *BaseContext) argsSubstBlock(
 				nargs = append(nargs, args...)
 				continue
 			}
-			narg := bctx.argsSubstText(args, opts, flags, arg)
+			narg := ctx.argsSubstText(args, opts, flags, arg)
 			nargs = append(nargs, narg)
 		}
 		res = &ast.Macro{
@@ -80,62 +80,62 @@ func (bctx *BaseContext) argsSubstBlock(
 	case *ast.TextBlock:
 		res = &ast.TextBlock{
 			Line: b.Line,
-			Text: bctx.argsSubstText(args, opts, flags, b.Text)}
+			Text: ctx.argsSubstText(args, opts, flags, b.Text)}
 	}
 	return res
 }
 
 func processUserMacro(exp BaseExporter) {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	// Do not allow too much depth
-	if bctx.callInfo.depth > 42 {
-		bctx.Error("user macro invocation:too much depth (infinite recursive calls?)")
+	if ctx.uMacroCall.depth > 42 {
+		ctx.Error("user macro invocation:too much depth (infinite recursive calls?)")
 		return
 	}
 
 	// curBlock: user defined macro
-	mb := bctx.block().(*ast.Macro)
-	m, ok := bctx.macros[mb.Name]
+	mb := ctx.block().(*ast.Macro)
+	m, ok := ctx.uMacros[mb.Name]
 	if !ok {
-		bctx.Error("undefined macro:", mb.Name) // XXX useless (should not happen)
+		ctx.Error("undefined macro:", mb.Name) // XXX useless (should not happen)
 		return
 	}
-	opts, flags, args := bctx.ParseOptions(m.opts, mb.Args)
+	opts, flags, args := ctx.ParseOptions(m.opts, mb.Args)
 
 	if len(args) > m.argsc {
-		bctx.Error("too many arguments")
+		ctx.Error("too many arguments")
 	}
 	if len(m.opts) == 0 && (len(opts) > 0 || len(flags) > 0) {
-		bctx.Error("unrecognized options")
+		ctx.Error("unrecognized options")
 	}
 	var blocks []ast.Block
 	if m.argsc > 0 || len(m.opts) > 0 {
 		// substitute $N arguments
 		blocks = []ast.Block{}
 		for _, b := range m.blocks {
-			blocks = append(blocks, bctx.argsSubstBlock(args, opts, flags, b))
+			blocks = append(blocks, ctx.argsSubstBlock(args, opts, flags, b))
 		}
 	} else {
 		blocks = m.blocks
 	}
 
 	// save user macro call location
-	if bctx.callInfo.depth == 0 {
-		bctx.callInfo.loc = bctx.loc
+	if ctx.uMacroCall.depth == 0 {
+		ctx.uMacroCall.loc = ctx.loc
 	}
-	bctx.callInfo.depth++
+	ctx.uMacroCall.depth++
 
 	// process user macro blocks
-	bctx.loc = &location{
+	ctx.loc = &location{
 		curBlock:  0,
 		curBlocks: blocks,
 		curFile:   m.file}
 	processBlocks(exp)
 
 	// recover location
-	bctx.callInfo.depth--
-	if bctx.callInfo.depth == 0 {
-		bctx.loc = bctx.callInfo.loc
-		bctx.callInfo.loc = nil
+	ctx.uMacroCall.depth--
+	if ctx.uMacroCall.depth == 0 {
+		ctx.loc = ctx.uMacroCall.loc
+		ctx.uMacroCall.loc = nil
 	}
 }

@@ -29,7 +29,6 @@ func NewExporter(opts *Options) frundis.Exporter {
 }
 
 type exporter struct {
-	Bctx          *frundis.BaseContext
 	Ctx           *frundis.Context
 	OutputFile    string
 	curOutputFile *os.File
@@ -44,20 +43,15 @@ type exporter struct {
 }
 
 func (exp *exporter) Init() {
-	bctx := &frundis.BaseContext{Format: "mom"}
-	exp.Bctx = bctx
-	bctx.Init()
-	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout)}
+	ctx := &frundis.Context{W: bufio.NewWriter(os.Stdout), Format: "mom"}
 	exp.Ctx = ctx
 	ctx.Init()
 	ctx.Filters["escape"] = escape.Roff
 }
 
 func (exp *exporter) Reset() error {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	ctx.Reset()
-	bctx.Reset()
 	if exp.OutputFile != "" {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
@@ -77,18 +71,13 @@ func (exp *exporter) Reset() error {
 
 func (exp *exporter) PostProcessing() {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	ctx.W.Flush()
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
 		if err != nil {
-			bctx.Error(err)
+			ctx.Error(err)
 		}
 	}
-}
-
-func (exp *exporter) BaseContext() *frundis.BaseContext {
-	return exp.Bctx
 }
 
 func (exp *exporter) BlockHandler() {
@@ -315,7 +304,6 @@ func (exp *exporter) EndItem() {
 
 func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	ctx := exp.Context()
-	bctx := exp.BaseContext()
 	w := ctx.GetW()
 	mtag, okMtag := ctx.Mtags[tag]
 	if okMtag {
@@ -326,7 +314,7 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	if len(exp.fontstack) > 0 {
 		cmd = exp.fontstack[len(exp.fontstack)-1]
 	}
-	if bctx.Macro == "Em" && (bctx.PrevMacro == "Lk" || bctx.PrevMacro == "Sx") {
+	if ctx.Macro == "Em" && (ctx.PrevMacro == "Lk" || ctx.PrevMacro == "Sx") {
 		// NOTE: this is quite hacky
 		fmt.Fprintf(w, "\n")
 	}
@@ -394,17 +382,16 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 }
 
 func (exp *exporter) FigureImage(image string, label string, link string) {
-	bctx := exp.BaseContext()
 	ctx := exp.Context()
 	w := ctx.GetW()
 	_, err := os.Stat(image)
 	if err != nil {
-		bctx.Error("image not found:", image)
+		ctx.Error("image not found:", image)
 		return
 	}
 	ext := path.Ext(image)
 	if ext != ".eps" && ext != ".pdf" {
-		bctx.Error("expected .eps or .pdf but got ", image)
+		ctx.Error("expected .eps or .pdf but got ", image)
 	}
 	image = escape.Roff(image)
 	fmt.Fprintf(w, ".FLOAT\n")
@@ -429,32 +416,32 @@ func (exp *exporter) HeaderReference(macro string) string {
 }
 
 func (exp *exporter) InlineImage(image string, link string, punct string) {
-	bctx := exp.BaseContext()
+	ctx := exp.Context()
 	if strings.ContainsAny(image, "{}") {
-		bctx.Error("path argument and label should not contain the characters `{', or `}")
+		ctx.Error("path argument and label should not contain the characters `{', or `}")
 		return
 	}
-	w := exp.Context().GetW()
+	w := ctx.GetW()
 	_, err := os.Stat(image)
 	if err != nil {
-		bctx.Error("image not found:", image)
+		ctx.Error("image not found:", image)
 		return
 	}
 	ext := path.Ext(image)
 	if ext != ".eps" && ext != ".pdf" {
-		bctx.Error("expected .eps or .pdf but got ", image)
+		ctx.Error("expected .eps or .pdf but got ", image)
 	}
 	image = escape.Roff(image)
 	fmt.Fprintf(w, ".PDF_IMAGE \"%s\"", image) // TODO: use punct
 }
 
 func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
-	bctx := exp.BaseContext()
-	w := exp.Context().GetW()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	parsedURL, err := url.Parse(uri)
 	var u string
 	if err != nil {
-		bctx.Error("invalid url or path:", uri)
+		ctx.Error("invalid url or path:", uri)
 	} else {
 		u = escape.Roff(parsedURL.String())
 	}
@@ -464,12 +451,12 @@ func (exp *exporter) LkWithLabel(uri string, label string, punct string) {
 }
 
 func (exp *exporter) LkWithoutLabel(uri string, punct string) {
-	bctx := exp.BaseContext()
-	w := exp.Context().GetW()
+	ctx := exp.Context()
+	w := ctx.GetW()
 	parsedURL, err := url.Parse(uri)
 	var u string
 	if err != nil {
-		bctx.Error("invalid url or path:", uri)
+		ctx.Error("invalid url or path:", uri)
 	} else {
 		u = escape.Roff(parsedURL.String())
 	}
@@ -483,10 +470,11 @@ func (exp *exporter) ParagraphTitle(title string) {
 }
 
 func (exp *exporter) RenderText(text []ast.Inline) string {
-	if exp.Context().Params["lang"] == "fr" {
+	ctx := exp.Context()
+	if ctx.Params["lang"] == "fr" {
 		text = frundis.InsertNbsps(exp, text)
 	}
-	return escape.Roff(exp.BaseContext().InlinesToText(text))
+	return escape.Roff(ctx.InlinesToText(text))
 }
 
 func (exp *exporter) TableOfContents(opts map[string][]ast.Inline, flags map[string]bool) {

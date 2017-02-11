@@ -15,14 +15,18 @@ import (
 // BaseExporter is a basic interface of basic built-in macros and basic
 // behavior.
 type BaseExporter interface {
-	BaseContext() *BaseContext
 	BlockHandler()
+	// Context returns processing context.
+	Context() *Context
+	// Init initializes Exporter
+	Init()
+	// Reset resets temporary data (for use between info and process phases)
+	Reset() error
+	// PostProcessing does some final processing
+	PostProcessing()
 }
 
-// Exporter is the interface that should satisfy any exporter for the frundis
-// input format.
-type Exporter interface {
-	BaseExporter
+type Renderer interface {
 	// BeginDescList starts a description list (e.g. prints to Context.W a "<dl>").
 	BeginDescList()
 	// BeginDescValue starts a description value (e.g. "<dd>").
@@ -64,8 +68,6 @@ type Exporter interface {
 	BeginVerse(title string, count int)
 	// CheckParamAssignement checks parameter assignement.
 	CheckParamAssignement(param string, value string) bool
-	// Context returns processing context.
-	Context() *Context
 	// Crossreference builds a reference link with a given name. It can
 	// have an explicit id from Context.IDs, or it can corresond to a
 	// loXentry.
@@ -128,8 +130,6 @@ type Exporter interface {
 	// an html href suitable for pointing to some id of an <h1
 	// id="some-id">)
 	HeaderReference(macro string) string
-	// Init initializes Exporter
-	Init()
 	// InlineImage handles an inline image
 	InlineImage(image string, link string, punct string)
 	// LkWithLabel produces a labeled link (e.g. "<a href="url">label</a>").
@@ -138,14 +138,10 @@ type Exporter interface {
 	LkWithoutLabel(url string, punct string)
 	// ParagraphTitle starts a titled paragraph (e.g. "<p><strong>title</strong>\n").
 	ParagraphTitle(title string)
-	// PostProcessing does some final processing
-	PostProcessing()
 	// RenderText renders regular inline text, processing escapes
 	// secuences, and performing format specific escapes (e.g. "&amp;" and
 	// the like) as necessary, and other processings.
 	RenderText([]ast.Inline) string
-	// Reset resets temporary data (for use between info and process phases)
-	Reset() error
 	// Tableofcontents produces a table of content (it can be just
 	// \tableofcontents in LaTeX, or more complicated stuff in html).
 	TableOfContents(opts map[string][]ast.Inline, flags map[string]bool)
@@ -153,6 +149,13 @@ type Exporter interface {
 	// information from a header macro (e.g. the presence of a minitoc in
 	// LaTeX, to add necessary packages as necessary)
 	TableOfContentsInfos(flags map[string]bool)
+}
+
+// Exporter is the interface that should satisfy any exporter for the frundis
+// input format.
+type Exporter interface {
+	BaseExporter
+	Renderer
 	// Xdtag builds a Dtag (e.g. frundis.Dtag{Cmd: cmd}).
 	Xdtag(cmd string) Dtag
 	// Xftag builds a Ftag.
@@ -163,28 +166,53 @@ type Exporter interface {
 	Xmtag(cmd *string, begin string, end string, pairs []string) Mtag
 }
 
-// BaseContext gathers context for BaseExporter.
-type BaseContext struct {
-	Args         [][]ast.Inline                // current macro args
-	Format       string                        // export format name
-	Macro        string                        // current macro
-	PrevMacro    string                        // previous non-user macro called, or "" for text-block
-	Werror       io.Writer                     // where to write non-fatal errors (default os.Stderr)
-	builtins     map[string]func(BaseExporter) // builtins map (#de, #dv, etc.)
-	bufi2t       bytes.Buffer                  // buffer to avoid allocations
-	bufa2t       bytes.Buffer                  // buffer to avoid allocations
-	bufra        bytes.Buffer                  // buffer to avoid allocations
-	callInfo     *userMacroCallInfo            // information related to user macro call
-	defInfo      *macroDefInfo                 // information related to user macro definition
-	files        map[string]([]ast.Block)      // parsed files
-	ifIgnore     int                           // whether in scope of an "#if" with false condition
-	line         int                           // current/last block line
-	loc          *location                     // location information
-	macros       map[string]macroDefInfo       // user defined textual macros
-	scopes       map[string]([]*scope)         // scopes
-	text         []ast.Inline                  // current/last text block text
-	validFormats []string                      // list of valid export formats
-	vars         map[string]string             // interpolation variables
+// Context gathers main context information for Exporter.
+type Context struct {
+	Args          [][]ast.Inline                 // current macro args
+	Dtags         map[string]Dtag                // display block tags set with "X dtag"
+	FigCount      int                            // current figure number
+	Filters       map[string]func(string) string // function filters
+	Format        string                         // export format name
+	Ftags         map[string]Ftag                // filter tags set with "X ftag"
+	IDs           map[string]string              // id information
+	Images        []string                       // list of image paths
+	Inline        bool                           // inline processing of Sm-like macros (e.g. in header)
+	LoXInfo       map[string]map[string]*LoXinfo // (list-type => ((title => information) map) map
+	LoXstack      map[string][]*LoXinfo          // (list-type => information list) map
+	Macro         string                         // current macro
+	Macros        map[string]func(Exporter)      // frundis macro handlers
+	Mtags         map[string]Mtag                // markup tags set with "X mtag"
+	Params        map[string]string              // parameters set with "X set"
+	PrevMacro     string                         // previous non-user macro called, or "" for text-block
+	Process       bool                           // whether in processing or info pass
+	Table         TableInfo                      // table information
+	Toc           *TocInfo                       // Toc information
+	Verse         VerseInfo                      // whether there is a poem in the source
+	W             *bufio.Writer                  // where final output goes
+	WantsSpace    bool                           // whether previous in-paragraph stuff reclaims a space
+	Werror        io.Writer                      // where to write non-fatal errors (default os.Stderr)
+	asIs          bool                           // treat current text as-is
+	bfInfo        *bfInfo                        // Bf/Ef block info
+	buf           bytes.Buffer                   // buffer for current paragraph-like generated text
+	bufa2t        bytes.Buffer                   // buffer to avoid allocations
+	bufi2t        bytes.Buffer                   // buffer to avoid allocations
+	bufra         bytes.Buffer                   // buffer to avoid allocations
+	builtins      map[string]func(BaseExporter)  // builtins map (#de, #dv, etc.)
+	files         map[string]([]ast.Block)       // parsed files
+	frundisINC    []string                       // list of paths where to search for frundis source files
+	ifIgnoreDepth int                            // depth of "#if" blocks with false condition
+	itemScope     bool                           // whether currently inside a list item
+	line          int                            // current/last block source line
+	loc           *location                      // source location information
+	parScope      bool                           // whether currently inside a paragraph or not
+	rawText       bytes.Buffer                   // buffer for currently accumulated raw text (as-is text of Bf/Ef)
+	scopes        map[string]([]*scope)          // scopes
+	text          []ast.Inline                   // current/last text block text
+	uMacroCall    *uMacroCallInfo                // information related to user macro call
+	uMacroDef     *uMacroDefInfo                 // information related to user macro definition
+	uMacros       map[string]uMacroDefInfo       // user defined textual macros
+	validFormats  []string                       // list of valid export formats
+	ivars         map[string]string              // interpolation variables
 }
 
 // Location information
@@ -195,13 +223,13 @@ type location struct {
 }
 
 // User macro call information
-type userMacroCallInfo struct {
+type uMacroCallInfo struct {
 	loc   *location // location of depth 0 invocation
 	depth int
 }
 
 // User macro definition information
-type macroDefInfo struct {
+type uMacroDefInfo struct {
 	file   string // file where macro is defined
 	line   int    // .#de
 	name   string // new macro name
@@ -209,68 +237,6 @@ type macroDefInfo struct {
 	argsc  int    // argument count (math.MaxInt32 if $@ is present)
 	opts   map[string]Option
 	blocks []ast.Block // list of blocks defining the new macro
-}
-
-// Init initializes context (should be called just after creating a BaseContext struct).
-func (bctx *BaseContext) Init() {
-	bctx.callInfo = &userMacroCallInfo{depth: 0}
-	bctx.bufi2t = bytes.Buffer{}
-	bctx.bufa2t = bytes.Buffer{}
-	bctx.bufra = bytes.Buffer{}
-	bctx.scopes = make(map[string]([]*scope))
-	bctx.macros = make(map[string]macroDefInfo)
-	bctx.vars = make(map[string]string)
-	bctx.validFormats = []string{"markdown", "xhtml", "latex", "epub", "mom"}
-	if bctx.files == nil {
-		bctx.files = make(map[string]([]ast.Block))
-	}
-	if bctx.Werror == nil {
-		bctx.Werror = os.Stderr
-	}
-	bctx.builtins = map[string]func(BaseExporter){
-		"#de": macroDefStart,
-		"#.":  macroDefEnd,
-		"#if": macroIfStart,
-		"#;":  macroIfEnd,
-		"#dv": macroDefVar,
-		"#so": macroSource}
-}
-
-// Reset resets a context, preserving only immutable information. Can be used
-// for doing two passes on a source: the second pass does actual processing
-// using information gathered in the first pass.
-func (bctx *BaseContext) Reset() {
-	*bctx = BaseContext{files: bctx.files, Format: bctx.Format}
-	bctx.Init()
-}
-
-// Context gathers main context information for Exporter.
-type Context struct {
-	Dtags      map[string]Dtag                // display block tags set with "X dtag"
-	FigCount   int                            // current figure number
-	Ftags      map[string]Ftag                // filter tags set with "X ftag"
-	Filters    map[string]func(string) string // function filters
-	IDs        map[string]string              // id information
-	Images     []string                       // list of image paths
-	Inline     bool                           // inline processing of Sm-like macros (e.g. in header)
-	LoXInfo    map[string]map[string]*LoXinfo // (list-type => ((title => information) map) map
-	LoXstack   map[string][]*LoXinfo          // (list-type => information list) map
-	Macros     map[string]func(Exporter)      // frundis macro handlers
-	Mtags      map[string]Mtag                // markup tags set with "X mtag"
-	Params     map[string]string              // parameters set with "X set"
-	Process    bool                           // whether in processing or info pass
-	Table      TableInfo                      // table information
-	TocInfo    *Toc                           // Toc information
-	Verse      VerseInfo                      // whether there is a poem in the source
-	W          *bufio.Writer                  // where final output goes
-	WantsSpace bool                           // whether previous in-paragraph stuff reclaims a space
-	asIs       bool                           // treat current text as-is
-	bfInfo     *bfInfo                        // Bf/Ef block info
-	buf        bytes.Buffer                   // buffer for current paragraph-like generated text
-	frundisINC []string                       // list of paths where to search for frundis source files
-	inpar      bool                           // whether currently inside a paragraph or not
-	itemScope  bool                           // whether currently inside a list item
-	rawText    bytes.Buffer                   // buffer for currently accumulated raw text (as-is text of Bf/Ef)
 }
 
 type VerseInfo struct {
@@ -337,6 +303,27 @@ type Ftag struct {
 
 // Init initializes context.
 func (ctx *Context) Init() {
+	ctx.uMacroCall = &uMacroCallInfo{depth: 0}
+	ctx.bufi2t = bytes.Buffer{}
+	ctx.bufa2t = bytes.Buffer{}
+	ctx.bufra = bytes.Buffer{}
+	ctx.scopes = make(map[string]([]*scope))
+	ctx.uMacros = make(map[string]uMacroDefInfo)
+	ctx.ivars = make(map[string]string)
+	ctx.validFormats = []string{"markdown", "xhtml", "latex", "epub", "mom"}
+	if ctx.files == nil {
+		ctx.files = make(map[string]([]ast.Block))
+	}
+	if ctx.Werror == nil {
+		ctx.Werror = os.Stderr
+	}
+	ctx.builtins = map[string]func(BaseExporter){
+		"#de": macroDefStart,
+		"#.":  macroDefEnd,
+		"#if": macroIfStart,
+		"#;":  macroIfEnd,
+		"#dv": macroDefVar,
+		"#so": macroSource}
 	if !ctx.Process {
 		ctx.Dtags = make(map[string]Dtag)
 		ctx.Ftags = make(map[string]Ftag)
@@ -346,7 +333,7 @@ func (ctx *Context) Init() {
 		ctx.Macros = DefaultExporterMacros()
 		ctx.Mtags = make(map[string]Mtag)
 		ctx.Params = make(map[string]string)
-		ctx.TocInfo = &Toc{}
+		ctx.Toc = &TocInfo{}
 		ctx.Filters = make(map[string]func(string) string)
 		ctx.Table.info = []*TableData{}
 		ctx.Params["lang"] = "en"
@@ -371,12 +358,14 @@ func (ctx *Context) Reset() {
 		Macros:   ctx.Macros,
 		Mtags:    ctx.Mtags,
 		Params:   ctx.Params,
-		TocInfo:  ctx.TocInfo,
+		files:    ctx.files,
+		Format:   ctx.Format,
+		Toc:      ctx.Toc,
 		W:        ctx.W,
 		Images:   ctx.Images,
 		Filters:  ctx.Filters}
 	ctx.Table.info = tableinfo
-	ctx.TocInfo.resetCounters()
+	ctx.Toc.resetCounters()
 	ctx.Process = true
 	ctx.Init()
 }
