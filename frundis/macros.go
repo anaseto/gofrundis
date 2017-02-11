@@ -1297,7 +1297,6 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 		"mom-preamble",
 		"nbsp", "title-page",
 		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-go-up", "xhtml-top", "xhtml5":
-		// XXX use map for this check ?
 	default:
 		ctx.Error("unknown parameter:", param)
 	}
