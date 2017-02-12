@@ -3,7 +3,6 @@ package xhtml
 import (
 	"bytes"
 	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"html"
 	"io/ioutil"
@@ -109,11 +108,14 @@ func genuuid() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// some bit shifting (v4 uuid)
-	u[8] = (u[8] | 0x80) & 0xBF
-	u[6] = (u[6] | 0x40) & 0x4F
+	// RFC 4122
+	u[8] = (u[8] & 0xbf) | 0x80
+	// v4 uuid
+	u[6] = (u[6] & 0x0f) | (4 << 4)
 
-	return hex.EncodeToString(u), nil
+	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", u[0:4], u[4:6], u[6:8], u[8:10], u[10:])
+
+	return uuid, nil
 }
 
 func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) {
@@ -380,7 +382,7 @@ func (exp *exporter) epubGenNCX(title string) {
 <ncx version="2005-1" xmlns="http://www.daisy.org/z3986/2005/ncx/">
   <head>
 `)
-	fmt.Fprintf(buf, "    <meta name=\"dtb:uid\" content=\"frundis-%s\" />\n", ctx.Params["epub-uuid"])
+	fmt.Fprintf(buf, "    <meta name=\"dtb:uid\" content=\"%s\" />\n", ctx.Params["epub-uuid"])
 	buf.WriteString(`    <meta name="dtb:depth" content="2" />
     <meta name="dtb:totalPageCount" content="0" />
     <meta name="dtb:maxPageNumber" content="0" />
