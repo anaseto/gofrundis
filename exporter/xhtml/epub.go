@@ -279,7 +279,6 @@ func (exp *exporter) epubGenCover(title string, cover string) {
 	ctx := exp.Context()
 	coverXhtml := path.Join(exp.OutputFile, "EPUB", "cover.xhtml")
 	buf := &bytes.Buffer{}
-	buf.WriteString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
 	exp.XHTMLandEPUBcommonHeader(buf)
 	fmt.Fprintf(buf, "  <title>%s</title>\n", title)
 	buf.WriteString(`  <link rel="stylesheet" type="text/css" href="stylesheet.css" />
