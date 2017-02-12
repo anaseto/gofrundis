@@ -16,7 +16,7 @@ import (
 
 // -ns => no space even if wantspace
 
-func doText(exp Exporter) {
+func processText(exp Exporter) {
 	ctx := exp.Context()
 	if !ctx.Process {
 		return
@@ -61,6 +61,8 @@ func hasBlankLine(s string) bool {
 	}
 	return blankline
 }
+
+////////////// Macros /////////////////////////////////////////////
 
 func macroBd(exp Exporter) {
 	ctx := exp.Context()
@@ -1379,6 +1381,8 @@ func macroHeaderInfos(exp Exporter) {
 	ctx.LoXstack["toc"] = append(ctx.LoXstack["toc"], tocInfo[title])
 }
 
+////////////// Macro utilities ///////////////////////////////////////////
+
 // processInlineMacros processes a list of arguments with Sm-like markup and
 // returns the result.
 func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
@@ -1448,6 +1452,53 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 		closeUnclosedBlocks(exp, "Bm")
 	}
 	return ctx.buf.String()
+}
+
+// beginPhrasingMacro handles context stuff for inline macro, such as
+// starting a new paragraph or adding a leading whitespace if necessary.
+func beginPhrasingMacro(exp Exporter, nospace bool) {
+	ctx := exp.Context()
+	if ctx.parScope {
+		exp.BeginPhrasingMacroInParagraph(nospace)
+		return
+	}
+	if !ctx.Inline && !ctx.itemScope {
+		exp.BeginParagraph()
+		reopenSpanningBlocks(exp)
+	}
+	ctx.parScope = true
+}
+
+// BeginPhrasingMacroInParagraph is a function for default use with the method
+// of same name of Exporter interface, which works for inline markup in most
+// output formats.
+func BeginPhrasingMacroInParagraph(exp Exporter, nospace bool) {
+	ctx := exp.Context()
+	if ctx.WantsSpace && !nospace {
+		w := ctx.W()
+		if ctx.Inline {
+			fmt.Fprint(w, " ")
+		} else {
+			fmt.Fprint(w, "\n")
+		}
+	}
+}
+
+// getClosePunct returns a punctuation delimiter or an empty string, and an
+// updated arguments slice.
+func getClosePunct(exp Exporter, args [][]ast.Inline) ([][]ast.Inline, string) {
+	ctx := exp.Context()
+	last := args[len(args)-1]
+	hasPunct := false
+	if ctx.isPunctArg(last) {
+		hasPunct = true
+		args = args[:len(args)-1]
+	}
+	var punct string
+	if hasPunct {
+		punct = exp.RenderText(last)
+	}
+	return args, punct
 }
 
 // reopenSpanningBlocks reopens Bm markup blocks after a paragraph break.
@@ -1534,6 +1585,13 @@ func endParagraph(exp Exporter, softbreak bool) {
 	}
 }
 
+func processParagraph(exp Exporter) {
+	ctx := exp.Context()
+	ctx.Wout.Write(exp.FormatParagraph(ctx.buf.Bytes()))
+	ctx.buf.Reset()
+	ctx.parScope = false
+}
+
 // testForUnclosedBlock returns true if there is an unclosed block of type
 // given by macro, and warns in such a case.
 func testForUnclosedBlock(exp Exporter, macro string) bool {
@@ -1575,36 +1633,6 @@ func testForUnclosedBlock(exp Exporter, macro string) bool {
 		return true
 	}
 	return false
-}
-
-// beginPhrasingMacro handles context stuff for inline macro, such as
-// starting a new paragraph or adding a leading whitespace if necessary.
-func beginPhrasingMacro(exp Exporter, nospace bool) {
-	ctx := exp.Context()
-	if ctx.parScope {
-		exp.BeginPhrasingMacroInParagraph(nospace)
-		return
-	}
-	if !ctx.Inline && !ctx.itemScope {
-		exp.BeginParagraph()
-		reopenSpanningBlocks(exp)
-	}
-	ctx.parScope = true
-}
-
-// BeginPhrasingMacroInParagraph is a function for default use with the method
-// of same name of Exporter interface, which works for inline markup in most
-// output formats.
-func BeginPhrasingMacroInParagraph(exp Exporter, nospace bool) {
-	ctx := exp.Context()
-	if ctx.WantsSpace && !nospace {
-		w := ctx.W()
-		if ctx.Inline {
-			fmt.Fprint(w, " ")
-		} else {
-			fmt.Fprint(w, "\n")
-		}
-	}
 }
 
 // testForUnclosedFormatBlock returns true if there is an unclosed Bf block,

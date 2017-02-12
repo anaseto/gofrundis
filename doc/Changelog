@@ -1,4 +1,10 @@
-Changes with respect to the perl version:
+v0.2:
+  + support attributes for dtags too
+  + better external command support
+  + disallow external commands by default
+  + some minor fixes and refactorings
+
+v0.1: (changes with respect to the perl version)
 
   + no -perl flag in .#de
   + no #fl

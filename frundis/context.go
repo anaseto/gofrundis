@@ -372,3 +372,11 @@ func (ctx *Context) Reset() {
 	ctx.Process = true
 	ctx.Init()
 }
+
+// W returns a writer to be used in place of ctx.W in macro methods.
+func (ctx *Context) W() io.Writer {
+	if ctx.parScope {
+		return &ctx.buf
+	}
+	return ctx.Wout
+}

@@ -189,7 +189,7 @@ func DefaultBlockHandler(exp Exporter) {
 		}
 		ctx.PrevMacro = b.Name
 	case *ast.TextBlock:
-		doText(exp)
+		processText(exp)
 		ctx.PrevMacro = ""
 	}
 }

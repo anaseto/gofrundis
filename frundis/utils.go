@@ -3,7 +3,6 @@ package frundis
 import (
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -74,6 +73,16 @@ func (ctx *Context) notExportFormat(formats []string) bool {
 	return true
 }
 
+// containsSpace checks wether a string contains any unicode space.
+func containsSpace(s string) bool {
+	for _, c := range s {
+		if unicode.IsSpace(c) {
+			return true
+		}
+	}
+	return false
+}
+
 // isPunctArg tests wether arg contains only punctuation. If it starts with a
 // \& escape, it is never considered punctuation.
 func (ctx *Context) isPunctArg(arg []ast.Inline) bool {
@@ -97,6 +106,11 @@ func (ctx *Context) isPunctArg(arg []ast.Inline) bool {
 		}
 	}
 	return true
+}
+
+// IsTrue returns true if string is empty or "0".
+func IsTrue(s string) bool {
+	return !(s == "" || s == "0")
 }
 
 // inlineToText converts an inline element to a string by processing escapes.
@@ -153,23 +167,6 @@ func renderArgs(exp Exporter, args [][]ast.Inline) string {
 	return ctx.bufra.String()
 }
 
-// getClosePunct returns a punctuation delimiter or an empty string, and an
-// updated arguments slice.
-func getClosePunct(exp Exporter, args [][]ast.Inline) ([][]ast.Inline, string) {
-	ctx := exp.Context()
-	last := args[len(args)-1]
-	hasPunct := false
-	if ctx.isPunctArg(last) {
-		hasPunct = true
-		args = args[:len(args)-1]
-	}
-	var punct string
-	if hasPunct {
-		punct = exp.RenderText(last)
-	}
-	return args, punct
-}
-
 // SearchIncFile returns the path to filename relative to the current directory
 // or the FRUNDISLIB environnment variable, and boolean true if such a file
 // exists. Otherwise it returns a false boolean.
@@ -186,16 +183,6 @@ func SearchIncFile(exp Exporter, filename string) (string, bool) {
 		}
 	}
 	return filename, false
-}
-
-// containsSpace checks wether a string contains any unicode space.
-func containsSpace(s string) bool {
-	for _, c := range s {
-		if unicode.IsSpace(c) {
-			return true
-		}
-	}
-	return false
 }
 
 // loXEntryInfos populates LoX structures with loXinfo information of a given
@@ -331,26 +318,6 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 		}
 	}
 	return newtext
-}
-
-// W returns a writer to be used in place of ctx.W in macro methods.
-func (ctx *Context) W() io.Writer {
-	if ctx.parScope {
-		return &ctx.buf
-	}
-	return ctx.Wout
-}
-
-func processParagraph(exp Exporter) {
-	ctx := exp.Context()
-	ctx.Wout.Write(exp.FormatParagraph(ctx.buf.Bytes()))
-	ctx.buf.Reset()
-	ctx.parScope = false
-}
-
-// IsTrue returns true if string is empty or "0".
-func IsTrue(s string) bool {
-	return !(s == "" || s == "0")
 }
 
 // readPairs reads a string s of pairs delimited by occurrences of the first
