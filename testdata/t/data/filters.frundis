@@ -3,9 +3,11 @@
 .X ftag -t c -shell "perl -pe 's/b//g'"
 .X ftag -t d -gsub /a/e/b/m
 .X ftag -t e -regexp /a+/i
+.X ftag -t f -shell perl -pe s/a/b/
 .Ft -f xhtml -t a ""
 .Ft -f xhtml -t a
 .Ft -f xhtml -t b "«blabla» "
+.Ft -f xhtml -t f "«blabla» "
 .Ft -f markdown -t b "«blabla» "
 .Ft -f mom -t b "«blabla» "
 .If -as-is -t b t/data/includes/text_to_filter.txt
@@ -15,3 +17,5 @@ more blabla
 .Ef
 .Ft -t d blabla
 .Ft -t e blaaablaaa
+.#run echo bla
+.#run "echo bla"

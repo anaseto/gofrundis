@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd February 4, 2017
+.Dd February 12, 2017
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -986,7 +986,7 @@ The syntax is as follows:
 .Cm ftag
 .Op Fl f Ar formats
 .Fl t Ar tag
-.Pq Fl shell Ar shell-cmd | Fl gsub Ar /string/replacement | Fl regexp Ar /pattern/replacement
+.Pq Fl shell Ar arg ... | Fl gsub Ar /string/replacement | Fl regexp Ar /pattern/replacement
 .Ed
 .Pp
 The
@@ -1096,8 +1096,10 @@ or
 invocation.
 The
 .Fl shell
-option accepts a command to which to pipe text (works only on platforms on
-which /bin/sh exists).
+option accepts a command to which to pipe text through stdin, with otherwise
+the same behavior and restrictions as the
+.Sx \&#run
+macro.
 The
 .Fl gsub
 option accepts a list of string/replacement pairs, and
@@ -1259,6 +1261,23 @@ flag negates the condition.
 The
 .Sx \&#if
 macros can be nested.
+.Ss \&#run
+Run a command. The syntax is as follows:
+.Bd -literal -offset indent
+.Pf . Sx \&#run Ar arg ...
+.Ed
+.Pp
+If several arguments are provided, the first is used as the name of the
+command, and the rest as arguments.
+If only one argument is provided, and it contains spaces, it is passed to the
+shell (non portable).
+Standard output of the command is printed as-is in the output document.
+.Pp
+.Em Note :
+this command is disallowed by default.
+See
+.Xr frundis 1
+for details.
 .Sh PARAMETERS
 This section is a list of the parameters that can be set with the
 .Sx \&X

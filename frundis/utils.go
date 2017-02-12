@@ -99,6 +99,7 @@ func (ctx *Context) isPunctArg(arg []ast.Inline) bool {
 	return true
 }
 
+// inlineToText converts an inline element to a string by processing escapes.
 func (ctx *Context) inlineToText(elt ast.Inline) string {
 	var res string
 	switch elt := elt.(type) {
@@ -187,6 +188,7 @@ func SearchIncFile(exp Exporter, filename string) (string, bool) {
 	return filename, false
 }
 
+// containsSpace checks wether a string contains any unicode space.
 func containsSpace(s string) bool {
 	for _, c := range s {
 		if unicode.IsSpace(c) {
@@ -196,6 +198,8 @@ func containsSpace(s string) bool {
 	return false
 }
 
+// loXEntryInfos populates LoX structures with loXinfo information of a given
+// class.
 func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 	ctx := exp.Context()
 	loX, ok := ctx.LoXInfo[class]
@@ -213,8 +217,27 @@ func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 	}
 }
 
-func shellFilter(exp Exporter, shellcmd string, text string) string {
+// getCommand returns a command from a list of arguments. If there is only one
+// argument, and it contains spaces, this argument is passed to the shell
+// as-is.
+func getCommand(args []string) *exec.Cmd {
+	var cmd *exec.Cmd
+	if len(args) == 1 && containsSpace(args[0]) {
+		cmd = exec.Command("/bin/sh", "-c", args[0])
+	} else {
+		cmd = exec.Command(args[0], args[1:]...)
+	}
+	return cmd
+}
+
+// shellFilter runs a filter on text using arguments args as the filtering
+// command.
+func shellFilter(exp Exporter, args []string, text string) string {
 	ctx := exp.Context()
+	if !ctx.Unrestricted {
+		ctx.Error("skipping disallowed external command")
+		return ""
+	}
 	file, err := ioutil.TempFile("", "frundis-")
 	defer func() {
 		file.Close()
@@ -234,11 +257,12 @@ func shellFilter(exp Exporter, shellcmd string, text string) string {
 	}
 	file.Sync()
 	file.Seek(0, 0) // return to start of the file
-	cmd := exec.Command("/bin/sh", "-c", shellcmd)
+	cmd := getCommand(args)
 	cmd.Stdin = file
-	bytes, err := cmd.CombinedOutput()
+	cmd.Stderr = os.Stderr
+	bytes, err := cmd.Output()
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error("shell command:", args, ":", err)
 		return ""
 	}
 	return string(bytes)

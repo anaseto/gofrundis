@@ -97,7 +97,7 @@ func processUserMacro(exp BaseExporter) {
 	mb := ctx.block().(*ast.Macro)
 	m, ok := ctx.uMacros[mb.Name]
 	if !ok {
-		ctx.Error("undefined macro:", mb.Name) // XXX useless (should not happen)
+		ctx.Error("internal error:undefined macro:", mb.Name) // (should not happen)
 		return
 	}
 	opts, flags, args := ctx.ParseOptions(m.opts, mb.Args)

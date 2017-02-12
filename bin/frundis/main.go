@@ -23,6 +23,7 @@ func main() {
 	optStandalone := flag.Bool("s", false, "standalone document (default for xhtml and epub)")
 	optOutputFile := flag.String("o", "", "`output-file`")
 	optTemplate := flag.Bool("t", false, "template operation mode")
+	optExec := flag.Bool("x", false, "unrestricted mode (#run and shell filters allowed)")
 	flag.Parse()
 
 	if *cpuprofile != "" {
@@ -64,7 +65,8 @@ func main() {
 			tpl.NewExporter(&tpl.Options{
 				OutputFile: *optOutputFile,
 				Format:     *optFormat}),
-			filename)
+			filename,
+			*optExec)
 		os.Exit(0)
 	}
 
@@ -76,28 +78,32 @@ func main() {
 				OutputFile:   *optOutputFile,
 				Standalone:   *optStandalone,
 				AllInOneFile: *optAllInOneFile}),
-			filename)
+			filename,
+			*optExec)
 	case "latex":
 		export(
 			latex.NewExporter(&latex.Options{
 				OutputFile: *optOutputFile,
 				Standalone: *optStandalone}),
-			filename)
+			filename,
+			*optExec)
 	case "markdown":
 		export(
 			markdown.NewExporter(&markdown.Options{OutputFile: *optOutputFile}),
-			filename)
+			filename,
+			*optExec)
 	case "mom":
 		export(
 			mom.NewExporter(&mom.Options{
 				OutputFile: *optOutputFile,
 				Standalone: *optStandalone}),
-			filename)
+			filename,
+			*optExec)
 	}
 }
 
-func export(exp frundis.Exporter, filename string) {
-	err := frundis.ProcessFrundisSource(exp, filename)
+func export(exp frundis.Exporter, filename string, unrestricted bool) {
+	err := frundis.ProcessFrundisSource(exp, filename, unrestricted)
 	if err != nil {
 		Error(err)
 	}

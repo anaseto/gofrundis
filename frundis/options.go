@@ -105,6 +105,7 @@ var specOptIm = map[string]Option{
 var specOptIt = map[string]Option{}
 var specOptLk = map[string]Option{"ns": FlagOption}
 var specOptP = map[string]Option{}
+var specOptRun = map[string]Option{}
 var specOptSm = map[string]Option{
 	"t":  ArgOption,
 	"ns": FlagOption,
@@ -132,7 +133,7 @@ var specOptXdtag = map[string]Option{
 var specOptXftag = map[string]Option{
 	"t":      ArgOption,
 	"f":      ArgOption,
-	"shell":  ArgOption,
+	"shell":  FlagOption,
 	"gsub":   ArgOption,
 	"regexp": ArgOption}
 var specOptXmtag = map[string]Option{

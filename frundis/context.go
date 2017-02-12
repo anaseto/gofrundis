@@ -185,6 +185,7 @@ type Context struct {
 	Params        map[string]string              // parameters set with "X set"
 	PrevMacro     string                         // previous non-user macro called, or "" for text-block
 	Process       bool                           // whether in processing or info pass
+	Unrestricted  bool                           // unrestricted mode (#run and shell filters allowed)
 	Table         TableInfo                      // table information
 	Toc           *TocInfo                       // Toc information
 	Verse         VerseInfo                      // whether there is a poem in the source
@@ -319,12 +320,12 @@ func (ctx *Context) Init() {
 		ctx.Werror = os.Stderr
 	}
 	ctx.builtins = map[string]func(BaseExporter){
-		"#de": macroDefStart,
-		"#.":  macroDefEnd,
-		"#if": macroIfStart,
-		"#;":  macroIfEnd,
-		"#dv": macroDefVar,
-		"#so": macroSource}
+		"#de":  macroDefStart,
+		"#.":   macroDefEnd,
+		"#if":  macroIfStart,
+		"#;":   macroIfEnd,
+		"#dv":  macroDefVar,
+		"#run": macroRun}
 	if !ctx.Process {
 		ctx.Dtags = make(map[string]Dtag)
 		ctx.Ftags = make(map[string]Ftag)
@@ -351,20 +352,21 @@ func (ctx *Context) Init() {
 func (ctx *Context) Reset() {
 	tableinfo := ctx.Table.info
 	*ctx = Context{
-		Dtags:    ctx.Dtags,
-		Ftags:    ctx.Ftags,
-		IDs:      ctx.IDs,
-		LoXInfo:  ctx.LoXInfo,
-		LoXstack: ctx.LoXstack,
-		Macros:   ctx.Macros,
-		Mtags:    ctx.Mtags,
-		Params:   ctx.Params,
-		files:    ctx.files,
-		Format:   ctx.Format,
-		Toc:      ctx.Toc,
-		Wout:     ctx.Wout,
-		Images:   ctx.Images,
-		Filters:  ctx.Filters}
+		Dtags:        ctx.Dtags,
+		Filters:      ctx.Filters,
+		Format:       ctx.Format,
+		Ftags:        ctx.Ftags,
+		IDs:          ctx.IDs,
+		Images:       ctx.Images,
+		LoXInfo:      ctx.LoXInfo,
+		LoXstack:     ctx.LoXstack,
+		Macros:       ctx.Macros,
+		Mtags:        ctx.Mtags,
+		Params:       ctx.Params,
+		Unrestricted: ctx.Unrestricted,
+		Toc:          ctx.Toc,
+		Wout:         ctx.Wout,
+		files:        ctx.files}
 	ctx.Table.info = tableinfo
 	ctx.Toc.resetCounters()
 	ctx.Process = true

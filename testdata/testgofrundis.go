@@ -130,7 +130,7 @@ func testFile(file string, format string) error {
 	name := strings.TrimSuffix(file, ".frundis")
 	suffix := strings.Replace(format, "xhtml", "html", -1)
 	suffix = strings.Replace(suffix, "latex", "tex", -1)
-	cmd := exec.Command(binPath, "-T", format, "-a", "-o", outputFile, file)
+	cmd := exec.Command(binPath, "-T", format, "-x", "-a", "-o", outputFile, file)
 	cmdout, err := cmd.CombinedOutput()
 	fmt.Fprint(os.Stderr, string(cmdout))
 	ref := name + "." + suffix

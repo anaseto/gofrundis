@@ -5,6 +5,7 @@ package frundis
 import (
 	"bytes"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/anaseto/gofrundis/ast"
@@ -111,7 +112,7 @@ func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) i
 			}
 		case ast.Escape:
 			if elt == ast.Escape("$@") {
-				return math.MaxInt32
+				max = math.MaxInt32
 			}
 		}
 	}
@@ -196,17 +197,35 @@ func macroDefVar(exp BaseExporter) {
 	ctx.ivars[name] = buf.String()
 }
 
-func macroSource(exp BaseExporter) {
-	// macro .#so
+func macroRun(exp BaseExporter) {
+	// macro .#run
 	ctx := exp.Context()
-	args := ctx.Args
-	if len(args) < 1 {
-		ctx.Error("filename argument required")
+	if !ctx.Unrestricted {
+		ctx.Error("skipping disallowed external command")
 		return
 	}
-	filename := ctx.InlinesToText(args[0])
-	err := processFile(exp, filename)
-	if err != nil {
-		ctx.Error(err)
+	_, _, args := ctx.ParseOptions(specOptRun, ctx.Args)
+	if !ctx.Process {
+		// NOTE: it could eventually be interesting to add an option
+		// that populates stdin of command with information which the
+		// command could use to customize behavior, and even to collect
+		// data during info pass.
+		return
 	}
+	sargs := make([]string, 0, len(args))
+	for _, elt := range args {
+		sargs = append(sargs, ctx.InlinesToText(elt))
+	}
+	if len(sargs) < 1 {
+		ctx.Error("not enough arguments")
+		return
+	}
+	cmd := getCommand(sargs)
+	cmd.Stderr = os.Stderr
+	bytes, err := cmd.Output()
+	if err != nil {
+		ctx.Error("shell command:", sargs, ":", err)
+		return
+	}
+	ctx.W().Write(bytes)
 }

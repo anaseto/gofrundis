@@ -1151,8 +1151,7 @@ func macroXdtag(exp Exporter, args [][]ast.Inline) {
 
 func macroXftag(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
-	var opts map[string][]ast.Inline
-	opts, _, args = ctx.ParseOptions(specOptXftag, args)
+	opts, flags, args := ctx.ParseOptions(specOptXftag, args)
 	if format, ok := opts["f"]; ok {
 		formats := strings.Split(ctx.InlinesToText(format), ",")
 		ctx.checkFormats(formats)
@@ -1171,9 +1170,16 @@ func macroXftag(exp Exporter, args [][]ast.Inline) {
 		ctx.Error("-t option should be specified")
 		return
 	}
-	if t, ok := opts["shell"]; ok {
-		shell := ctx.InlinesToText(t)
-		ctx.Filters[tag] = func(text string) string { return shellFilter(exp, shell, text) }
+	if flags["shell"] {
+		if len(args) <= 0 {
+			ctx.Error("missing arguments for shell command")
+			return
+		}
+		sargs := make([]string, 0, len(args))
+		for _, elt := range args {
+			sargs = append(sargs, ctx.InlinesToText(elt))
+		}
+		ctx.Filters[tag] = func(text string) string { return shellFilter(exp, sargs, text) }
 		return
 	}
 	if t, ok := opts["gsub"]; ok {

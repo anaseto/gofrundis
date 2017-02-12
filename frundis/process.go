@@ -7,9 +7,12 @@ import (
 	"github.com/anaseto/gofrundis/parser"
 )
 
-// ProcessFrundisSource processes a frundis file with a given exporter.
-func ProcessFrundisSource(exp Exporter, filename string) error {
+// ProcessFrundisSource processes a frundis file with a given exporter. In
+// restricted mode, no #run nor shell filter are allowed.
+func ProcessFrundisSource(exp Exporter, filename string, unrestricted bool) error {
 	exp.Init()
+	ctx := exp.Context()
+	ctx.Unrestricted = unrestricted
 	err := processFile(exp, filename)
 	if err != nil {
 		return err
@@ -22,7 +25,6 @@ func ProcessFrundisSource(exp Exporter, filename string) error {
 	if err != nil {
 		return err
 	}
-	ctx := exp.Context()
 	if ctx.loc == nil {
 		ctx.loc = &location{curBlock: -1, curFile: filename}
 	}
