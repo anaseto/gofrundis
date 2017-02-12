@@ -337,7 +337,7 @@ func readPairs(s string) ([]string, error) {
 	return repls, nil
 }
 
-func testPairs(ctx *Context, pairs []string) {
+func checkPairs(ctx *Context, pairs []string) {
 	for i := 0; i < len(pairs)-1; i += 2 {
 		if pairs[i] == "" {
 			ctx.Error(fmt.Sprintf("in -a option:key %d is empty", (i/2)+1))

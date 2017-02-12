@@ -375,8 +375,10 @@ func (ctx *Context) Reset() {
 
 // W returns a writer to be used in place of ctx.W in macro methods.
 func (ctx *Context) W() io.Writer {
-	if ctx.parScope {
+	switch {
+	case ctx.parScope:
 		return &ctx.buf
+	default:
+		return ctx.Wout
 	}
-	return ctx.Wout
 }

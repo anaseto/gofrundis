@@ -1145,7 +1145,7 @@ func macroXdtag(exp Exporter, args [][]ast.Inline) {
 		if err != nil {
 			ctx.Error("invalid -a argument (missing separator?):", err)
 		}
-		testPairs(ctx, pairs)
+		checkPairs(ctx, pairs)
 	}
 	cmd := ctx.InlinesToText(opts["c"])
 	ctx.Dtags[tag] = exp.Xdtag(cmd, pairs)
@@ -1271,7 +1271,7 @@ func macroXmtag(exp Exporter, args [][]ast.Inline) {
 		if err != nil {
 			ctx.Error("invalid -a argument (missing separator?):", err)
 		}
-		testPairs(ctx, pairs)
+		checkPairs(ctx, pairs)
 	}
 	ctx.Mtags[tag] = exp.Xmtag(cmd, b, e, pairs)
 }
@@ -1530,7 +1530,7 @@ func closeSpanningBlocks(exp Exporter) {
 // about them.
 func closeUnclosedBlocks(exp Exporter, macro string) {
 	ctx := exp.Context()
-	if testForUnclosedBlock(exp, macro) {
+	if checkForUnclosedBlock(exp, macro) {
 		curMacro := ctx.Macro
 		curArgs := ctx.Args
 		ctx.Args = [][]ast.Inline{}
@@ -1592,9 +1592,9 @@ func processParagraph(exp Exporter) {
 	ctx.parScope = false
 }
 
-// testForUnclosedBlock returns true if there is an unclosed block of type
+// checkForUnclosedBlock returns true if there is an unclosed block of type
 // given by macro, and warns in such a case.
-func testForUnclosedBlock(exp Exporter, macro string) bool {
+func checkForUnclosedBlock(exp Exporter, macro string) bool {
 	ctx := exp.Context()
 	stack, ok := ctx.scopes[macro]
 	if ok && len(stack) > 0 {
@@ -1635,12 +1635,12 @@ func testForUnclosedBlock(exp Exporter, macro string) bool {
 	return false
 }
 
-// testForUnclosedFormatBlock returns true if there is an unclosed Bf block,
-// and warns about it.
-func testForUnclosedFormatBlock(exp Exporter) bool {
+// checkForUnclosedFormatBlock searches for an unclosed Bf block, and warns
+// about it.
+func checkForUnclosedFormatBlock(exp Exporter) {
 	ctx := exp.Context()
 	if ctx.bfInfo == nil {
-		return false
+		return
 	}
 	var file string
 	if ctx.loc.curFile != ctx.bfInfo.file {
@@ -1650,14 +1650,13 @@ func testForUnclosedFormatBlock(exp Exporter) bool {
 	if ctx.bfInfo.inUserMacro {
 		inUserMacro = " opened inside user macro"
 	}
-	msg := fmt.Sprintf("`.%s' not allowed inside scope of `.Bf' macro%s at line %d%s",
+	msg := fmt.Sprintf("found `%s' while `.Bf' macro%s at line %d%s isn't closed by a `.Ef'",
 		ctx.Macro, inUserMacro, ctx.bfInfo.line, file)
 	ctx.Error(msg)
-	return true
 }
 
-// testForUnclosedDe test for an unterminated user macro definition and warns about it.
-func testForUnclosedDe(exp Exporter) {
+// checkForUnclosedDe checks for an unterminated user macro definition and warns about it.
+func checkForUnclosedDe(exp Exporter) {
 	ctx := exp.Context()
 	if ctx.uMacroDef == nil {
 		return

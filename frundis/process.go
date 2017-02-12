@@ -32,9 +32,9 @@ func ProcessFrundisSource(exp Exporter, filename string, unrestricted bool) erro
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
 	closeUnclosedBlocks(exp, "Bd")
-	testForUnclosedBlock(exp, "#if")
-	_ = testForUnclosedFormatBlock(exp)
-	testForUnclosedDe(exp)
+	checkForUnclosedBlock(exp, "#if")
+	checkForUnclosedFormatBlock(exp)
+	checkForUnclosedDe(exp)
 	endParagraph(exp, false)
 	exp.PostProcessing()
 	return nil
@@ -183,6 +183,9 @@ func DefaultBlockHandler(exp Exporter) {
 		macros := ctx.Macros
 		handler, ok := macros[b.Name]
 		if ok {
+			if ctx.bfInfo != nil && b.Name != "Ef" {
+				checkForUnclosedFormatBlock(exp)
+			}
 			handler(exp)
 		} else if b.Name != "" {
 			ctx.Error("unknown macro:", b.Name)
