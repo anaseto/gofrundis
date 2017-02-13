@@ -174,7 +174,7 @@ func MinimalExporterMacros() map[string]func(Exporter) {
 		"X":  macroX}
 }
 
-// DefaultBlockHandler is as handler for Exporter method BlockHandler.
+// DefaultBlockHandler is a handler for Exporter method BlockHandler.
 func DefaultBlockHandler(exp Exporter) {
 	ctx := exp.Context()
 	b := ctx.block()
