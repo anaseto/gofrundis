@@ -130,7 +130,7 @@ func macroBf(exp Exporter) {
 	tag, okTag := opts["t"]
 	ctx.asIs = true
 	if !okFmt && !okTag {
-		ctx.Error("you should specify a -f option or -t option at least")
+		ctx.Error("one of -f option or -t option at least required")
 		bfinf.ignore = true
 		return
 	}
@@ -245,7 +245,7 @@ func macroBlProcess(exp Exporter) {
 	switch tag {
 	case "item", "enum", "desc":
 		if len(args) > 0 {
-			ctx.Error("too many arguments: no title for ", tag, " list")
+			ctx.Error("useless arguments")
 		}
 	}
 	scopes, ok := ctx.scopes["Bl"]
@@ -586,7 +586,7 @@ func macroFt(exp Exporter) {
 	}
 	tag, okTag := opts["t"]
 	if !okFmt && !okTag {
-		ctx.Error("you should specify a -f option or -t option at least")
+		ctx.Error("one of -f option or -t option at least required")
 		return
 	}
 	scopes, okScope := ctx.scopes["Bl"]
@@ -598,7 +598,6 @@ func macroFt(exp Exporter) {
 		beginPhrasingMacro(exp, flags["ns"])
 		ctx.WantsSpace = false
 	}
-	// If ctx.Buf is empty, we write directly to ctx.W
 	var text string
 	if okTag {
 		tag := ctx.InlinesToText(tag)
@@ -1104,7 +1103,7 @@ func macroX(exp Exporter) {
 	}
 	args := ctx.Args
 	if len(args) == 0 {
-		ctx.Error("you should specify arguments")
+		ctx.Error("not enough a")
 		return
 	}
 	cmd := ctx.InlinesToText(args[0])
@@ -1130,7 +1129,7 @@ func macroXdtag(exp Exporter, args [][]ast.Inline) {
 	if format, okFmt := opts["f"]; okFmt {
 		formats = strings.Split(ctx.InlinesToText(format), ",")
 	} else {
-		ctx.Error("you should specify `-f' option")
+		ctx.Error("`-f' option required")
 		return
 	}
 	ctx.checkFormats(formats)
@@ -1145,7 +1144,7 @@ func macroXdtag(exp Exporter, args [][]ast.Inline) {
 			return
 		}
 	} else {
-		ctx.Error("-t option should be specified")
+		ctx.Error("-t option required")
 		return
 	}
 	var pairs []string
@@ -1247,7 +1246,7 @@ func macroXmtag(exp Exporter, args [][]ast.Inline) {
 	if format, okFmt := opts["f"]; okFmt {
 		formats = strings.Split(ctx.InlinesToText(format), ",")
 	} else {
-		ctx.Error("you should specify `-f' option")
+		ctx.Error("`-f' option required")
 		return
 	}
 	ctx.checkFormats(formats)
