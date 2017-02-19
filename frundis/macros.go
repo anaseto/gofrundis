@@ -74,10 +74,7 @@ func macroBd(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			if _, ok := ctx.IDs[id]; ok {
-				ctx.Error("already used id")
-			}
-			ctx.IDs[id] = ref
+			ctx.storeId(id, ref, BdId)
 		}
 		return
 	}
@@ -142,7 +139,7 @@ func macroBf(exp Exporter) {
 		bfinf.filterTag = tag
 		_, okGoFilter := ctx.Filters[tag]
 		if !okGoFilter {
-			ctx.Error("undefined filter tag '", tag)
+			ctx.Error("undefined filter tag:", tag)
 			bfinf.ignore = true
 			return
 		}
@@ -180,32 +177,36 @@ func macroBlInfos(exp Exporter) {
 	switch ctx.InlinesToText(tag) {
 	case "verse":
 		ctx.Verse.Used = true
-		title := renderArgs(exp, args)
+		title := processInlineMacros(exp, args)
 		if title == "" {
 			return
 		}
-		titleText := processInlineMacros(exp, args)
 		ctx.Verse.verseCount++
 		loXEntryInfos(exp, "lop",
 			&LoXinfo{
+				id:        ctx.InlinesToText(opts["id"]),
 				Title:     title,
-				TitleText: titleText,
 				Count:     ctx.Verse.verseCount,
 				RefPrefix: "poem"},
 			strconv.Itoa(ctx.Verse.verseCount))
 	case "table":
 		ctx.Table.scope = true
-		title := renderArgs(exp, args)
+		title := processInlineMacros(exp, args)
 		if title == "" {
+			if t, ok := opts["id"]; ok {
+				id := exp.RenderText(t)
+				ref := exp.GenRef("", id, false)
+				ctx.storeId(id, ref, UntitledTableId)
+				ctx.Table.id = id
+			}
 			return
 		}
-		titleText := processInlineMacros(exp, args)
+		ctx.Table.title = title
 		ctx.Table.TitCount++
-		ctx.Table.titScope = true
 		loXEntryInfos(exp, "lot",
 			&LoXinfo{
+				id:        ctx.InlinesToText(opts["id"]),
 				Title:     title,
-				TitleText: titleText,
 				Count:     ctx.Table.TitCount,
 				RefPrefix: "tbl"},
 			strconv.Itoa(ctx.Table.TitCount))
@@ -258,13 +259,12 @@ func macroBlProcess(exp Exporter) {
 	case "enum":
 		exp.BeginEnumList()
 	case "table":
-		title := processInlineMacros(exp, args)
-		ctx.Table.scope = true
-		if title != "" {
+		tableinfo := ctx.Table.info[ctx.Table.Count]
+		if tableinfo.Title != "" {
 			ctx.Table.TitCount++
 			ctx.Table.titScope = true
 		}
-		exp.BeginTable(title, ctx.Table.TitCount, ctx.Table.info[ctx.Table.Count].Cols)
+		exp.BeginTable(tableinfo)
 	}
 	ctx.itemScope = false
 }
@@ -279,10 +279,7 @@ func macroBm(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			if _, ok := ctx.IDs[id]; ok {
-				ctx.Error("already used id")
-			}
-			ctx.IDs[id] = ref
+			ctx.storeId(id, ref, SmId)
 		}
 		return
 	}
@@ -416,15 +413,19 @@ func macroEl(exp Exporter) {
 func macroElInfos(exp Exporter) {
 	ctx := exp.Context()
 	if ctx.Table.scope {
-		if ctx.Table.Cols == 0 {
-			ctx.Table.Cols = ctx.Table.Cell
+		if ctx.Table.cols == 0 {
+			ctx.Table.cols = ctx.Table.Cell
 		}
-		ctx.Table.info = append(ctx.Table.info, &TableData{Cols: ctx.Table.Cols})
-		ctx.Table.scope = false
-		ctx.Table.titScope = false
-		ctx.Table.Cell = 0
-		ctx.Table.Cols = 0
+		ctx.Table.info = append(ctx.Table.info,
+			&TableData{
+				Cols:  ctx.Table.cols,
+				Id:    ctx.Table.id,
+				Title: ctx.Table.title})
 		ctx.Table.Count++
+		ctx.Table = TableInfo{
+			info:     ctx.Table.info,
+			Count:    ctx.Table.Count,
+			TitCount: ctx.Table.TitCount}
 	}
 }
 
@@ -486,21 +487,11 @@ func macroElProcess(exp Exporter) {
 			exp.EndTableCell()
 			exp.EndTableRow()
 		}
-		var tableinfo *TableData
-		if ctx.Table.titScope {
-			info, ok := ctx.LoXstack["lot"]
-			if ok {
-				tableinfo = &TableData{Title: info[ctx.Table.TitCount-1].TitleText}
-			} else {
-				tableinfo = &TableData{}
-				ctx.Error("internal error about table info")
-			}
-		}
-		exp.EndTable(tableinfo)
+		exp.EndTable(ctx.Table.info[ctx.Table.Count])
 		ctx.Table.titScope = false
 		ctx.Table.scope = false
 		ctx.Table.Cell = 0
-		ctx.Table.Cols = 0
+		ctx.Table.cols = 0
 		ctx.Table.Count++
 	}
 	scopes, ok := ctx.scopes["Bl"]
@@ -686,7 +677,11 @@ func macroImProcess(exp Exporter) {
 		beginPhrasingMacro(exp, flags["ns"])
 		ctx.WantsSpace = true
 		image := ctx.InlinesToText(args[0])
-		exp.InlineImage(image, link, punct)
+		var id string
+		if t, ok := opts["id"]; ok {
+			id = exp.RenderText(t)
+		}
+		exp.InlineImage(image, link, id, punct)
 	case 2:
 		closeUnclosedBlocks(exp, "Bm")
 		closeUnclosedBlocks(exp, "Bl")
@@ -700,26 +695,35 @@ func macroImProcess(exp Exporter) {
 
 func macroImInfos(exp Exporter) {
 	ctx := exp.Context()
-	_, _, args := ctx.ParseOptions(specOptIm, ctx.Args)
+	opts, _, args := ctx.ParseOptions(specOptIm, ctx.Args)
 	args, _ = getClosePunct(exp, args)
 	var image string
-	if len(args) > 0 {
+	if len(args) == 0 {
+		return
+	}
+	if len(args) == 1 {
+		// inline image
 		image = ctx.InlinesToText(args[0])
 		ctx.Images = append(ctx.Images, image)
+		if t, ok := opts["id"]; ok {
+			id := exp.RenderText(t)
+			ref := exp.GenRef("", id, false)
+			ctx.storeId(id, ref, InlineImId)
+		}
+		return
 	}
-	if len(args) > 1 {
-		image = ctx.InlinesToText(args[0])
-		ctx.Images = append(ctx.Images, image)
-		label := exp.RenderText(args[1])
-		ctx.FigCount++
-		loXEntryInfos(exp, "lof",
-			&LoXinfo{
-				Title:     label,
-				TitleText: label,
-				Count:     ctx.FigCount,
-				RefPrefix: "fig"},
-			strconv.Itoa(ctx.FigCount))
-	}
+	// figure
+	image = ctx.InlinesToText(args[0])
+	ctx.Images = append(ctx.Images, image)
+	label := exp.RenderText(args[1])
+	ctx.FigCount++
+	loXEntryInfos(exp, "lof",
+		&LoXinfo{
+			id:        ctx.InlinesToText(opts["id"]),
+			Title:     label,
+			Count:     ctx.FigCount,
+			RefPrefix: "fig"},
+		strconv.Itoa(ctx.FigCount))
 }
 
 func macroIt(exp Exporter) {
@@ -734,8 +738,8 @@ func macroIt(exp Exporter) {
 func macroItInfos(exp Exporter) {
 	ctx := exp.Context()
 	if ctx.Table.scope {
-		if ctx.Table.Cols == 0 {
-			ctx.Table.Cols = ctx.Table.Cell
+		if ctx.Table.cols == 0 {
+			ctx.Table.cols = ctx.Table.Cell
 		}
 		ctx.Table.Cell = 1
 	}
@@ -814,10 +818,10 @@ func macroItTable(exp Exporter, args [][]ast.Inline) {
 		exp.EndTableCell()
 		exp.EndTableRow()
 	}
-	if ctx.Table.Cols == 0 {
-		ctx.Table.Cols = ctx.Table.Cell
+	if ctx.Table.cols == 0 {
+		ctx.Table.cols = ctx.Table.Cell
 	}
-	if ctx.Table.Cols > ctx.Table.Cell {
+	if ctx.Table.cols > ctx.Table.Cell {
 		ctx.Error("not enough cells in previous row")
 	}
 	ctx.Table.Cell = 1
@@ -910,10 +914,7 @@ func macroSm(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			if _, ok := ctx.IDs[id]; ok {
-				ctx.Error("already used id")
-			}
-			ctx.IDs[id] = ref
+			ctx.storeId(id, ref, SmId)
 		}
 		return
 	}
@@ -947,11 +948,7 @@ func macroSx(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	opts, flags, args := ctx.ParseOptions(specOptSx, ctx.Args)
-	tag := "toc" // default value
-	if t, ok := opts["t"]; ok {
-		tag = ctx.InlinesToText(t)
-	}
+	_, flags, args := ctx.ParseOptions(specOptSx, ctx.Args)
 	var punct string
 	if len(args) > 1 {
 		args, punct = getClosePunct(exp, args)
@@ -960,38 +957,27 @@ func macroSx(exp Exporter) {
 		ctx.Error("arguments required")
 		return
 	}
-	loX, okloX := ctx.LoXInfo[tag]
-	if !okloX && !flags["id"] {
-		ctx.Error("invalid argument to -type:", tag)
-		return
-	}
-	id := renderArgs(exp, args)
-	var loXentry *LoXinfo
-	if !flags["id"] {
-		entry, ok := loX[id]
-		if ok {
-			loXentry = entry
-		} else {
-			ctx.Error("unknown title for type '", tag, "':", id)
-			id = ""
-		}
+	id := ctx.InlinesToText(args[0])
+	var idtype IdType
+	var ref string
+	idinfo, ok := ctx.IDs[id]
+	if ok {
+		idtype = idinfo.Type
+		ref = idinfo.Ref
+	} else {
+		ctx.Error("reference to unknown id '", id, "'")
 	}
 	beginPhrasingMacro(exp, flags["ns"])
 	ctx.WantsSpace = true
 	var name string
-	if t, ok := opts["name"]; ok {
-		name = exp.RenderText(t)
-	} else {
+	if len(args) > 1 {
+		args = args[1:]
 		name = processInlineMacros(exp, args)
+	} else {
+		name = id
+		ctx.Error("not enough arguments: cross-reference text missing")
 	}
-	if flags["id"] {
-		_, ok := ctx.IDs[id]
-		if !ok {
-			ctx.Error("reference to unknown id '", id, "'")
-			id = ""
-		}
-	}
-	exp.CrossReference(id, name, loXentry, punct)
+	exp.CrossReference(IdInfo{Ref: ref, Type: idtype}, name, punct)
 }
 
 func macroTa(exp Exporter) {
@@ -1330,21 +1316,20 @@ func macroHeaderProcess(exp Exporter) {
 		return
 	}
 	numbered := !flags["nonum"]
-	title := renderArgs(exp, args)
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
 	endParagraph(exp, false)
 	ctx.Toc.updateHeadersCount(ctx.Macro, flags["nonum"])
-	titleText := processInlineMacros(exp, args)
-	exp.BeginHeader(ctx.Macro, title, numbered, titleText)
-	fmt.Fprint(ctx.W(), titleText)
+	title := processInlineMacros(exp, args)
+	exp.BeginHeader(ctx.Macro, numbered, title)
+	fmt.Fprint(ctx.W(), title)
 	closeUnclosedBlocks(exp, "Bm")
-	exp.EndHeader(ctx.Macro, title, numbered, titleText)
+	exp.EndHeader(ctx.Macro, numbered, title)
 }
 
 func macroHeaderInfos(exp Exporter) {
 	ctx := exp.Context()
-	_, flags, args := ctx.ParseOptions(specOptHeader, ctx.Args)
+	opts, flags, args := ctx.ParseOptions(specOptHeader, ctx.Args)
 	if len(args) == 0 {
 		// Error message while processing
 		return
@@ -1357,28 +1342,24 @@ func macroHeaderInfos(exp Exporter) {
 		ctx.Toc.HasChapter = true
 	}
 	ref := exp.HeaderReference(ctx.Macro)
-	title := renderArgs(exp, args)
-	tocInfo, ok := ctx.LoXInfo["toc"]
-	if !ok {
-		ctx.LoXInfo["toc"] = make(map[string]*LoXinfo)
-		tocInfo = ctx.LoXInfo["toc"]
+	if id := ctx.InlinesToText(opts["id"]); id != "" {
+		ctx.storeId(id, ref, HeaderId)
 	}
 	num := ctx.Toc.HeaderNum(ctx.Macro, flags["nonum"])
-	titleText := processInlineMacros(exp, args)
-	tocInfo[title] = &LoXinfo{
+	title := processInlineMacros(exp, args)
+	info := &LoXinfo{
 		Count:     ctx.Toc.HeaderCount,
 		Ref:       ref,
 		RefPrefix: "s",
 		Macro:     ctx.Macro,
 		Nonum:     flags["nonum"],
 		Title:     title,
-		TitleText: titleText,
 		Num:       num}
+	ctx.LoXstack["toc"] = append(ctx.LoXstack["toc"], info)
 	switch ctx.Macro {
 	case "Pt", "Ch":
-		ctx.LoXstack["nav"] = append(ctx.LoXstack["nav"], tocInfo[title])
+		ctx.LoXstack["nav"] = append(ctx.LoXstack["nav"], info)
 	}
-	ctx.LoXstack["toc"] = append(ctx.LoXstack["toc"], tocInfo[title])
 }
 
 ////////////// Macro utilities ///////////////////////////////////////////

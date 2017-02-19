@@ -8,7 +8,7 @@
 .If t/data/includes/code.frundis
 A backslash `\e' is written `\ee'. To begin a line with a period you can
 \&. use a zero-width `\e&' character. {}
-.Ch \&"title
+.Ch -id label \&"title
 A `~'character
 A non-breaking space\~!
 [bla]
@@ -41,7 +41,7 @@ Text.
 .#;
 .Lk \&«»#\e
 .Lk \&«»#\e ).
-.Sx -name \elolailo \&"title
+.Sx label \elolailo
 .\"\$
 .Sm "Some     Text
 .Sm "Some     ""Text

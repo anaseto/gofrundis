@@ -96,7 +96,7 @@ func (exp *exporter) BeginEnumList() {
 	exp.nesting += 3
 }
 
-func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedText string) {
+func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	num := ctx.Toc.HeaderLevel(macro)
@@ -168,7 +168,7 @@ func (exp *exporter) BeginPhrasingMacroInParagraph(nospace bool) {
 	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
-func (exp *exporter) BeginTable(title string, count int, ncols int) {
+func (exp *exporter) BeginTable(tableinfo *frundis.TableData) {
 	w := exp.Context().W()
 	fmt.Fprint(w, "\n") // XXX bof
 }
@@ -196,7 +196,7 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
 	w := exp.Context().W()
 	// TODO: do some kind of cross-references (pandoc-like ?)
 	fmt.Fprintf(w, "%s%s", name, punct)
@@ -235,7 +235,7 @@ func (exp *exporter) EndEnumItem() {
 	fmt.Fprint(w, "\n")
 }
 
-func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
+func (exp *exporter) EndHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, "\n")
@@ -248,7 +248,7 @@ func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleT
 		uc = "-"
 	}
 	if num <= 2 {
-		fmt.Fprint(w, strings.Repeat(uc, utf8.RuneCountInString(titleText)))
+		fmt.Fprint(w, strings.Repeat(uc, utf8.RuneCountInString(title)))
 		fmt.Fprint(w, "\n")
 	}
 	fmt.Fprint(w, "\n")
@@ -344,7 +344,7 @@ func (exp *exporter) HeaderReference(macro string) string {
 	return ""
 }
 
-func (exp *exporter) InlineImage(image string, link string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
 	w := exp.Context().W()
 	fmt.Fprint(w, "!["+image+"]"+"("+image+")"+punct)
 }

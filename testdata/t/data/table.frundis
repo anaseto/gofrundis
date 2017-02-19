@@ -1,4 +1,4 @@
-.Bl -t table -columns 3
+.Bl -id label1 -t table -columns 3
 .It one
 .Ta two
 .Ta three
@@ -26,7 +26,7 @@ C
 .Ta D
 E
 .El
-.Bl -t table -columns 3 Title
+.Bl -id label -t table -columns 3 Title
 .It one
 .Ta two
 .Ta three
@@ -34,6 +34,8 @@ E
 .Ta b
 .Ta c
 .El
+.Sx label link-to-table
+.Sx label1 link-to-untitled-table
 .Tc -lot
 .Bl -t table -columns 2 Sm Title
 .It one

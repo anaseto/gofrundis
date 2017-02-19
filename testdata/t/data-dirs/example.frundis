@@ -2,19 +2,19 @@
 .X set document-title Title
 .X set lang xx
 .Pt Part1
-.Ch Chap1
+.Ch -id chap1 Chap1
 Text.
 .Ch Chap2
 Text.
 .Sh Section1
 Text.
-.Sh Section2
+.Sh -id section2 Section2
 Text.
 .Ss Subsection1
 Text.
-.Pt Part2
+.Pt -id part2 Part2
 .Ch Chap3
 Text.
-.Sx Section2
-.Sx Chap1
-.Sx Part2
+.Sx section2 Section2
+.Sx chap1 Chap1
+.Sx part2 Part2

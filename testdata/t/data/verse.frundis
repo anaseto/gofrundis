@@ -1,4 +1,4 @@
-.Bl -t verse "A poem"
+.Bl -id label1 -t verse "A poem"
 .It a verse
 .It
 a second verse
@@ -6,10 +6,10 @@ a second verse
 .It
 first verse of second strofe
 .El
-.Bl -t verse A Sm poem
+.Bl -id label2 -t verse A Sm poem
 .It Lulu verse
 .It a second Sm verse
 .It a third verse
 .El
-.Sx -t lop A poem
-.Sx -t lop A Sm poem
+.Sx label1 A poem
+.Sx label2 A Sm poem

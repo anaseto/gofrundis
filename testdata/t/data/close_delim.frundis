@@ -1,4 +1,4 @@
-.Sh section
+.Sh -id label section
 .Bm
 Some text to markup with a delimiter
 .Em .
@@ -15,5 +15,5 @@ That's it.
 .Sm text »
 .Lk url label .
 .Lk url .
-.Sx section .
-.Sx section \~.
+.Sx label section .
+.Sx label section \~.

@@ -11,4 +11,5 @@
 .PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/forum/?bla=thing&blabla= SUFFIX ""
 \f[I].PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/forum/?bla=thing&blabla= SUFFIX ""
 \f[R]
+.PDF_LINK "label1" SUFFIX "" "image1"
 .PP

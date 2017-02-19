@@ -18,8 +18,8 @@ paragraph text.
 ### Another subsection
 
 paragraph text. A reference to the subsection Another
-subsection. Another subsection link text to Another
-subsection.
+subsection. Another subsection link to other section
+link text to Another subsection.
 
 Another section
 ---------------

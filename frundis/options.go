@@ -73,6 +73,7 @@ var specOptBf = map[string]Option{
 	"f":  ArgOption,
 	"ns": FlagOption}
 var specOptBl = map[string]Option{
+	"id":      ArgOption,
 	"t":       ArgOption,
 	"columns": ArgOption}
 var specOptBm = map[string]Option{
@@ -100,6 +101,7 @@ var specOptIncludeFile = map[string]Option{
 	"as-is": FlagOption,
 	"t":     ArgOption}
 var specOptIm = map[string]Option{
+	"id":   ArgOption,
 	"ns":   FlagOption,
 	"link": ArgOption}
 var specOptIt = map[string]Option{}
@@ -111,10 +113,7 @@ var specOptSm = map[string]Option{
 	"ns": FlagOption,
 	"id": ArgOption}
 var specOptSx = map[string]Option{
-	"t":    ArgOption,
-	"name": ArgOption,
-	"ns":   FlagOption,
-	"id":   FlagOption}
+	"ns": FlagOption}
 var specOptTa = map[string]Option{}
 var specOptTc = map[string]Option{
 	"summary": FlagOption,
@@ -144,4 +143,6 @@ var specOptXmtag = map[string]Option{
 	"b": ArgOption,
 	"e": ArgOption}
 var specOptXset = map[string]Option{"f": ArgOption}
-var specOptHeader = map[string]Option{"nonum": FlagOption}
+var specOptHeader = map[string]Option{
+	"id":    ArgOption,
+	"nonum": FlagOption}

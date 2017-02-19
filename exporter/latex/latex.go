@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/anaseto/gofrundis/ast"
@@ -134,7 +135,7 @@ func (exp *exporter) BeginEnumList() {
 	exp.Context().Wout.WriteString("\\begin{enumerate}\n")
 }
 
-func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
+func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	cmd := latexHeaderName(macro)
 	if !numbered {
@@ -161,7 +162,7 @@ func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	if id != "" {
-		fmt.Fprintf(w, "\\hypertarget{%s}{", id)
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", id)
 	}
 	mtag, ok := ctx.Mtags[tag]
 	if !ok {
@@ -194,12 +195,12 @@ func (exp *exporter) BeginPhrasingMacroInParagraph(nospace bool) {
 	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
-func (exp *exporter) BeginTable(title string, count int, ncols int) {
+func (exp *exporter) BeginTable(tableinfo *frundis.TableData) {
 	w := exp.Context().W()
-	if title != "" {
+	if tableinfo.Title != "" {
 		fmt.Fprint(w, "\\begin{table}[htbp]\n")
 	}
-	lll := strings.Repeat("l", ncols)
+	lll := strings.Repeat("l", tableinfo.Cols)
 	fmt.Fprintf(w, "\\begin{tabular}{%s}\n", lll)
 }
 
@@ -232,17 +233,16 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
-	switch {
-	case loXentry != nil:
-		fmt.Fprintf(w, "\\hyperref[%s:%d]{%s}%s", loXentry.Ref, loXentry.Count, name, punct)
-	case id != "":
-		ref, _ := ctx.IDs[id] // we know that it's ok
-		fmt.Fprintf(w, "\\hyperlink{%s}{%s}%s", ref, name, punct)
-	default:
+	switch idf.Type {
+	case frundis.HeaderId, frundis.FigureId, frundis.TableId, frundis.PoemId:
+		fmt.Fprintf(w, "\\hyperref[%s]{%s}%s", idf.Ref, name, punct)
+	case frundis.NoId:
 		fmt.Fprintf(w, "%s%s", name, punct)
+	default:
+		fmt.Fprintf(w, "\\hyperlink{%s}{%s}%s", idf.Ref, name, punct)
 	}
 }
 
@@ -284,18 +284,15 @@ func (exp *exporter) EndEnumItem() {
 	fmt.Fprint(w, "\n")
 }
 
-func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
-	// TODO: rethink args (pass loxinfo?)
+func (exp *exporter) EndHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	cmd := latexHeaderName(macro)
 	fmt.Fprint(w, "}\n")
 	if !numbered {
-		fmt.Fprintf(w, "\\addcontentsline{toc}{%s}{%s}\n", cmd, titleText)
+		fmt.Fprintf(w, "\\addcontentsline{toc}{%s}{%s}\n", cmd, title)
 	}
-	toc, _ := ctx.LoXInfo["toc"]
-	entry, _ := toc[title]
-	fmt.Fprintf(w, "\\label{s:%d}\n", entry.Count)
+	fmt.Fprintf(w, "\\label{s:%d}\n", ctx.Toc.HeaderCount)
 }
 
 func (exp *exporter) EndItemList() {
@@ -315,9 +312,6 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 		fmt.Fprint(w, mtag.End)
 	}
 	fmt.Fprint(w, "}")
-	if id != "" {
-		fmt.Fprint(w, "}")
-	}
 	fmt.Fprint(w, punct)
 }
 
@@ -340,10 +334,12 @@ func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, "\\end{tabular}\n")
-	if tableinfo != nil {
+	if tableinfo.Title != "" {
 		fmt.Fprintf(w, "\\caption{%s}\n", tableinfo.Title)
 		fmt.Fprintf(w, "\\label{tbl:%d}\n", ctx.Table.TitCount)
 		fmt.Fprint(w, "\\end{table}\n")
+	} else if tableinfo.Id != "" {
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", tableinfo.Id)
 	}
 }
 
@@ -392,18 +388,18 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 }
 
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
-	if prefix == "" {
-		return fmt.Sprintf("%s", id)
+	if prefix != "" {
+		return fmt.Sprintf("%s:%s", prefix, id)
 	} else {
-		return fmt.Sprintf("%s", prefix)
+		return fmt.Sprintf("%s", id)
 	}
 }
 
 func (exp *exporter) HeaderReference(macro string) string {
-	return "s"
+	return exp.GenRef("s", strconv.Itoa(exp.Context().Toc.HeaderCount), false)
 }
 
-func (exp *exporter) InlineImage(image string, link string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
 	ctx := exp.Context()
 	if strings.ContainsAny(image, "{}") {
 		ctx.Error("path argument and label should not contain the characters `{', or `}")
@@ -417,6 +413,9 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 	}
 	image = escape.LaTeXPercent(image)
 	fmt.Fprintf(w, "\\includegraphics{%s}%s", image, punct)
+	if id != "" {
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", id)
+	}
 }
 
 func (exp *exporter) LkWithLabel(uri string, label string, punct string) {

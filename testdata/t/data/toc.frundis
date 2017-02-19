@@ -10,11 +10,12 @@ paragraph text.
 .P
 .Ss A subsection
 paragraph text.
-.Ss Another subsection
+.Ss -id myid Another subsection
 paragraph text. A reference to the subsection
-.Sx Another subsection .
-.Sx Another subsection
-.Sx -name "link text to Another subsection" Another subsection .
+.Sx myid Another subsection .
+.Sx myid Another subsection
+.Sx myid "link to other section"
+.Sx myid "link text to Another subsection" .
 .Sh Another section
 paragraph text.
 .Ch A second Sm chapter

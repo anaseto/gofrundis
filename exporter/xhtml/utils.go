@@ -154,7 +154,7 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 			id := strings.Replace(href, "#", "-", -1)
 			fmt.Fprintf(w, "%s<navPoint id=\"%s\">\n", strings.Repeat("  ", level+1), id)
 			fmt.Fprint(w, strings.Repeat("  ", level+2),
-				"<navLabel><text>", num, entry.TitleText, "</text></navLabel>\n")
+				"<navLabel><text>", num, entry.Title, "</text></navLabel>\n")
 			fmt.Fprintf(w, "%s<content src=\"%s\" />\n", strings.Repeat("  ", level+2), href)
 		case navToc:
 			num := entry.Num
@@ -163,7 +163,7 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 				num += ". "
 			}
 			fmt.Fprintf(w, "%s<li><a href=\"%s\">%s%s</a>\n",
-				strings.Repeat("  ", level+1), href, num, entry.TitleText)
+				strings.Repeat("  ", level+1), href, num, entry.Title)
 		}
 	}
 	if level > 0 {
@@ -222,7 +222,7 @@ func (exp *exporter) xhtmlTOClikeEntry(w io.Writer, entry *frundis.LoXinfo, flag
 		}
 	}
 	fmt.Fprintf(w, "%s<li><a href=\"%s\">%s%s</a>\n",
-		strings.Repeat("  ", level+1), href, num, entry.TitleText)
+		strings.Repeat("  ", level+1), href, num, entry.Title)
 }
 
 func (exp *exporter) getID(entry *frundis.LoXinfo) string {

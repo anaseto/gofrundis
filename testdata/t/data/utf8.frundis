@@ -3,7 +3,7 @@
 .X mtag -f markdown -t enclose -b « -e »
 .X mtag -f mom -t enclose -b « -e »
 «text»\~«text»
-.Ch «text»
+.Ch -id label «text»
 .#de macro
 «text»\~«text»
 «text» «text»
@@ -15,7 +15,7 @@
 «text» «text»
 «text» :
 .Ft -f xhtml «Ft-text»
-.Sx «text»
+.Sx label «text»
 .Sm -t enclose Sm-text
 «
 .Sm -ns some text »

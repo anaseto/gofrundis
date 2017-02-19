@@ -8,7 +8,7 @@
 .X mtag -f mom -t quotes -b «\~ -e \~»
 .X set -f xhtml dmark "—"
 .Pt Primera parte
-.Ch \
+.Ch -id label \
     Prólogo Sm muy corto
 Esta es la historia de Shaedra, pero en más breve, porque no tengo tiempo para
 escribir todo.
@@ -63,7 +63,7 @@ spanning block
 .#if -f latex
 .Im t/data/image.png
 .#;
-.Sx Prólogo Sm muy corto
+.Sx label Prólogo Sm muy corto
 .Sm arg1 arg2
 Text.
 .X mtag -f latex -t ** -c textbf

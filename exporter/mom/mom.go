@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/anaseto/gofrundis/ast"
@@ -126,7 +127,7 @@ func (exp *exporter) BeginEnumList() {
 	exp.Context().Wout.WriteString(".LIST\n")
 }
 
-func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
+func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	level := 1
 	switch macro {
@@ -137,13 +138,11 @@ func (exp *exporter) BeginHeader(macro string, title string, numbered bool, rend
 	case "Ss":
 		level = 4
 	}
-	toc, _ := ctx.LoXInfo["toc"]
-	entry, _ := toc[title]
 	w := ctx.W()
 	if level < 3 {
 		fmt.Fprintf(w, ".NEWPAGE\n")
 	}
-	fmt.Fprintf(w, ".HEADING %d NAMED s:%d \"", level, entry.Count)
+	fmt.Fprintf(w, ".HEADING %d NAMED s:%d \"", level, ctx.Toc.HeaderCount)
 }
 
 func (exp *exporter) BeginItem() {
@@ -186,10 +185,10 @@ func (exp *exporter) BeginPhrasingMacroInParagraph(nospace bool) {
 	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
-func (exp *exporter) BeginTable(title string, count int, ncols int) {
+func (exp *exporter) BeginTable(tableinfo *frundis.TableData) {
 	w := exp.Context().W()
-	lll := strings.Repeat("l ", ncols)
-	if title != "" {
+	lll := strings.Repeat("l ", tableinfo.Cols)
+	if tableinfo.Title != "" {
 		fmt.Fprintf(w, ".FLOAT\n")
 	}
 	fmt.Fprintf(w, ".TS\nallbox;\n%s.\n", lll)
@@ -225,20 +224,17 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
-	switch {
-	case loXentry != nil:
-		fmt.Fprintf(w, ".PDF_LINK \"%s:%d\" SUFFIX \"%s\" \"%s\"", loXentry.Ref, loXentry.Count, punct, name)
+	switch idf.Type {
+	case frundis.NoId:
+		fmt.Fprintf(w, "%s%s", name, punct)
+	default:
+		fmt.Fprintf(w, ".PDF_LINK \"%s\" SUFFIX \"%s\" \"%s\"", idf.Ref, punct, name)
 		// FIXME?: name could mess with surrounding markup if it has
 		// markup (the problem is groff \f[..] that cannot simply be
 		// reliably closed).
-	case id != "":
-		ref, _ := ctx.IDs[id] // we know that it's ok
-		fmt.Fprintf(w, ".PDF_LINK \"%s\" SUFFIX \"%s\" \"%s\"", ref, punct, name)
-	default:
-		fmt.Fprintf(w, "%s%s", name, punct)
 	}
 }
 
@@ -280,17 +276,13 @@ func (exp *exporter) EndEnumItem() {
 	fmt.Fprint(w, "\n")
 }
 
-func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
-	// TODO: rethink args (pass loxinfo?)
+func (exp *exporter) EndHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, "\"\n")
 	// if !numbered {
 	// 	fmt.Fprintf(w, "\\addcontentsline{toc}{%s}{%s}\n", cmd, titleText)
 	// }
-	//toc, _ := ctx.LoXInfo["toc"]
-	//entry, _ := toc[title]
-	//fmt.Fprintf(w, ".PDF_TARGET \"s:%d\"\n", entry.Count)
 }
 
 func (exp *exporter) EndItemList() {
@@ -347,10 +339,12 @@ func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, ".TE\n")
-	if tableinfo != nil {
+	if tableinfo.Title != "" {
 		fmt.Fprintf(w, ".CAPTION \"%s\" TO_LIST TABLES\n", tableinfo.Title)
+		fmt.Fprintf(w, ".PDF_TARGET \"tbl:%d\"\n", ctx.Table.TitCount)
 		fmt.Fprintf(w, ".FLOAT OFF\n")
-		//	fmt.Fprintf(w, "\\label{tbl:%d}\n", ctx.TableCount)
+	} else if tableinfo.Id != "" {
+		fmt.Fprintf(w, ".PDF_TARGET \"%s\"\n", tableinfo.Id)
 	}
 }
 
@@ -397,25 +391,23 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 	fmt.Fprintf(w, ".FLOAT\n")
 	fmt.Fprintf(w, ".PDF_IMAGE \"%s\"\n", image)
 	fmt.Fprintf(w, ".CAPTION \"%s\" TO_LIST FIGURES\n", label)
+	fmt.Fprintf(w, ".PDF_TARGET \"fig:%d\"\n", ctx.FigCount)
 	fmt.Fprintf(w, ".FLOAT OFF\n")
-	// fmt.Fprintf(w, "\\label{fig:%d}\n", ctx.FigCount)
 }
 
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
-	// XXX not used yet
-	if prefix == "" {
-		return fmt.Sprintf("%s", id)
+	if prefix != "" {
+		return fmt.Sprintf("%s:%s", prefix, id)
 	} else {
-		return fmt.Sprintf("%s", prefix)
+		return fmt.Sprintf("%s", id)
 	}
 }
 
 func (exp *exporter) HeaderReference(macro string) string {
-	// XXX not used yet
-	return "s"
+	return exp.GenRef("s", strconv.Itoa(exp.Context().Toc.HeaderCount), false)
 }
 
-func (exp *exporter) InlineImage(image string, link string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
 	ctx := exp.Context()
 	if strings.ContainsAny(image, "{}") {
 		ctx.Error("path argument and label should not contain the characters `{', or `}")
@@ -433,6 +425,9 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 	}
 	image = escape.Roff(image)
 	fmt.Fprintf(w, ".PDF_IMAGE \"%s\"", image) // TODO: use punct
+	if id != "" {
+		fmt.Fprintf(w, ".PDF_TARGET \"%s\"\n", id)
+	}
 }
 
 func (exp *exporter) LkWithLabel(uri string, label string, punct string) {

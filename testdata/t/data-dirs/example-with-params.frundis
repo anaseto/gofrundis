@@ -19,14 +19,14 @@
 .#if -f mom
 .Im t/data-dirs/img/image.pdf
 .#;
-.Sh -nonum Abstract
+.Sh -id abstract -nonum Abstract
 Text.
 .Sm -id label1 Emphasized text with a label .
 .Pt Part1
 .Tc -mini -summary
-.Ch Chap1
+.Ch -id chap1 Chap1
 Text.
-.Ch Chap2
+.Ch -id chap2 Chap2
 .Tc -mini
 Text.
 .P Title of paragraph
@@ -41,9 +41,9 @@ Normal paragraph.
 Text.
 .Ss Subsection1
 Text.
-.Sh Section2
+.Sh -id section2 Section2
 Text.
-.Bl -t table -columns 2 Table2
+.Bl -id table2 -t table -columns 2 Table2
 .It c
 .Ta d
 .It e
@@ -51,16 +51,16 @@ Text.
 .El
 .Ss Subsection2
 Text.
-.Pt Part2
+.Pt -id part2 Part2
 .Ch Chap3
 .Tc -mini -title "Mini Toc"
 Text. Some cross-references:
-.Sx Section2
-.Sx Chap1
-.Sx Part2
-.Sx Abstract
-.Sx -t lot Table2
-.Sx -name "Link to emphasized text" -id label1
+.Sx section2 Section2
+.Sx chap1 Chap1
+.Sx part2 Part2
+.Sx abstract Abstract
+.Sx table2 Table2
+.Sx label1 "Link to emphasized text"
 .Sh Section3
 Text.
 .Tc -lot

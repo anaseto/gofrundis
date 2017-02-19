@@ -99,7 +99,7 @@ func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 func (exp *exporter) BeginEnumList() {
 }
 
-func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedText string) {
+func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
 }
 
 func (exp *exporter) BeginItem() {
@@ -127,7 +127,7 @@ func (exp *exporter) BeginPhrasingMacroInParagraph(nospace bool) {
 	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
-func (exp *exporter) BeginTable(title string, count int, ncols int) {
+func (exp *exporter) BeginTable(tableinfo *frundis.TableData) {
 }
 
 func (exp *exporter) BeginTableCell() {
@@ -148,7 +148,7 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
 }
 
 func (exp *exporter) DescName(name string) {
@@ -169,7 +169,7 @@ func (exp *exporter) EndEnumList() {
 func (exp *exporter) EndEnumItem() {
 }
 
-func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
+func (exp *exporter) EndHeader(macro string, numbered bool, title string) {
 }
 
 func (exp *exporter) EndItemList() {
@@ -231,7 +231,7 @@ func (exp *exporter) HeaderReference(macro string) string {
 	return ""
 }
 
-func (exp *exporter) InlineImage(image string, link string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
 }
 
 func (exp *exporter) LkWithLabel(url string, label string, punct string) {

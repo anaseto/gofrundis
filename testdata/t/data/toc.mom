@@ -15,6 +15,7 @@ paragraph text\&.
 paragraph text\&. A reference to the subsection
 .PDF_LINK "s:5" SUFFIX "\&." "Another subsection"
 .PDF_LINK "s:5" SUFFIX "" "Another subsection"
+.PDF_LINK "s:5" SUFFIX "" "link to other section"
 .PDF_LINK "s:5" SUFFIX "\&." "link text to Another subsection"
 .PP
 .HEADING 3 NAMED s:6 "Another section"

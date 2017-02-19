@@ -43,7 +43,7 @@ type Renderer interface {
 	// a given title (e.g. prints <h1 class="Ch" id="3">). It can also be
 	// used as a hook for more complex things (such as writing new chapters
 	// to a new file).
-	BeginHeader(macro string, title string, numbered bool, renderedTitle string)
+	BeginHeader(macro string, numbered bool, title string)
 	// BeginItem starts a list item (e.g. "<li>").
 	BeginItem()
 	// BeginItem starts an item list (e.g. "<ul>").
@@ -59,7 +59,7 @@ type Renderer interface {
 	BeginPhrasingMacroInParagraph(nospace bool)
 	// BeginTable starts a table (e.g. "<table>"). The table can have an
 	// optional title, and count is the table number.
-	BeginTable(title string, count int, ncols int)
+	BeginTable(tableinfo *TableData)
 	// BeginTableCell starts a new cell (e.g. "<td>").
 	BeginTableCell()
 	// BeginTableRow starts a new row (e.g. "<tr>").
@@ -71,7 +71,7 @@ type Renderer interface {
 	// Crossreference builds a reference link with a given name. It can
 	// have an explicit id from Context.IDs, or it can corresond to a
 	// loXentry.
-	CrossReference(id string, name string, loXentry *LoXinfo, punct string)
+	CrossReference(idf IdInfo, name string, punct string)
 	// DescName generates a description list item name (e.g. "<dt>" + name
 	// + "</dt>")
 	DescName(name string)
@@ -82,15 +82,13 @@ type Renderer interface {
 	// EndDisplayBlock ends a display block with a given tag (e.g. "</div>"
 	// or "</" + Dtag.Cmd + ">").
 	EndDisplayBlock(tag string)
-	// EndEnumItem ends a enumeration list value (e.g. "</li>"). Value
-	// should be processed as with EndDescValue. XXX
+	// EndEnumItem ends a enumeration list value (e.g. "</li>").
 	EndEnumItem()
 	// EndEnumList ends an enumeration list (e.g. "</ol>").
 	EndEnumList()
 	// EndHeader ends a header (e.g. "</h1>") of level given by macro, with
-	// some title (title name in toc info), numbered or not, and formatted
-	// title (can be printed)
-	EndHeader(macro string, title string, numbered bool, titleText string)
+	// some title, numbered or not.
+	EndHeader(macro string, numbered bool, title string)
 	// EndItem ends an item list value. As with EndEnumValue.
 	EndItem()
 	// EndItemList ends an item list (e.g. "</ul>").
@@ -116,7 +114,7 @@ type Renderer interface {
 	EndTableRow()
 	// EndVerse ends a poem (e.g. \end{verse}).
 	EndVerse()
-	// EndVerse ends a poem.
+	// EndVerseLine ends a poem line (e.g. "<br />\n").
 	EndVerseLine()
 	// FormatParagraph can be used to do post-processing of paragraph-like text.
 	FormatParagraph(text []byte) []byte
@@ -130,8 +128,8 @@ type Renderer interface {
 	// an html href suitable for pointing to some id of an <h1
 	// id="some-id">)
 	HeaderReference(macro string) string
-	// InlineImage handles an inline image
-	InlineImage(image string, link string, punct string)
+	// InlineImage handles an inline image.
+	InlineImage(image string, link string, id string, punct string)
 	// LkWithLabel produces a labeled link (e.g. "<a href="url">label</a>").
 	LkWithLabel(url string, label string, punct string)
 	// LkWithLabel produces a link (e.g. "<a href="url">url</a>").
@@ -174,10 +172,9 @@ type Context struct {
 	Filters       map[string]func(string) string // function filters
 	Format        string                         // export format name
 	Ftags         map[string]Ftag                // filter tags set with "X ftag"
-	IDs           map[string]string              // id information
+	IDs           map[string]IdInfo              // id information
 	Images        []string                       // list of image paths
 	Inline        bool                           // inline processing of Sm-like macros (e.g. in header)
-	LoXInfo       map[string]map[string]*LoXinfo // (list-type => ((title => information) map) map
 	LoXstack      map[string][]*LoXinfo          // (list-type => information list) map
 	Macro         string                         // current macro
 	Macros        map[string]func(Exporter)      // frundis macro handlers
@@ -185,13 +182,13 @@ type Context struct {
 	Params        map[string]string              // parameters set with "X set"
 	PrevMacro     string                         // previous non-user macro called, or "" for text-block
 	Process       bool                           // whether in processing or info pass
-	Unrestricted  bool                           // unrestricted mode (#run and shell filters allowed)
 	Table         TableInfo                      // table information
 	Toc           *TocInfo                       // Toc information
+	Unrestricted  bool                           // unrestricted mode (#run and shell filters allowed)
 	Verse         VerseInfo                      // whether there is a poem in the source
-	Wout          *bufio.Writer                  // where final output goes
 	WantsSpace    bool                           // whether previous in-paragraph stuff reclaims a space
 	Werror        io.Writer                      // where to write non-fatal errors (default os.Stderr)
+	Wout          *bufio.Writer                  // where final output goes
 	asIs          bool                           // treat current text as-is
 	bfInfo        *bfInfo                        // Bf/Ef block info
 	buf           bytes.Buffer                   // buffer for current paragraph-like generated text
@@ -203,6 +200,7 @@ type Context struct {
 	frundisINC    []string                       // list of paths where to search for frundis source files
 	ifIgnoreDepth int                            // depth of "#if" blocks with false condition
 	itemScope     bool                           // whether currently inside a list item
+	ivars         map[string]string              // interpolation variables
 	line          int                            // current/last block source line
 	loc           *location                      // source location information
 	parScope      bool                           // whether currently inside a paragraph or not
@@ -213,7 +211,6 @@ type Context struct {
 	uMacroDef     *uMacroDefInfo                 // information related to user macro definition
 	uMacros       map[string]uMacroDefInfo       // user defined textual macros
 	validFormats  []string                       // list of valid export formats
-	ivars         map[string]string              // interpolation variables
 }
 
 // Location information
@@ -241,25 +238,28 @@ type uMacroDefInfo struct {
 }
 
 type VerseInfo struct {
-	Used       bool // wether there is a poem in the source
+	Used       bool // whether there is a poem in the source
 	verseCount int  // current titled poem number
 }
 
 // TableInfo contains table information.
 type TableInfo struct {
 	Cell     int          // current table cell
-	Cols     int          // current table number of columns
 	Count    int          // current table number (with or without title)
 	TitCount int          // current titled table number
+	cols     int          // current table number of columns
+	id       string       // identifier from "-id label"
 	info     []*TableData // some non LoX information about tables (e.g. number of columns)
 	scope    bool         // whether currently in table scope
 	titScope bool         // whether currently in titled table scope
+	title    string       // current table title
 }
 
 // TableData contains some table data.
 type TableData struct {
 	Title string // title of the table (empty if no title)
 	Cols  int    // number of columns
+	Id    string // label from "-id label"
 }
 
 // LoXinfo gathers misc information for cross-references and TOC-like stuff.
@@ -270,8 +270,27 @@ type LoXinfo struct {
 	Num       string // formatted string representing entry number
 	Ref       string // reference (e.g. in an "href")
 	RefPrefix string // reference prefix (e.g. "fig" for figures)
-	Title     string // entry title (e.g. a chapter title)
-	TitleText string // Processed title
+	Title     string // title (rendered)
+	id        string // id for ctx.Ids
+}
+
+type IdType int
+
+const (
+	NoId IdType = iota
+	SmId
+	BdId
+	InlineImId
+	FigureId
+	HeaderId
+	PoemId
+	TableId
+	UntitledTableId
+)
+
+type IdInfo struct {
+	Ref  string
+	Type IdType
 }
 
 type bfInfo struct {
@@ -329,8 +348,7 @@ func (ctx *Context) Init() {
 	if !ctx.Process {
 		ctx.Dtags = make(map[string]Dtag)
 		ctx.Ftags = make(map[string]Ftag)
-		ctx.IDs = make(map[string]string)
-		ctx.LoXInfo = make(map[string]map[string]*LoXinfo)
+		ctx.IDs = make(map[string]IdInfo)
 		ctx.LoXstack = make(map[string][]*LoXinfo)
 		ctx.Macros = DefaultExporterMacros()
 		ctx.Mtags = make(map[string]Mtag)
@@ -358,7 +376,6 @@ func (ctx *Context) Reset() {
 		Ftags:        ctx.Ftags,
 		IDs:          ctx.IDs,
 		Images:       ctx.Images,
-		LoXInfo:      ctx.LoXInfo,
 		LoXstack:     ctx.LoXstack,
 		Macros:       ctx.Macros,
 		Mtags:        ctx.Mtags,

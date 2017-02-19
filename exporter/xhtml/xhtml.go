@@ -219,18 +219,18 @@ func (exp *exporter) BeginEnumList() {
 	fmt.Fprint(w, "<ol>\n")
 }
 
-func (exp *exporter) BeginHeader(macro string, title string, numbered bool, renderedTitle string) {
+func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	num := ctx.Toc.HeaderLevel(macro)
 	switch macro {
 	case "Pt", "Ch":
 		if ctx.Format == "epub" || !exp.AllInOneFile {
-			exp.xhtmlFileOutputChange(renderedTitle)
+			exp.xhtmlFileOutputChange(title)
 		}
 	}
 	w := ctx.W()
-	toc, _ := ctx.LoXInfo["toc"] // should be ok
-	entry, _ := toc[title]       // should be ok
+	toc, _ := ctx.LoXstack["toc"]
+	entry := toc[ctx.Toc.HeaderCount-1] // headers count is updated before
 	id := exp.getID(entry)
 	fmt.Fprintf(w, "<h%d class=\"%s\" id=\"%s\">", num, macro, id)
 	if numbered {
@@ -284,12 +284,16 @@ func (exp *exporter) BeginPhrasingMacroInParagraph(nospace bool) {
 	frundis.BeginPhrasingMacroInParagraph(exp, nospace)
 }
 
-func (exp *exporter) BeginTable(title string, count int, ncols int) {
-	w := exp.Context().W()
-	if title != "" {
-		fmt.Fprintf(w, "<div id=\"tbl%d\" class=\"table\">\n", count)
+func (exp *exporter) BeginTable(tableinfo *frundis.TableData) {
+	ctx := exp.Context()
+	w := ctx.W()
+	var id string
+	if tableinfo.Title != "" {
+		fmt.Fprintf(w, "<div id=\"tbl%d\" class=\"table\">\n", ctx.Table.TitCount)
+	} else if tableinfo.Id != "" {
+		id = " id=\"" + tableinfo.Id + "\""
 	}
-	fmt.Fprint(w, "<table>\n")
+	fmt.Fprintf(w, "<table%s>\n", id)
 }
 
 func (exp *exporter) BeginTableCell() {
@@ -333,15 +337,14 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(id string, name string, loXentry *frundis.LoXinfo, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, "<a")
-	if loXentry != nil {
-		fmt.Fprintf(w, " href=\"%s\"", loXentry.Ref)
-	} else if id != "" {
-		href, _ := ctx.IDs[id] // we know that it's ok
-		fmt.Fprintf(w, " href=\"%s\"", href)
+	switch idf.Type {
+	case frundis.NoId:
+	default:
+		fmt.Fprintf(w, " href=\"%s\"", idf.Ref)
 	}
 	fmt.Fprintf(w, ">%s</a>%s", name, punct)
 }
@@ -391,7 +394,7 @@ func (exp *exporter) EndEnumItem() {
 	fmt.Fprint(w, "</li>\n")
 }
 
-func (exp *exporter) EndHeader(macro string, title string, numbered bool, titleText string) {
+func (exp *exporter) EndHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	num := ctx.Toc.HeaderLevel(macro)
@@ -438,7 +441,7 @@ func (exp *exporter) EndParagraphUnsoftly() {
 func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 	w := exp.Context().W()
 	fmt.Fprint(w, "</table>\n")
-	if tableinfo != nil {
+	if tableinfo.Title != "" {
 		fmt.Fprintf(w, "<p class=\"table-title\">%s</p>\n</div>\n", tableinfo.Title)
 	}
 }
@@ -552,7 +555,7 @@ func (exp *exporter) processLink(link string) string {
 	return link
 }
 
-func (exp *exporter) InlineImage(image string, link string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
 	ctx := exp.Context()
 	w := exp.Context().W()
 	if ctx.Format == "epub" {
@@ -570,10 +573,13 @@ func (exp *exporter) InlineImage(image string, link string, punct string) {
 	}
 	image = html.EscapeString(image)
 	link = exp.processLink(link)
+	if id != "" {
+		id = " id=\"" + id + "\""
+	}
 	if link != "" && ctx.Format == "xhtml" {
-		fmt.Fprintf(w, "<a href=\"%s\"><img src=\"%s\" alt=\"%s\" /></a>%s", link, u, image, punct)
+		fmt.Fprintf(w, "<a href=\"%s\"><img src=\"%s\" alt=\"%s\"%s /></a>%s", link, u, image, id, punct)
 	} else {
-		fmt.Fprintf(w, "<img src=\"%s\" alt=\"%s\" />%s", u, image, punct)
+		fmt.Fprintf(w, "<img src=\"%s\" alt=\"%s\"%s />%s", u, image, id, punct)
 	}
 }
 

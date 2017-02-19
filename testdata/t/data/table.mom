@@ -4,6 +4,7 @@ l l l .
 one	two	three
 a	b	\f[I]c\f[R]
 .TE
+.PDF_TARGET "label1"
 .TS
 allbox;
 l l l .
@@ -19,7 +20,11 @@ one	two	three
 a	b	c
 .TE
 .CAPTION "Title" TO_LIST TABLES
+.PDF_TARGET "tbl:1"
 .FLOAT OFF
+.PDF_LINK "tbl:1" SUFFIX "" "link-to-table"
+.PDF_LINK "label1" SUFFIX "" "link-to-untitled-table"
+.PP
 .FLOAT
 .TS
 allbox;
@@ -28,6 +33,7 @@ one	two
 a	b
 .TE
 .CAPTION "\f[I]Title\f[R]" TO_LIST TABLES
+.PDF_TARGET "tbl:2"
 .FLOAT OFF
 .TS
 allbox;
@@ -41,4 +47,5 @@ l l .
 A	B
 .TE
 .CAPTION "Title" TO_LIST TABLES
+.PDF_TARGET "tbl:3"
 .FLOAT OFF

@@ -189,19 +189,33 @@ func SearchIncFile(exp Exporter, filename string) (string, bool) {
 // class.
 func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 	ctx := exp.Context()
-	loX, ok := ctx.LoXInfo[class]
-	if !ok {
-		loX = make(map[string]*LoXinfo)
-		ctx.LoXInfo[class] = loX
-	}
 	loXinfo.Ref = exp.GenRef(loXinfo.RefPrefix, id, false)
-	loX[loXinfo.Title] = loXinfo
 	_, okStack := ctx.LoXstack[class]
 	if okStack {
 		ctx.LoXstack[class] = append(ctx.LoXstack[class], loXinfo)
 	} else {
 		ctx.LoXstack[class] = []*LoXinfo{loXinfo}
 	}
+	if loXinfo.id != "" {
+		var idtype IdType
+		switch class {
+		case "lof":
+			idtype = FigureId
+		case "lot":
+			idtype = TableId
+		case "lop":
+			idtype = PoemId
+		}
+		ctx.storeId(loXinfo.id, loXinfo.Ref, idtype)
+	}
+}
+
+// storeId stores an id with reference string ref, and of type idtype.
+func (ctx *Context) storeId(id, ref string, idtype IdType) {
+	if _, ok := ctx.IDs[id]; ok {
+		ctx.Error("already used id")
+	}
+	ctx.IDs[id] = IdInfo{Ref: ref, Type: idtype}
 }
 
 // getCommand returns a command from a list of arguments. If there is only one
