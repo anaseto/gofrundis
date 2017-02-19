@@ -13,3 +13,8 @@ first verse of second strofe
 .El
 .Sx label1 A poem
 .Sx label2 A Sm poem
+.Bl -id label3 -t verse
+.It First verse
+.It Second verse
+.El
+.Sx label3 An untitled poem

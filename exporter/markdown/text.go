@@ -72,7 +72,7 @@ func (exp *exporter) BlockHandler() {
 	frundis.DefaultBlockHandler(exp)
 }
 
-func (exp *exporter) BeginDescList() {
+func (exp *exporter) BeginDescList(id string) {
 }
 
 func (exp *exporter) BeginDescValue() {
@@ -88,7 +88,7 @@ func (exp *exporter) BeginDialogue() {
 func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 }
 
-func (exp *exporter) BeginEnumList() {
+func (exp *exporter) BeginEnumList(id string) {
 	w := exp.Context().W()
 	if exp.nesting > 0 {
 		fmt.Fprint(w, "\n")
@@ -142,7 +142,7 @@ func (exp *exporter) BeginEnumItem() {
 	fmt.Fprint(w, item)
 }
 
-func (exp *exporter) BeginItemList() {
+func (exp *exporter) BeginItemList(id string) {
 	w := exp.Context().W()
 	if exp.nesting > 0 {
 		fmt.Fprint(w, "\n")
@@ -181,7 +181,7 @@ func (exp *exporter) BeginTableCell() {
 func (exp *exporter) BeginTableRow() {
 }
 
-func (exp *exporter) BeginVerse(title string, count int) {
+func (exp *exporter) BeginVerse(title string, id string) {
 	w := exp.Context().W()
 	exp.verse = true
 	fmt.Fprint(w, "##### "+title+"\n\n")

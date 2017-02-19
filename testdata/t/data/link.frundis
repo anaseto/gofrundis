@@ -2,6 +2,7 @@
 .Lk http://bardinflor.perso.aquilenet/frundis/
 .#if -f xhtml,epub,latex,markdown
 .Im -id label1 t/data/image.png
+.Sx label1 image1
 .#;
 .#if -f xhtml,epub
 .Im -link http://bardinflor.perso.aquilenet/bigimage.png image.png
@@ -15,8 +16,8 @@
 .Sx imagelabel "image label"
 .#;
 .P
-.Sm -id label1 Text
-.Sx label1 "link to label"
+.Sm -id label3 Text
+.Sx label3 "link to label"
 .Bm -id label2
 Text with label2
 .Em
@@ -25,4 +26,3 @@ Text with label2
 .Bm
 .Lk http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=
 .Em
-.Sx label1 image1

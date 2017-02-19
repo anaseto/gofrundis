@@ -165,10 +165,13 @@ func (exp *exporter) BlockHandler() {
 	frundis.DefaultBlockHandler(exp)
 }
 
-func (exp *exporter) BeginDescList() {
+func (exp *exporter) BeginDescList(id string) {
 	ctx := exp.Context()
 	w := ctx.W()
-	fmt.Fprint(w, "<dl>\n")
+	if id != "" {
+		id = " id=\"" + id + "\""
+	}
+	fmt.Fprintf(w, "<dl%s>\n", id)
 }
 
 func (exp *exporter) BeginDescValue() {
@@ -213,10 +216,13 @@ func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 	fmt.Fprint(w, ">\n")
 }
 
-func (exp *exporter) BeginEnumList() {
+func (exp *exporter) BeginEnumList(id string) {
 	ctx := exp.Context()
 	w := ctx.W()
-	fmt.Fprint(w, "<ol>\n")
+	if id != "" {
+		id = " id=\"" + id + "\""
+	}
+	fmt.Fprintf(w, "<ol%s>\n", id)
 }
 
 func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
@@ -248,9 +254,12 @@ func (exp *exporter) BeginEnumItem() {
 	fmt.Fprint(w, "<li>")
 }
 
-func (exp *exporter) BeginItemList() {
+func (exp *exporter) BeginItemList(id string) {
 	w := exp.Context().W()
-	fmt.Fprint(w, "<ul>\n")
+	if id != "" {
+		id = " id=\"" + id + "\""
+	}
+	fmt.Fprintf(w, "<ul%s>\n", id)
 }
 
 func (exp *exporter) BeginMarkupBlock(tag string, id string) {
@@ -306,12 +315,17 @@ func (exp *exporter) BeginTableRow() {
 	fmt.Fprint(w, "<tr>\n")
 }
 
-func (exp *exporter) BeginVerse(title string, count int) {
+func (exp *exporter) BeginVerse(title string, id string) {
 	w := exp.Context().W()
-	fmt.Fprint(w, "<div class=\"verse\">\n")
 	if title != "" {
-		fmt.Fprintf(w, "<h4 id=\"poem%d\">%s</h4>\n", count, title)
+		fmt.Fprint(w, "<div class=\"verse\">\n")
+		fmt.Fprintf(w, "<h4 id=\"poem%s\">%s</h4>\n", id, title)
+		return
 	}
+	if id != "" {
+		id = " id=\"" + id + "\""
+	}
+	fmt.Fprintf(w, "<div class=\"verse\"%s>\n", id)
 }
 
 func (exp *exporter) CheckParamAssignement(param string, value string) bool {

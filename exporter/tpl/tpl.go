@@ -84,7 +84,7 @@ func (exp *exporter) BlockHandler() {
 	frundis.DefaultBlockHandler(exp)
 }
 
-func (exp *exporter) BeginDescList() {
+func (exp *exporter) BeginDescList(id string) {
 }
 
 func (exp *exporter) BeginDescValue() {
@@ -96,7 +96,7 @@ func (exp *exporter) BeginDialogue() {
 func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 }
 
-func (exp *exporter) BeginEnumList() {
+func (exp *exporter) BeginEnumList(id string) {
 }
 
 func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
@@ -108,7 +108,7 @@ func (exp *exporter) BeginItem() {
 func (exp *exporter) BeginEnumItem() {
 }
 
-func (exp *exporter) BeginItemList() {
+func (exp *exporter) BeginItemList(id string) {
 }
 
 func (exp *exporter) BeginMarkupBlock(tag string, id string) {
@@ -136,7 +136,7 @@ func (exp *exporter) BeginTableCell() {
 func (exp *exporter) BeginTableRow() {
 }
 
-func (exp *exporter) BeginVerse(title string, count int) {
+func (exp *exporter) BeginVerse(title string, id string) {
 }
 
 func (exp *exporter) CheckParamAssignement(param string, value string) bool {

@@ -5,13 +5,14 @@ I no see really why it is interesting.
 .It
 But it is.
 .El
-.Bl
+.Bl -id label1
 .It
 un
 .It deux
 .It
 trois
 .El
+.Sx label1 untitled item list
 .P
 .Bl
 .It
@@ -42,12 +43,13 @@ and even more text
 .Sm in fourth point
 .El
 .\" description lists
-.Bl -t desc
+.Bl -id label3 -t desc
 .It a description list
 is this.
 .It a poem
 is another thing.
 .El
+.Sx label3 untitled desc list
 .\" nested lists
 .Bl
 .It
@@ -60,7 +62,7 @@ list
 .It
 Item text.
 .El
-.Bl -t enum
+.Bl -id label2 -t enum
 .It
 .Bl -t enum
 .It some text in the nested list that is too long to fit in a single 55 character line
@@ -76,3 +78,4 @@ Text
 .Sm more emphasized text
 Text.
 .El
+.Sx label2 untitled enum list

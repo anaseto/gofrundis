@@ -170,15 +170,28 @@ func macroBl(exp Exporter) {
 func macroBlInfos(exp Exporter) {
 	ctx := exp.Context()
 	opts, _, args := ctx.ParseOptions(specOptBl, ctx.Args)
-	tag, ok := opts["t"]
-	if !ok {
-		return
+	var tag string
+	if t, ok := opts["t"]; ok {
+		tag = ctx.InlinesToText(t)
+	} else {
+		tag = "item"
 	}
-	switch ctx.InlinesToText(tag) {
+	switch tag {
+	case "item", "enum", "desc":
+		if t, ok := opts["id"]; ok {
+			id := exp.RenderText(t)
+			ref := exp.GenRef("", id, false)
+			ctx.storeId(id, ref, UntitledList)
+		}
 	case "verse":
 		ctx.Verse.Used = true
 		title := processInlineMacros(exp, args)
 		if title == "" {
+			if t, ok := opts["id"]; ok {
+				id := exp.RenderText(t)
+				ref := exp.GenRef("", id, false)
+				ctx.storeId(id, ref, UntitledList)
+			}
 			return
 		}
 		ctx.Verse.verseCount++
@@ -196,7 +209,7 @@ func macroBlInfos(exp Exporter) {
 			if t, ok := opts["id"]; ok {
 				id := exp.RenderText(t)
 				ref := exp.GenRef("", id, false)
-				ctx.storeId(id, ref, UntitledTableId)
+				ctx.storeId(id, ref, UntitledList)
 				ctx.Table.id = id
 			}
 			return
@@ -229,6 +242,12 @@ func macroBlProcess(exp Exporter) {
 		ctx.Error("invalid `-t' option argument:", tag)
 		tag = "item" // fallback to basic "item" list
 	}
+	switch tag {
+	case "item", "enum", "desc":
+		if len(args) > 0 {
+			ctx.Error("too many arguments: no title for ", tag, " list")
+		}
+	}
 	scopes, ok := ctx.scopes["Bl"]
 	if ok && len(scopes) > 0 {
 		last := scopes[len(scopes)-1]
@@ -245,19 +264,25 @@ func macroBlProcess(exp Exporter) {
 
 	ctx.pushScope(&scope{name: "Bl", tag: tag})
 
+	var id string
+	if t, ok := opts["id"]; ok {
+		id = exp.RenderText(t)
+	}
+
 	switch tag {
 	case "verse":
 		title := processInlineMacros(exp, args)
 		if title != "" {
 			ctx.Verse.verseCount++
+			id = fmt.Sprintf("%d", ctx.Verse.verseCount)
 		}
-		exp.BeginVerse(title, ctx.Verse.verseCount)
+		exp.BeginVerse(title, id)
 	case "desc":
-		exp.BeginDescList()
+		exp.BeginDescList(id)
 	case "item":
-		exp.BeginItemList()
+		exp.BeginItemList(id)
 	case "enum":
-		exp.BeginEnumList()
+		exp.BeginEnumList(id)
 	case "table":
 		tableinfo := ctx.Table.info[ctx.Table.Count]
 		if tableinfo.Title != "" {

@@ -6,6 +6,7 @@ I no see really why it is interesting\&.
 .ITEM
 But it is\&.
 .LIST OFF
+.PDF_TARGET "label1"
 .LIST
 .ITEM
 un
@@ -14,6 +15,7 @@ deux
 .ITEM
 trois
 .LIST OFF
+.PDF_LINK "label1" SUFFIX "" "untitled item list"
 .PP
 .LIST
 .ITEM
@@ -48,6 +50,7 @@ and more text
 and even more text
 \f[I]in fourth point\f[R]
 .LIST OFF
+.PDF_TARGET "label3"
 .LIST USER ""
 .ITEM
 \f[B]a description list\f[R]
@@ -56,6 +59,8 @@ is this\&.
 \f[B]a poem\f[R]
 is another thing\&.
 .LIST OFF
+.PDF_LINK "label3" SUFFIX "" "untitled desc list"
+.PP
 .LIST
 .ITEM
 .LIST
@@ -68,6 +73,7 @@ list
 .ITEM
 Item text\&.
 .LIST OFF
+.PDF_TARGET "label2"
 .LIST
 .ITEM
 .LIST
@@ -88,3 +94,5 @@ Text
 \f[I]more emphasized text\f[R]
 Text\&.
 .LIST OFF
+.PDF_LINK "label2" SUFFIX "" "untitled enum list"
+.PP

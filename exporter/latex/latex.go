@@ -83,8 +83,12 @@ func (exp *exporter) BlockHandler() {
 	frundis.DefaultBlockHandler(exp)
 }
 
-func (exp *exporter) BeginDescList() {
-	exp.Context().Wout.WriteString("\\begin{description}\n")
+func (exp *exporter) BeginDescList(id string) {
+	w := exp.Context().W()
+	if id != "" {
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", id)
+	}
+	fmt.Fprint(w, "\\begin{description}\n")
 }
 
 func (exp *exporter) BeginDescValue() {
@@ -131,8 +135,12 @@ func (exp *exporter) BeginDisplayBlock(tag string, id string) {
 	}
 }
 
-func (exp *exporter) BeginEnumList() {
-	exp.Context().Wout.WriteString("\\begin{enumerate}\n")
+func (exp *exporter) BeginEnumList(id string) {
+	w := exp.Context().W()
+	if id != "" {
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", id)
+	}
+	fmt.Fprint(w, "\\begin{enumerate}\n")
 }
 
 func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
@@ -154,8 +162,12 @@ func (exp *exporter) BeginEnumItem() {
 	fmt.Fprint(w, "\\item ")
 }
 
-func (exp *exporter) BeginItemList() {
-	exp.Context().Wout.WriteString("\\begin{itemize}\n")
+func (exp *exporter) BeginItemList(id string) {
+	w := exp.Context().W()
+	if id != "" {
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", id)
+	}
+	fmt.Fprint(w, "\\begin{itemize}\n")
 }
 
 func (exp *exporter) BeginMarkupBlock(tag string, id string) {
@@ -215,11 +227,13 @@ func (exp *exporter) BeginTableRow() {
 	// nothing to do
 }
 
-func (exp *exporter) BeginVerse(title string, count int) {
+func (exp *exporter) BeginVerse(title string, id string) {
 	w := exp.Context().W()
 	if title != "" {
 		fmt.Fprintf(w, "\\poemtitle{%s}\n", title)
-		fmt.Fprintf(w, "\\label{poem:%d}\n", count)
+		fmt.Fprintf(w, "\\label{poem:%s}\n", id)
+	} else if id != "" {
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", id)
 	}
 	fmt.Fprint(w, "\\begin{verse}\n")
 }

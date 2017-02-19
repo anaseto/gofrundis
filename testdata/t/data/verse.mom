@@ -1,4 +1,5 @@
 .HEADING 5 "A poem"
+.PDF_TARGET "poem:1"
 .QUOTE
 a verse
 a second verse
@@ -7,6 +8,7 @@ first verse of second strofe
 
 .QUOTE OFF
 .HEADING 5 "A \f[I]poem\f[R]"
+.PDF_TARGET "poem:2"
 .QUOTE
 Lulu verse
 a second \f[I]verse\f[R]
@@ -15,4 +17,12 @@ a third verse
 .QUOTE OFF
 .PDF_LINK "poem:1" SUFFIX "" "A poem"
 .PDF_LINK "poem:2" SUFFIX "" "A \f[I]poem\f[R]"
+.PP
+.PDF_TARGET "label3"
+.QUOTE
+First verse
+Second verse
+
+.QUOTE OFF
+.PDF_LINK "label3" SUFFIX "" "An untitled poem"
 .PP

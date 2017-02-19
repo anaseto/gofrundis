@@ -28,7 +28,7 @@ type BaseExporter interface {
 
 type Renderer interface {
 	// BeginDescList starts a description list (e.g. prints to Context.W a "<dl>").
-	BeginDescList()
+	BeginDescList(id string)
 	// BeginDescValue starts a description value (e.g. "<dd>").
 	BeginDescValue()
 	// BeginDialogue starts a dialogue (e.g. a "—").
@@ -38,7 +38,7 @@ type Renderer interface {
 	// BeginEnumItem starts a list numbered item (e.g. "<li>").
 	BeginEnumItem()
 	// BeginEnumList starts an enumeration list (e.g. "<ol>").
-	BeginEnumList()
+	BeginEnumList(id string)
 	// BeginHeader handles beginning of a specific header macro (name), and
 	// a given title (e.g. prints <h1 class="Ch" id="3">). It can also be
 	// used as a hook for more complex things (such as writing new chapters
@@ -47,7 +47,7 @@ type Renderer interface {
 	// BeginItem starts a list item (e.g. "<li>").
 	BeginItem()
 	// BeginItem starts an item list (e.g. "<ul>").
-	BeginItemList()
+	BeginItemList(id string)
 	// BeginMarkupBlock starts markup with given tag and id (e.g. "<" +
 	// mtag.Cmd + " id=\"" + id + "\">" + mtag.Begin, where mtag is the
 	// Context.Mtag corresponding to tag).
@@ -65,7 +65,7 @@ type Renderer interface {
 	// BeginTableRow starts a new row (e.g. "<tr>").
 	BeginTableRow()
 	// BeginVerse starts a poem.
-	BeginVerse(title string, count int)
+	BeginVerse(title string, id string)
 	// CheckParamAssignement checks parameter assignement.
 	CheckParamAssignement(param string, value string) bool
 	// Crossreference builds a reference link with a given name. It can
@@ -285,7 +285,7 @@ const (
 	HeaderId
 	PoemId
 	TableId
-	UntitledTableId
+	UntitledList
 )
 
 type IdInfo struct {
