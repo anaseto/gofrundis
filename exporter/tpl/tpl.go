@@ -2,7 +2,6 @@ package tpl
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"html"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
+// Options gathers configuration for template mode exporter.
 type Options struct {
 	Format     string // "latex" or "xhtml"
 	OutputFile string // name of output file or directory
@@ -59,7 +59,7 @@ func (exp *exporter) Reset() error {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			return errors.New(fmt.Sprintf("frundis:%v\n", err))
+			return fmt.Errorf("frundis:%v\n", err)
 		}
 	}
 	if exp.curOutputFile == nil {
@@ -148,7 +148,7 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
 }
 
 func (exp *exporter) DescName(name string) {

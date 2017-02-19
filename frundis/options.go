@@ -4,8 +4,10 @@ package frundis
 
 import "github.com/anaseto/gofrundis/ast"
 
+// Option represents the type of option (flag or with argument).
 type Option int
 
+// Option types
 const (
 	FlagOption Option = iota // boolean flag
 	ArgOption                // option with argument

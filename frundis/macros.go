@@ -74,7 +74,7 @@ func macroBd(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			ctx.storeId(id, ref, BdId)
+			ctx.storeID(id, ref, BdID)
 		}
 		return
 	}
@@ -181,7 +181,7 @@ func macroBlInfos(exp Exporter) {
 		if t, ok := opts["id"]; ok {
 			id := exp.RenderText(t)
 			ref := exp.GenRef("", id, false)
-			ctx.storeId(id, ref, UntitledList)
+			ctx.storeID(id, ref, UntitledList)
 		}
 	case "verse":
 		ctx.Verse.Used = true
@@ -190,7 +190,7 @@ func macroBlInfos(exp Exporter) {
 			if t, ok := opts["id"]; ok {
 				id := exp.RenderText(t)
 				ref := exp.GenRef("", id, false)
-				ctx.storeId(id, ref, UntitledList)
+				ctx.storeID(id, ref, UntitledList)
 			}
 			return
 		}
@@ -209,7 +209,7 @@ func macroBlInfos(exp Exporter) {
 			if t, ok := opts["id"]; ok {
 				id := exp.RenderText(t)
 				ref := exp.GenRef("", id, false)
-				ctx.storeId(id, ref, UntitledList)
+				ctx.storeID(id, ref, UntitledList)
 				ctx.Table.id = id
 			}
 			return
@@ -304,7 +304,7 @@ func macroBm(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			ctx.storeId(id, ref, SmId)
+			ctx.storeID(id, ref, SmID)
 		}
 		return
 	}
@@ -444,7 +444,7 @@ func macroElInfos(exp Exporter) {
 		ctx.Table.info = append(ctx.Table.info,
 			&TableData{
 				Cols:  ctx.Table.cols,
-				Id:    ctx.Table.id,
+				ID:    ctx.Table.id,
 				Title: ctx.Table.title})
 		ctx.Table.Count++
 		ctx.Table = TableInfo{
@@ -732,7 +732,7 @@ func macroImInfos(exp Exporter) {
 		if t, ok := opts["id"]; ok {
 			id := exp.RenderText(t)
 			ref := exp.GenRef("", id, false)
-			ctx.storeId(id, ref, InlineImId)
+			ctx.storeID(id, ref, InlineImID)
 		}
 		return
 	}
@@ -938,7 +938,7 @@ func macroSm(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			ctx.storeId(id, ref, SmId)
+			ctx.storeID(id, ref, SmID)
 		}
 		return
 	}
@@ -982,7 +982,7 @@ func macroSx(exp Exporter) {
 		return
 	}
 	id := ctx.InlinesToText(args[0])
-	var idtype IdType
+	var idtype IDType
 	var ref string
 	idinfo, ok := ctx.IDs[id]
 	if ok {
@@ -1001,7 +1001,7 @@ func macroSx(exp Exporter) {
 		name = id
 		ctx.Error("not enough arguments: cross-reference text missing")
 	}
-	exp.CrossReference(IdInfo{Ref: ref, Type: idtype}, name, punct)
+	exp.CrossReference(IDInfo{Ref: ref, Type: idtype}, name, punct)
 }
 
 func macroTa(exp Exporter) {
@@ -1367,7 +1367,7 @@ func macroHeaderInfos(exp Exporter) {
 	}
 	ref := exp.HeaderReference(ctx.Macro)
 	if id := ctx.InlinesToText(opts["id"]); id != "" {
-		ctx.storeId(id, ref, HeaderId)
+		ctx.storeID(id, ref, HeaderID)
 	}
 	num := ctx.Toc.HeaderNum(ctx.Macro, flags["nonum"])
 	title := processInlineMacros(exp, args)

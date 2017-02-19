@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// TocInfo gathers information about headers.
 type TocInfo struct {
 	HasPart         bool
 	HasChapter      bool
@@ -19,6 +20,8 @@ type TocInfo struct {
 	SubsectionNum   int
 }
 
+// NavCount returns the number of current navigation unit (a file with part or
+// chapter in indexed html).
 func (t *TocInfo) NavCount() int {
 	return t.PartCount + t.ChapterCount
 }

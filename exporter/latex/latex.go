@@ -2,7 +2,6 @@ package latex
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
+// Options gathers configuration for LaTeX exporter.
 type Options struct {
 	OutputFile string // name of output file or directory
 	Standalone bool   // generate complete document with headers
@@ -52,7 +52,7 @@ func (exp *exporter) Reset() error {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			return errors.New(fmt.Sprintf("frundis:%v\n", err))
+			return fmt.Errorf("frundis:%v\n", err)
 		}
 	}
 	if exp.curOutputFile == nil {
@@ -247,13 +247,13 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	switch idf.Type {
-	case frundis.HeaderId, frundis.FigureId, frundis.TableId, frundis.PoemId:
+	case frundis.HeaderID, frundis.FigureID, frundis.TableID, frundis.PoemID:
 		fmt.Fprintf(w, "\\hyperref[%s]{%s}%s", idf.Ref, name, punct)
-	case frundis.NoId:
+	case frundis.NoID:
 		fmt.Fprintf(w, "%s%s", name, punct)
 	default:
 		fmt.Fprintf(w, "\\hyperlink{%s}{%s}%s", idf.Ref, name, punct)
@@ -352,8 +352,8 @@ func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 		fmt.Fprintf(w, "\\caption{%s}\n", tableinfo.Title)
 		fmt.Fprintf(w, "\\label{tbl:%d}\n", ctx.Table.TitCount)
 		fmt.Fprint(w, "\\end{table}\n")
-	} else if tableinfo.Id != "" {
-		fmt.Fprintf(w, "\\hypertarget{%s}{}", tableinfo.Id)
+	} else if tableinfo.ID != "" {
+		fmt.Fprintf(w, "\\hypertarget{%s}{}", tableinfo.ID)
 	}
 }
 

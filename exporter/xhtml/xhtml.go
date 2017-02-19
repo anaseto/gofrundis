@@ -3,7 +3,6 @@ package xhtml
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"html"
 	"net/url"
@@ -15,6 +14,7 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
+// Options gathers configuration for HTML and EPUB export.
 type Options struct {
 	AllInOneFile bool   // output goes only to one html file
 	Format       string // "epub" or "xhtml"
@@ -61,7 +61,7 @@ func (exp *exporter) Reset() error {
 			if err != nil {
 				err = os.Mkdir(exp.OutputFile, 0755)
 				if err != nil {
-					return errors.New(fmt.Sprintf("frundis:%v\n", err))
+					return fmt.Errorf("frundis:%v\n", err)
 				}
 			} else {
 				fmt.Fprintf(os.Stderr, "frundis:warning:directory %s already exists", exp.OutputFile)
@@ -69,13 +69,13 @@ func (exp *exporter) Reset() error {
 			index := path.Join(exp.OutputFile, "index.html")
 			exp.curOutputFile, err = os.Create(index)
 			if err != nil {
-				return errors.New(fmt.Sprintf("frundis:%v\n", err))
+				return fmt.Errorf("frundis:%v\n", err)
 			}
 		} else if exp.OutputFile != "" {
 			var err error
 			exp.curOutputFile, err = os.Create(exp.OutputFile)
 			if err != nil {
-				return errors.New(fmt.Sprintf("frundis:%v\n", err))
+				return fmt.Errorf("frundis:%v\n", err)
 			}
 		}
 		if exp.curOutputFile == nil {
@@ -118,7 +118,7 @@ func (exp *exporter) Reset() error {
 
 		exp.curOutputFile, err = os.Create(path.Join(exp.OutputFile, "EPUB", "index.xhtml"))
 		if err != nil {
-			return errors.New(fmt.Sprintf("frundis:%v\n", err))
+			return fmt.Errorf("frundis:%v\n", err)
 		}
 		ctx.Wout = bufio.NewWriter(exp.curOutputFile)
 		title := ctx.Params["document-title"]
@@ -133,7 +133,7 @@ func makeDirectory(filename string) error {
 	if err != nil {
 		err = os.Mkdir(filename, 0755)
 		if err != nil {
-			return errors.New(fmt.Sprintf("frundis:%v\n", err))
+			return fmt.Errorf("frundis:%v\n", err)
 		}
 	}
 	return nil
@@ -299,8 +299,8 @@ func (exp *exporter) BeginTable(tableinfo *frundis.TableData) {
 	var id string
 	if tableinfo.Title != "" {
 		fmt.Fprintf(w, "<div id=\"tbl%d\" class=\"table\">\n", ctx.Table.TitCount)
-	} else if tableinfo.Id != "" {
-		id = " id=\"" + tableinfo.Id + "\""
+	} else if tableinfo.ID != "" {
+		id = " id=\"" + tableinfo.ID + "\""
 	}
 	fmt.Fprintf(w, "<table%s>\n", id)
 }
@@ -351,12 +351,12 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, "<a")
 	switch idf.Type {
-	case frundis.NoId:
+	case frundis.NoID:
 	default:
 		fmt.Fprintf(w, " href=\"%s\"", idf.Ref)
 	}

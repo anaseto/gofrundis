@@ -2,7 +2,6 @@ package markdown
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
+// Options gathers configuration for markdown exporter.
 type Options struct {
 	OutputFile string // name of output file or directory
 }
@@ -47,7 +47,7 @@ func (exp *exporter) Reset() error {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			return errors.New(fmt.Sprintf("frundis:%v\n", err))
+			return fmt.Errorf("frundis:%v\n", err)
 		}
 	}
 	if exp.curOutputFile == nil {
@@ -196,7 +196,7 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
 	w := exp.Context().W()
 	// TODO: do some kind of cross-references (pandoc-like ?)
 	fmt.Fprintf(w, "%s%s", name, punct)

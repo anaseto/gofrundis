@@ -3,7 +3,6 @@ package mom
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -16,6 +15,7 @@ import (
 	"github.com/anaseto/gofrundis/frundis"
 )
 
+// Options gathers configuration for groff mom exporter.
 type Options struct {
 	OutputFile string // name of output file or directory
 	Standalone bool   // generate complete document with headers
@@ -57,7 +57,7 @@ func (exp *exporter) Reset() error {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			return errors.New(fmt.Sprintf("frundis:%v\n", err))
+			return fmt.Errorf("frundis:%v\n", err)
 		}
 	}
 	if exp.curOutputFile == nil {
@@ -238,11 +238,11 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IdInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	switch idf.Type {
-	case frundis.NoId:
+	case frundis.NoID:
 		fmt.Fprintf(w, "%s%s", name, punct)
 	default:
 		fmt.Fprintf(w, ".PDF_LINK \"%s\" SUFFIX \"%s\" \"%s\"", idf.Ref, punct, name)
@@ -357,8 +357,8 @@ func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 		fmt.Fprintf(w, ".CAPTION \"%s\" TO_LIST TABLES\n", tableinfo.Title)
 		fmt.Fprintf(w, ".PDF_TARGET \"tbl:%d\"\n", ctx.Table.TitCount)
 		fmt.Fprintf(w, ".FLOAT OFF\n")
-	} else if tableinfo.Id != "" {
-		fmt.Fprintf(w, ".PDF_TARGET \"%s\"\n", tableinfo.Id)
+	} else if tableinfo.ID != "" {
+		fmt.Fprintf(w, ".PDF_TARGET \"%s\"\n", tableinfo.ID)
 	}
 }
 
@@ -412,9 +412,8 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 	if prefix != "" {
 		return fmt.Sprintf("%s:%s", prefix, id)
-	} else {
-		return fmt.Sprintf("%s", id)
 	}
+	return fmt.Sprintf("%s", id)
 }
 
 func (exp *exporter) HeaderReference(macro string) string {

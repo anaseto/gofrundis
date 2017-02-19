@@ -22,12 +22,12 @@ var latexEscapes = []string{
 
 var latexEscaper = strings.NewReplacer(latexEscapes...)
 
-// Latex escapes special LaTeX characters.
+// LaTeX escapes special LaTeX characters.
 func LaTeX(text string) string {
 	return latexEscaper.Replace(text)
 }
 
-// LatexPercent escapes just % (for post-processing url, for example).
+// LaTeXPercent escapes just % (for post-processing url, for example).
 func LaTeXPercent(text string) string {
 	return strings.Replace(text, "%", "\\%", -1)
 }

@@ -26,6 +26,8 @@ type BaseExporter interface {
 	PostProcessing()
 }
 
+// Renderer is an interface regrouping rendering methods common to all
+// exporters.
 type Renderer interface {
 	// BeginDescList starts a description list (e.g. prints to Context.W a "<dl>").
 	BeginDescList(id string)
@@ -71,7 +73,7 @@ type Renderer interface {
 	// Crossreference builds a reference link with a given name. It can
 	// have an explicit id from Context.IDs, or it can corresond to a
 	// loXentry.
-	CrossReference(idf IdInfo, name string, punct string)
+	CrossReference(idf IDInfo, name string, punct string)
 	// DescName generates a description list item name (e.g. "<dt>" + name
 	// + "</dt>")
 	DescName(name string)
@@ -172,7 +174,7 @@ type Context struct {
 	Filters       map[string]func(string) string // function filters
 	Format        string                         // export format name
 	Ftags         map[string]Ftag                // filter tags set with "X ftag"
-	IDs           map[string]IdInfo              // id information
+	IDs           map[string]IDInfo              // id information
 	Images        []string                       // list of image paths
 	Inline        bool                           // inline processing of Sm-like macros (e.g. in header)
 	LoXstack      map[string][]*LoXinfo          // (list-type => information list) map
@@ -237,6 +239,7 @@ type uMacroDefInfo struct {
 	blocks []ast.Block // list of blocks defining the new macro
 }
 
+// VerseInfo gathers verse information.
 type VerseInfo struct {
 	Used       bool // whether there is a poem in the source
 	verseCount int  // current titled poem number
@@ -259,7 +262,7 @@ type TableInfo struct {
 type TableData struct {
 	Title string // title of the table (empty if no title)
 	Cols  int    // number of columns
-	Id    string // label from "-id label"
+	ID    string // label from "-id label"
 }
 
 // LoXinfo gathers misc information for cross-references and TOC-like stuff.
@@ -271,26 +274,29 @@ type LoXinfo struct {
 	Ref       string // reference (e.g. in an "href")
 	RefPrefix string // reference prefix (e.g. "fig" for figures)
 	Title     string // title (rendered)
-	id        string // id for ctx.Ids
+	id        string // id for ctx.IDs
 }
 
-type IdType int
+// IDType corresponds to different elements that can have an identifier.
+type IDType int
 
+// Types of elements having an identifier
 const (
-	NoId IdType = iota
-	SmId
-	BdId
-	InlineImId
-	FigureId
-	HeaderId
-	PoemId
-	TableId
+	NoID IDType = iota
+	SmID
+	BdID
+	InlineImID
+	FigureID
+	HeaderID
+	PoemID
+	TableID
 	UntitledList
 )
 
-type IdInfo struct {
+// IDInfo gathers identifier information.
+type IDInfo struct {
 	Ref  string
-	Type IdType
+	Type IDType
 }
 
 type bfInfo struct {
@@ -348,7 +354,7 @@ func (ctx *Context) Init() {
 	if !ctx.Process {
 		ctx.Dtags = make(map[string]Dtag)
 		ctx.Ftags = make(map[string]Ftag)
-		ctx.IDs = make(map[string]IdInfo)
+		ctx.IDs = make(map[string]IDInfo)
 		ctx.LoXstack = make(map[string][]*LoXinfo)
 		ctx.Macros = DefaultExporterMacros()
 		ctx.Mtags = make(map[string]Mtag)

@@ -1,7 +1,6 @@
 package frundis
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -197,25 +196,25 @@ func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 		ctx.LoXstack[class] = []*LoXinfo{loXinfo}
 	}
 	if loXinfo.id != "" {
-		var idtype IdType
+		var idtype IDType
 		switch class {
 		case "lof":
-			idtype = FigureId
+			idtype = FigureID
 		case "lot":
-			idtype = TableId
+			idtype = TableID
 		case "lop":
-			idtype = PoemId
+			idtype = PoemID
 		}
-		ctx.storeId(loXinfo.id, loXinfo.Ref, idtype)
+		ctx.storeID(loXinfo.id, loXinfo.Ref, idtype)
 	}
 }
 
 // storeId stores an id with reference string ref, and of type idtype.
-func (ctx *Context) storeId(id, ref string, idtype IdType) {
+func (ctx *Context) storeID(id, ref string, idtype IDType) {
 	if _, ok := ctx.IDs[id]; ok {
 		ctx.Error("already used id")
 	}
-	ctx.IDs[id] = IdInfo{Ref: ref, Type: idtype}
+	ctx.IDs[id] = IDInfo{Ref: ref, Type: idtype}
 }
 
 // getCommand returns a command from a list of arguments. If there is only one
@@ -346,7 +345,7 @@ func readPairs(s string) ([]string, error) {
 	s = s[size:]
 	repls := strings.Split(s, fmt.Sprintf("%c", r))
 	if len(repls)%2 != 0 {
-		return nil, errors.New(fmt.Sprintf("odd number of items in '%s'", s))
+		return nil, fmt.Errorf("odd number of items in '%s'", s)
 	}
 	return repls, nil
 }
