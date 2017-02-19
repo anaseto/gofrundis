@@ -1,3 +1,7 @@
+v0.3:
+  + cross-reference support overhaul (much simpler now)
+  + some minor fixes
+
 v0.2:
   + support attributes for dtags too
   + better external command support
