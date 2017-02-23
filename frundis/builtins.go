@@ -44,6 +44,9 @@ func macroDefStart(exp BaseExporter) {
 func macroDefEnd(exp BaseExporter) {
 	// macro .#.
 	ctx := exp.Context()
+	if len(ctx.Args) > 0 {
+		ctx.Error("useless arguments")
+	}
 	if ctx.uMacroDef == nil {
 		ctx.Error("found '.#.' without previous '.#de'")
 		return
@@ -161,6 +164,9 @@ func macroIfStart(exp BaseExporter) {
 func macroIfEnd(exp BaseExporter) {
 	// macro .#;
 	ctx := exp.Context()
+	if len(ctx.Args) > 0 {
+		ctx.Error("useless arguments")
+	}
 	if ctx.ifIgnoreDepth > 0 {
 		ctx.ifIgnoreDepth--
 	}
