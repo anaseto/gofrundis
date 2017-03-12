@@ -7,7 +7,7 @@
 .Bf -f latex
 \erule{\etextwidth}{1pt}
 .Ef
-.Bf -f text
+.Bf -f markdown
 ***
 .Ef
 .P
