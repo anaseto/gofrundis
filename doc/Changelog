@@ -1,4 +1,5 @@
   + warn if unterminated quoted argument
+  + warn if bad -c argument to html mtag or dtag
 
 v0.3:
   + cross-reference support overhaul (much simpler now)

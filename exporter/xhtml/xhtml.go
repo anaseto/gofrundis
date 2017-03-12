@@ -647,6 +647,12 @@ func (exp *exporter) TableOfContentsInfos(flags map[string]bool) {
 }
 
 func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
+	switch cmd {
+	case "address", "article", "aside", "blockquote", "div", "header", "fieldset",
+		"figure", "footer", "form", "main", "nav", "section", "":
+	default:
+		exp.Context().Error(cmd, ":expected element allowing flowing content")
+	}
 	return frundis.Dtag{Cmd: cmd, Pairs: pairs}
 }
 
@@ -660,6 +666,14 @@ func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string
 		c = "em"
 	} else {
 		c = *cmd
+	}
+	switch c {
+	case "a", "abbr", "area", "audio", "b", "bdi", "bdo", "br", "button", "canvas", "cite", "code", "data", "datalist", "del",
+		"dfn", "em", "embed", "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "link", "map", "mark", "math",
+		"meta", "meter", "noscript", "object", "output", "progress", "q", "ruby", "s", "samp", "script", "select",
+		"small", "span", "strong", "sub", "sup", "svg", "template", "textarea", "time", "u", "var", "video", "wbr", "text":
+	default:
+		exp.Context().Error(c, ":not an html phrasing element")
 	}
 	// TODO: perhaps process pairs here and do some error checking
 	return frundis.Mtag{Begin: html.EscapeString(begin), End: html.EscapeString(end), Cmd: c, Pairs: pairs}

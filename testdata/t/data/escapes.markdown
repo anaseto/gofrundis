@@ -10,11 +10,15 @@ A \`\~'character A non-breaking space ! \[bla\] <bla\>
 
 —A dialogue starts with a mark. Two backslashes \\\\.
 
+
+```
 Text \\*
 Text \\.
 Text \\
 normal text
 Text. \% #'"&$
+```
+
 **strange title:\\%$\#**. Text.
 ![http://example.com/image.png?thing=2&stuff=4%](http://example.com/image.png?thing=2&stuff=4%)
 

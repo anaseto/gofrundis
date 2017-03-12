@@ -86,6 +86,8 @@ func (exp *exporter) BeginDialogue() {
 }
 
 func (exp *exporter) BeginDisplayBlock(tag string, id string) {
+	w := exp.Context().W()
+	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) BeginEnumList(id string) {
@@ -219,6 +221,8 @@ func (exp *exporter) EndDescValue() {
 }
 
 func (exp *exporter) EndDisplayBlock(tag string) {
+	w := exp.Context().W()
+	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) EndEnumList() {
