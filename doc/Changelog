@@ -1,5 +1,10 @@
-  + warn if unterminated quoted argument
-  + warn if bad -c argument to html mtag or dtag
+v0.4:
+
+  + warn if unterminated quoted argument instead of just adding closing
+    automatically
+  + warn if invalid -c argument to html mtag or dtag
+  + add some other warnings
+  + update code.frundis example
 
 v0.3:
   + cross-reference support overhaul (much simpler now)
