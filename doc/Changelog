@@ -1,3 +1,5 @@
+  + warn if unterminated quoted argument
+
 v0.3:
   + cross-reference support overhaul (much simpler now)
   + some minor fixes

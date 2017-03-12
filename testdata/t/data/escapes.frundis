@@ -43,8 +43,8 @@ Text.
 .Lk \&«»#\e ).
 .Sx label \elolailo
 .\"\$
-.Sm "Some     Text
-.Sm "Some     ""Text
+.Sm "Some     Text"
+.Sm "Some     ""Text"
 .Ft -f xhtml,latex -t escape \&"&
 .#if -f xhtml
 .Sm -t espace-insecable blabla blabla

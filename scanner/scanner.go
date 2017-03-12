@@ -12,6 +12,7 @@ import (
 	"github.com/anaseto/gofrundis/token"
 )
 
+// Scanner gathers information and methods for scanning frundis files.
 type Scanner struct {
 	File    string    // file beeing read (for error messages only)
 	Reader  io.Reader // reader to scan from
@@ -119,7 +120,11 @@ func (s *Scanner) scanArgument() (token.Token, string) {
 		}
 		return s.scanEscape()
 	case '\n':
-		if s.state == scanArgMore || s.state == scanQuotedArg {
+		if s.state == scanArgMore {
+			s.state = scanArgEnd
+			return token.TEXT, ""
+		} else if s.state == scanQuotedArg {
+			s.error("unterminated quoted argument")
 			s.state = scanArgEnd
 			return token.TEXT, ""
 		}
@@ -170,7 +175,11 @@ scanAgain:
 			goto scanAgain
 		}
 	default:
-		if s.state != scanQuotedArg && unicode.IsSpace(s.ch) || s.ch == '\n' {
+		if s.state != scanQuotedArg && unicode.IsSpace(s.ch) {
+			s.state = scanArgEnd
+			return token.TEXT, s.buf.String()
+		} else if s.ch == '\n' {
+			s.error("unterminated quoted argument")
 			s.state = scanArgEnd
 			return token.TEXT, s.buf.String()
 		}

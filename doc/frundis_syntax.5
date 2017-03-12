@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd March 09, 2017
+.Dd March 12, 2017
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -83,13 +83,6 @@ inside a pair of quote characters
 A literal character
 .Sq \&"
 can be rendered inside a quoted string by doubling it.
-If an argument begins with a
-.Sq \&"
-without a corresponding closing
-.Sq \&"
-then all text following the
-.Sq \&"
-to the end of the line forms a single argument.
 .Ss Comments
 In any type of line, text beginning by
 .Sq \&\e\(dq
@@ -219,7 +212,7 @@ define exporting parameters and tags:
 .Ar args ...
 .El
 .Sh FORMATS
-Currently four target formats are supported: LaTeX, XHTML, EPUB,
+Currently several target formats are supported: LaTeX, XHTML, EPUB,
 markdown and groff mom.
 Some parameters apply only to a specific target format, see the
 .Sx PARAMETERS
