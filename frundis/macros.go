@@ -333,12 +333,16 @@ func macroBm(exp Exporter) {
 
 func macroD(exp Exporter) {
 	ctx := exp.Context()
+	if !ctx.Process {
+		return
+	}
+	if checkForList(exp) {
+		ctx.Error("not allowed in list")
+		return
+	}
 	_, _, args := ctx.ParseOptions(specOptD, ctx.Args)
 	if len(args) > 0 {
 		ctx.Error("useless arguments")
-	}
-	if !ctx.Process {
-		return
 	}
 	if ctx.parScope {
 		closeSpanningBlocks(exp)
@@ -907,6 +911,10 @@ func macroLk(exp Exporter) {
 func macroP(exp Exporter) {
 	ctx := exp.Context()
 	if !ctx.Process {
+		return
+	}
+	if checkForList(exp) {
+		ctx.Error("not allowed in list")
 		return
 	}
 	_, _, args := ctx.ParseOptions(specOptP, ctx.Args)
@@ -1667,4 +1675,17 @@ func checkForUnclosedDe(exp Exporter) {
 		return
 	}
 	ctx.Error("found End Of File while `.#de' macro at line ", ctx.uMacroDef.line, " of file ", ctx.uMacroDef.file, " isn't closed by a `.#.'")
+}
+
+// checkForList checks whether in list (not including verse)
+func checkForList(exp Exporter) bool {
+	ctx := exp.Context()
+	scopes, ok := ctx.scopes["Bl"]
+	if ok && len(scopes) > 0 {
+		last := scopes[len(scopes)-1]
+		if last == nil || last.tag != "verse" {
+			return true
+		}
+	}
+	return false
 }
