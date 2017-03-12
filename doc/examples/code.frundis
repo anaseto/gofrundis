@@ -2,6 +2,7 @@
 .X dtag -f latex -t code -c verbatim
 .X dtag -f mom -t code -c CODE
 .X dtag -f xhtml,epub -t code -c div
+.X dtag -f xhtml,epub -t filtered-code -c div
 .X dtag -f markdown -t code
 .\" Begin a code block
 .#de Bcode
@@ -32,4 +33,16 @@
 .#;
 .Ft -f xhtml,epub </pre>
 .Ed -t code
+.#.
+.\" Include code from file macro with custom filter
+.#de -f xhtml include-code-with-filter
+.Bd -r -t filtered-code
+.Bf -f xhtml
+<pre>
+.Ef
+.If -as-is -t \$1 \$2
+.Bf -f xhtml
+</pre>
+.Ef
+.Ed -t filtered-code
 .#.
