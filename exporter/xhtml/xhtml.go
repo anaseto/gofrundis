@@ -64,7 +64,7 @@ func (exp *exporter) Reset() error {
 					return fmt.Errorf("frundis:%v\n", err)
 				}
 			} else {
-				fmt.Fprintf(os.Stderr, "frundis:warning:directory %s already exists", exp.OutputFile)
+				fmt.Fprintf(os.Stderr, "frundis:warning:directory %s already exists\n", exp.OutputFile)
 			}
 			index := path.Join(exp.OutputFile, "index.html")
 			exp.curOutputFile, err = os.Create(index)
