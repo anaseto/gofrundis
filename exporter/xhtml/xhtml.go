@@ -40,6 +40,9 @@ type exporter struct {
 	OutputFile          string
 	curOutputFile       *os.File
 	xhtmlNavigationText *bytes.Buffer
+	renderedTitle       string
+	renderedAuthor      string
+	renderedDate        string
 }
 
 func (exp *exporter) Init() {
@@ -54,6 +57,9 @@ func (exp *exporter) Init() {
 func (exp *exporter) Reset() error {
 	ctx := exp.Context()
 	ctx.Reset()
+	exp.renderedTitle = exp.RenderText([]ast.Inline{ast.Text(ctx.Params["document-title"])})
+	exp.renderedAuthor = exp.RenderText([]ast.Inline{ast.Text(ctx.Params["document-author"])})
+	exp.renderedDate = exp.RenderText([]ast.Inline{ast.Text(ctx.Params["document-date"])})
 	switch exp.Format {
 	case "xhtml":
 		if exp.OutputFile != "" && !exp.AllInOneFile {
@@ -83,8 +89,7 @@ func (exp *exporter) Reset() error {
 		}
 		ctx.Wout = bufio.NewWriter(exp.curOutputFile)
 		if exp.Standalone || !exp.AllInOneFile {
-			title := html.EscapeString(ctx.Params["document-title"])
-			exp.XHTMLdocumentHeader(ctx.Wout, title)
+			exp.XHTMLdocumentHeader(ctx.Wout, exp.renderedTitle)
 			exp.xhtmlTitlePage()
 			if !exp.AllInOneFile {
 				switch ctx.Params["xhtml-index"] {
@@ -121,8 +126,7 @@ func (exp *exporter) Reset() error {
 			return fmt.Errorf("frundis:%v\n", err)
 		}
 		ctx.Wout = bufio.NewWriter(exp.curOutputFile)
-		title := ctx.Params["document-title"]
-		exp.XHTMLdocumentHeader(ctx.Wout, title)
+		exp.XHTMLdocumentHeader(ctx.Wout, exp.renderedTitle)
 		exp.xhtmlTitlePage()
 	}
 	return nil

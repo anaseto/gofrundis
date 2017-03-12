@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"text/template"
 
+	"github.com/anaseto/gofrundis/ast"
 	"github.com/anaseto/gofrundis/frundis"
 )
 
@@ -85,9 +86,9 @@ func (exp *exporter) beginLatexDocument() {
 	if langMini == "" {
 		langMini = "english"
 	}
-	title := ctx.Params["document-title"]
-	author := ctx.Params["document-author"]
-	date := ctx.Params["document-date"]
+	title := exp.RenderText([]ast.Inline{ast.Text(ctx.Params["document-title"])})
+	author := exp.RenderText([]ast.Inline{ast.Text(ctx.Params["document-author"])})
+	date := exp.RenderText([]ast.Inline{ast.Text(ctx.Params["document-date"])})
 	preamble := ctx.Params["latex-preamble"]
 	data := &struct {
 		Title     string
