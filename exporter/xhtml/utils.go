@@ -418,17 +418,17 @@ func (exp *exporter) xhtmlTitlePage() {
 	if !frundis.IsTrue(ctx.Params["title-page"]) {
 		return
 	}
-	if title, ok := ctx.Params["document-title"]; ok {
+	if title := ctx.Params["document-title"]; title != "" {
 		fmt.Fprintf(ctx.Wout, "<h1 class=\"title\">%s</h1>\n", title)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document title specified")
 	}
-	if author, ok := ctx.Params["document-author"]; ok {
+	if author := ctx.Params["document-author"]; author != "" {
 		fmt.Fprintf(ctx.Wout, "<h2 class=\"author\">%s</h2>\n", author)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document author specified")
 	}
-	if date, ok := ctx.Params["document-date"]; ok {
+	if date := ctx.Params["document-date"]; date != "" {
 		fmt.Fprintf(ctx.Wout, "<h3 class=\"date\">%s</h3>\n", date)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document date specified")
