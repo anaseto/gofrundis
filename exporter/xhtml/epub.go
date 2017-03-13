@@ -62,7 +62,7 @@ func (exp *exporter) epubGen() {
 	if !ok {
 		ctx.Error("EPUB requires document-title parameter to be set")
 	}
-	title := exp.renderedTitle
+	title := ctx.Params["document-title"]
 	lang := ctx.Params["lang"]
 
 	exp.epubGenMimetype()
@@ -162,8 +162,8 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 	if subject := html.EscapeString(ctx.Params["epub-subject"]); subject != "" {
 		fmt.Fprintf(buf, "<dc:subject id=\"epub-subject-1\">%s</dc:subject>\n", subject)
 	}
-	if exp.renderedAuthor != "" {
-		fmt.Fprintf(buf, "<dc:creator id=\"epub-creator-1\">%s</dc:creator>\n", exp.renderedAuthor)
+	if author, ok := ctx.Params["document-author"]; ok {
+		fmt.Fprintf(buf, "<dc:creator id=\"epub-creator-1\">%s</dc:creator>\n", author)
 	}
 	if cover != "" && epub3 {
 		buf.WriteString("<meta name=\"cover\" content=\"cover-image\" />\n")

@@ -59,7 +59,7 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 		if t, ok := opts["title"]; flags["mini"] || ok {
 			title = exp.RenderText(t)
 		} else {
-			title = exp.renderedTitle
+			title = ctx.Params["document-title"]
 		}
 		if title != "" {
 			fmt.Fprintf(w, "  <h2 id=\"toc-title\" class=\"toc-title\">%s</h2>\n", title)
@@ -67,14 +67,14 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 		fmt.Fprint(w, "  <ul>\n")
 	case ncxToc:
 		fmt.Fprint(w, "<navMap>\n")
-		title := exp.renderedTitle
+		title := ctx.Params["document-title"]
 		fmt.Fprint(w, "    <navPoint id=\"titlepage\">\n")
 		fmt.Fprintf(w, "      <navLabel><text>%s</text></navLabel>\n", title)
 		fmt.Fprint(w, "      <content src=\"index.xhtml\" />\n")
 		fmt.Fprint(w, "    </navPoint>\n")
 	case navToc:
 		fmt.Fprint(w, "<nav epub:type=\"toc\" id=\"navtoc\">\n")
-		title := exp.renderedTitle
+		title := ctx.Params["document-title"]
 		if title != "" {
 			fmt.Fprintf(w, "  <h2 id=\"toc-title\" class=\"toc-title\">%s</h2>\n", title)
 		}
@@ -418,18 +418,18 @@ func (exp *exporter) xhtmlTitlePage() {
 	if !frundis.IsTrue(ctx.Params["title-page"]) {
 		return
 	}
-	if exp.renderedTitle != "" {
-		fmt.Fprintf(ctx.Wout, "<h1 class=\"title\">%s</h1>\n", exp.renderedTitle)
+	if title, ok := ctx.Params["document-title"]; ok {
+		fmt.Fprintf(ctx.Wout, "<h1 class=\"title\">%s</h1>\n", title)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document title specified")
 	}
-	if exp.renderedAuthor != "" {
-		fmt.Fprintf(ctx.Wout, "<h2 class=\"author\">%s</h2>\n", exp.renderedAuthor)
+	if author, ok := ctx.Params["document-author"]; ok {
+		fmt.Fprintf(ctx.Wout, "<h2 class=\"author\">%s</h2>\n", author)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document author specified")
 	}
-	if exp.renderedDate != "" {
-		fmt.Fprintf(ctx.Wout, "<h3 class=\"date\">%s</h3>\n", exp.renderedDate)
+	if date, ok := ctx.Params["document-date"]; ok {
+		fmt.Fprintf(ctx.Wout, "<h3 class=\"date\">%s</h3>\n", date)
 	} else {
 		ctx.Error("warning:parameter ``title-page'' set to true value but no document date specified")
 	}

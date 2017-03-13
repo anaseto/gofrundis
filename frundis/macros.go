@@ -1314,7 +1314,7 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 		ctx.Error("too many arguments")
 	}
 	param := ctx.InlinesToText(args[0])
-	value := ctx.InlinesToText(args[1])
+	var value string
 	switch param {
 	case "dmark", "document-author", "document-date", "document-title",
 		"epub-cover", "epub-css", "epub-metadata", "epub-subject", "epub-uuid", "epub-version",
@@ -1325,6 +1325,14 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-go-up", "xhtml-top", "xhtml5":
 	default:
 		ctx.Error("unknown parameter:", param)
+	}
+	switch param {
+	case "document-author", "document-date", "document-title",
+		"epub-subject", "epub-uuid",
+		"xhtml-index", "xhtml-go-up", "xhtml-top":
+		value = exp.RenderText(args[1])
+	default:
+		value = ctx.InlinesToText(args[1])
 	}
 	if exp.CheckParamAssignement(param, value) {
 		ctx.Params[param] = value
