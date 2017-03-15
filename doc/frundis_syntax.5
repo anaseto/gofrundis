@@ -1211,6 +1211,13 @@ section.
 A defined variable can then be interpolated in text lines and macro lines
 arguments with
 .No \e* Ns Bq Ar name .
+As a special case, if
+.Ar name
+starts with
+.Sq $
+and is not defined, it is looked up in the environment; if it is not found, the
+empty string is returned.
+Use of an undefined variable is an error in the general case.
 .Ss \&#if
 Begin a conditional. The syntax is as follows:
 .Bd -literal -offset indent

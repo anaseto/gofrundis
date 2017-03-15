@@ -17,3 +17,4 @@ Some text. The date:\*[date]
 .#;
 .#dv backslash «\e»
 \*[backslash]
+Environment:\*[$FRUNDIS]\*[$UNDEFINEDVAR]

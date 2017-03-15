@@ -15,6 +15,10 @@ import (
 var passTests bool = true
 
 func main() {
+	err := os.Setenv("FRUNDIS", "ok")
+	if err != nil {
+		fmt.Fprint(os.Stderr, "could not set environment variable")
+	}
 	for _, f := range []func() error{doFragments, doStandalones} {
 		err := f()
 		if err != nil {

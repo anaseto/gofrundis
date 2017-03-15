@@ -122,7 +122,11 @@ func (ctx *Context) inlineToText(elt ast.Inline) string {
 		var ok bool
 		res, ok = ctx.ivars[string(elt)]
 		if !ok {
-			ctx.Error("unknown variable name:", string(elt))
+			if len(string(elt)) > 0 && string(elt)[0] == '$' {
+				res = os.Getenv(string(elt)[1:])
+			} else {
+				ctx.Error("unknown variable name:", string(elt))
+			}
 		}
 	case ast.Text:
 		res = string(elt)

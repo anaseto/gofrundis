@@ -1,3 +1,6 @@
+  + interpolate environment variables with \*[$ENVVAR]
+  + some bug fixes
+
 v0.4:
 
   + warn if unterminated quoted argument instead of just adding closing
