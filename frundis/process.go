@@ -124,7 +124,7 @@ func processBlock(exp Exporter) {
 		if ok {
 			if ctx.bfInfo != nil {
 				switch b.Name {
-				case "Ef", "#de", "#.", "#if", "#;", "#dv":
+				case "Ef", "#if", "#;":
 				default:
 					checkForUnclosedFormatBlock(exp)
 				}
