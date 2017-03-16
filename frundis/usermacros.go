@@ -85,7 +85,7 @@ func (ctx *Context) argsSubstBlock(
 	return res
 }
 
-func processUserMacro(exp Exporter) {
+func processUserMacro(exp Exporter, m uMacroDefInfo) {
 	ctx := exp.Context()
 	// Do not allow too much depth
 	if ctx.uMacroCall.depth > 42 {
@@ -94,13 +94,7 @@ func processUserMacro(exp Exporter) {
 	}
 
 	// curBlock: user defined macro
-	mb := ctx.block().(*ast.Macro)
-	m, ok := ctx.uMacros[mb.Name]
-	if !ok {
-		ctx.Error("internal error:undefined macro:", mb.Name) // (should not happen)
-		return
-	}
-	opts, flags, args := ctx.ParseOptions(m.opts, mb.Args)
+	opts, flags, args := ctx.ParseOptions(m.opts, ctx.Args)
 
 	if len(args) > m.argsc {
 		ctx.Error("too many arguments")

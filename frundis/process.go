@@ -114,10 +114,9 @@ func processBlock(exp Exporter) {
 
 	switch b := b.(type) {
 	case *ast.Macro:
-		var ok bool
-		_, ok = ctx.uMacros[b.Name]
+		m, ok := ctx.uMacros[b.Name]
 		if ok {
-			processUserMacro(exp)
+			processUserMacro(exp, m)
 			return
 		}
 		handler, ok := ctx.Macros[b.Name]
