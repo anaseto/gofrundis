@@ -145,7 +145,7 @@ func (ctx *Context) InlinesToText(elts []ast.Inline) string {
 }
 
 // argsToText stringifies a list of arguments args using separator sep.
-func argsToText(exp BaseExporter, args [][]ast.Inline, sep string) string {
+func argsToText(exp Exporter, args [][]ast.Inline, sep string) string {
 	ctx := exp.Context()
 	ctx.bufa2t.Reset()
 	for i, arg := range args {

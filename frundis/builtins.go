@@ -11,7 +11,7 @@ import (
 	"github.com/anaseto/gofrundis/ast"
 )
 
-func macroDefStart(exp BaseExporter) {
+func macroDefStart(exp Exporter) {
 	// macro .#de
 	ctx := exp.Context()
 	if ctx.uMacroDef != nil {
@@ -41,7 +41,7 @@ func macroDefStart(exp BaseExporter) {
 		file:   ctx.loc.curFile}
 }
 
-func macroDefEnd(exp BaseExporter) {
+func macroDefEnd(exp Exporter) {
 	// macro .#.
 	ctx := exp.Context()
 	if len(ctx.Args) > 0 {
@@ -122,7 +122,7 @@ func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) i
 	return max
 }
 
-func macroIfStart(exp BaseExporter) {
+func macroIfStart(exp Exporter) {
 	// macro .#if
 	ctx := exp.Context()
 	ctx.pushScope(&scope{name: "#if"})
@@ -161,7 +161,7 @@ func macroIfStart(exp BaseExporter) {
 	}
 }
 
-func macroIfEnd(exp BaseExporter) {
+func macroIfEnd(exp Exporter) {
 	// macro .#;
 	ctx := exp.Context()
 	if len(ctx.Args) > 0 {
@@ -176,7 +176,7 @@ func macroIfEnd(exp BaseExporter) {
 	}
 }
 
-func macroDefVar(exp BaseExporter) {
+func macroDefVar(exp Exporter) {
 	// macro .#dv
 	ctx := exp.Context()
 	opts, _, args := ctx.ParseOptions(specOptDefVar, ctx.Args)
@@ -203,7 +203,7 @@ func macroDefVar(exp BaseExporter) {
 	ctx.ivars[name] = buf.String()
 }
 
-func macroRun(exp BaseExporter) {
+func macroRun(exp Exporter) {
 	// macro .#run
 	ctx := exp.Context()
 	if !ctx.Unrestricted {

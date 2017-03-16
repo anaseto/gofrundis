@@ -85,7 +85,7 @@ func (ctx *Context) argsSubstBlock(
 	return res
 }
 
-func processUserMacro(exp BaseExporter) {
+func processUserMacro(exp Exporter) {
 	ctx := exp.Context()
 	// Do not allow too much depth
 	if ctx.uMacroCall.depth > 42 {

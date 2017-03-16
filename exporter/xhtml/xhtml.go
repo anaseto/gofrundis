@@ -159,10 +159,6 @@ func (exp *exporter) PostProcessing() {
 	}
 }
 
-func (exp *exporter) BlockHandler() {
-	frundis.DefaultBlockHandler(exp)
-}
-
 func (exp *exporter) BeginDescList(id string) {
 	ctx := exp.Context()
 	w := ctx.W()

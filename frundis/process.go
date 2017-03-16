@@ -41,7 +41,7 @@ func ProcessFrundisSource(exp Exporter, filename string, unrestricted bool) erro
 }
 
 // processFile does one pass through a file with a given exporter.
-func processFile(exp BaseExporter, filename string) error {
+func processFile(exp Exporter, filename string) error {
 	ctx := exp.Context()
 	blocks, ok := ctx.files[filename]
 	if !ok {
@@ -60,7 +60,7 @@ func processFile(exp BaseExporter, filename string) error {
 	return nil
 }
 
-func processBlocks(exp BaseExporter) {
+func processBlocks(exp Exporter) {
 	ctx := exp.Context()
 	for i, b := range ctx.loc.curBlocks {
 		ctx.loc.curBlock = i
@@ -77,7 +77,7 @@ func processBlocks(exp BaseExporter) {
 	}
 }
 
-func processBlock(exp BaseExporter) {
+func processBlock(exp Exporter) {
 	ctx := exp.Context()
 	b := ctx.block()
 	if ctx.ifIgnoreDepth > 0 {
@@ -112,87 +112,88 @@ func processBlock(exp BaseExporter) {
 		return
 	}
 
-	if b, ok := b.(*ast.Macro); ok {
+	switch b := b.(type) {
+	case *ast.Macro:
+		var ok bool
 		_, ok = ctx.uMacros[b.Name]
 		if ok {
 			processUserMacro(exp)
 			return
 		}
-		builtinHandler, ok := ctx.builtins[b.Name]
+		handler, ok := ctx.Macros[b.Name]
 		if ok {
-			builtinHandler(exp)
+			if ctx.bfInfo != nil {
+				switch b.Name {
+				case "Ef", "#de", "#.", "#if", "#;", "#dv":
+				default:
+					checkForUnclosedFormatBlock(exp)
+				}
+			}
+			handler(exp)
 			ctx.PrevMacro = b.Name
-			return
+		} else if b.Name != "" {
+			ctx.Error("unknown macro:", b.Name)
 		}
+	case *ast.TextBlock:
+		processText(exp)
+		ctx.PrevMacro = ""
 	}
-	exp.BlockHandler()
 }
 
 // DefaultExporterMacros returns a mapping from macros to handling functions,
 // with the standard set of frundis macros.
 func DefaultExporterMacros() map[string]func(Exporter) {
 	return map[string]func(Exporter){
-		"Bd": macroBd,
-		"Bf": macroBf,
-		"Bl": macroBl,
-		"Bm": macroBm,
-		"Ch": macroHeader,
-		"D":  macroD,
-		"Ed": macroEd,
-		"Ef": macroEf,
-		"El": macroEl,
-		"Em": macroEm,
-		"Ft": macroFt,
-		"If": macroIncludeFile,
-		"Im": macroIm,
-		"It": macroIt,
-		"Lk": macroLk,
-		"P":  macroP,
-		"Pt": macroHeader,
-		"Sh": macroHeader,
-		"Sm": macroSm,
-		"Ss": macroHeader,
-		"Sx": macroSx,
-		"Ta": macroTa,
-		"Tc": macroTc,
-		"X":  macroX}
+		"Bd":   macroBd,
+		"Bf":   macroBf,
+		"Bl":   macroBl,
+		"Bm":   macroBm,
+		"Ch":   macroHeader,
+		"D":    macroD,
+		"Ed":   macroEd,
+		"Ef":   macroEf,
+		"El":   macroEl,
+		"Em":   macroEm,
+		"Ft":   macroFt,
+		"If":   macroIncludeFile,
+		"Im":   macroIm,
+		"It":   macroIt,
+		"Lk":   macroLk,
+		"P":    macroP,
+		"Pt":   macroHeader,
+		"Sh":   macroHeader,
+		"Sm":   macroSm,
+		"Ss":   macroHeader,
+		"Sx":   macroSx,
+		"Ta":   macroTa,
+		"Tc":   macroTc,
+		"X":    macroX,
+		"#de":  macroDefStart,
+		"#.":   macroDefEnd,
+		"#if":  macroIfStart,
+		"#;":   macroIfEnd,
+		"#dv":  macroDefVar,
+		"#run": macroRun}
 }
 
 // MinimalExporterMacros returns a mapping from macros to handling functions,
 // with only the following macros: Bd, Bf, Bm, Ed, Ef, Em, Ft, If, Sm, X.
 func MinimalExporterMacros() map[string]func(Exporter) {
 	return map[string]func(Exporter){
-		"Bd": macroBd,
-		"Bf": macroBf,
-		"Bm": macroBm,
-		"Ed": macroEd,
-		"Ef": macroEf,
-		"Em": macroEm,
-		"Ft": macroFt,
-		"If": macroIncludeFile,
-		"Sm": macroSm,
-		"X":  macroX}
-}
-
-// DefaultBlockHandler is a handler for Exporter method BlockHandler.
-func DefaultBlockHandler(exp Exporter) {
-	ctx := exp.Context()
-	b := ctx.block()
-	switch b := b.(type) {
-	case *ast.Macro:
-		macros := ctx.Macros
-		handler, ok := macros[b.Name]
-		if ok {
-			if ctx.bfInfo != nil && b.Name != "Ef" {
-				checkForUnclosedFormatBlock(exp)
-			}
-			handler(exp)
-		} else if b.Name != "" {
-			ctx.Error("unknown macro:", b.Name)
-		}
-		ctx.PrevMacro = b.Name
-	case *ast.TextBlock:
-		processText(exp)
-		ctx.PrevMacro = ""
-	}
+		"Bd":   macroBd,
+		"Bf":   macroBf,
+		"Bm":   macroBm,
+		"Ed":   macroEd,
+		"Ef":   macroEf,
+		"Em":   macroEm,
+		"Ft":   macroFt,
+		"If":   macroIncludeFile,
+		"Sm":   macroSm,
+		"X":    macroX,
+		"#de":  macroDefStart,
+		"#.":   macroDefEnd,
+		"#if":  macroIfStart,
+		"#;":   macroIfEnd,
+		"#dv":  macroDefVar,
+		"#run": macroRun}
 }

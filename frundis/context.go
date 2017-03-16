@@ -12,10 +12,8 @@ import (
 	"github.com/anaseto/gofrundis/ast"
 )
 
-// BaseExporter is a basic interface of basic built-in macros and basic
-// behavior.
+// BaseExporter is a basic interface with essential Exporter methods.
 type BaseExporter interface {
-	BlockHandler()
 	// Context returns processing context.
 	Context() *Context
 	// Init initializes Exporter
@@ -197,7 +195,6 @@ type Context struct {
 	bufa2t        bytes.Buffer                   // buffer to avoid allocations
 	bufi2t        bytes.Buffer                   // buffer to avoid allocations
 	bufra         bytes.Buffer                   // buffer to avoid allocations
-	builtins      map[string]func(BaseExporter)  // builtins map (#de, #dv, etc.)
 	files         map[string]([]ast.Block)       // parsed files
 	frundisINC    []string                       // list of paths where to search for frundis source files
 	ifIgnoreDepth int                            // depth of "#if" blocks with false condition
@@ -344,13 +341,6 @@ func (ctx *Context) Init() {
 	if ctx.Werror == nil {
 		ctx.Werror = os.Stderr
 	}
-	ctx.builtins = map[string]func(BaseExporter){
-		"#de":  macroDefStart,
-		"#.":   macroDefEnd,
-		"#if":  macroIfStart,
-		"#;":   macroIfEnd,
-		"#dv":  macroDefVar,
-		"#run": macroRun}
 	if !ctx.Process {
 		ctx.Dtags = make(map[string]Dtag)
 		ctx.Ftags = make(map[string]Ftag)
