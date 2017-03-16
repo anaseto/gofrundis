@@ -2,7 +2,6 @@ package parser
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -85,15 +84,14 @@ func (p *Parser) parseBlock() (ast.Block, error) {
 	case token.EOF:
 		b = nil
 	default:
-		err = errors.New(fmt.Sprintf("parser.parseBlock:unexpected token: %v\n", p.tok))
+		err = fmt.Errorf("parser.parseBlock:unexpected token:%#v\n", p.tok)
 	}
 	//fmt.Fprintf(os.Stderr, "%#v\n", b)
 	return b, err
 }
 
 func (p *Parser) parseText() (*ast.TextBlock, error) {
-	// p.tok == token.TEXT || p.tok == token.ESCAPE || p.tok == token.IESCAPE
-	// || p.tok == token.AESCAPE
+	// p.tok != token.MACRO_NAME && p.tok != token.EOF
 	b := []ast.Inline{}
 	line := p.line
 parse:
@@ -118,7 +116,7 @@ parse:
 		case token.MACRO_NAME, token.EOF:
 			break parse
 		default:
-			return nil, errors.New(fmt.Sprint("parser.parseText:unexpected token:", p.tok))
+			return nil, fmt.Errorf("parser.parseText:unexpected token:%#v", p.tok)
 		}
 		var err error
 		p.tok, p.line, p.lit, err = p.scan.Scan()
@@ -172,7 +170,7 @@ parse:
 			m.Args = append(m.Args, a)
 			a = []ast.Inline{}
 		default:
-			return nil, errors.New(fmt.Sprint("parser.parseMacro:unexpected token:", p.tok))
+			return nil, fmt.Errorf("parser.parseMacro:unexpected token:%#v", p.tok)
 		}
 	}
 	return &m, nil
