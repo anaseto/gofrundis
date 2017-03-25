@@ -12,7 +12,7 @@ import (
 	"syscall"
 )
 
-var passTests bool = true
+var passTests = true
 
 func main() {
 	err := os.Setenv("FRUNDIS", "ok")
@@ -34,7 +34,7 @@ func main() {
 func doFragments() error {
 	dataDir, err := os.Open("t/data")
 	if err != nil {
-		return errors.New(fmt.Sprintf("Error reading t/data:%v", err))
+		return fmt.Errorf("Error reading t/data:%v", err)
 	}
 	defer func() {
 		err := dataDir.Close()
@@ -61,7 +61,7 @@ func doFragments() error {
 func doStandalones() error {
 	dataDir, err := os.Open("t/data-dirs")
 	if err != nil {
-		return errors.New(fmt.Sprintf("Error reading t/data-dirs:%v", err))
+		return fmt.Errorf("Error reading t/data-dirs:%v", err)
 	}
 	defer func() {
 		err = dataDir.Close()
@@ -206,7 +206,7 @@ func testStandalone(file string, format string, toFile bool) error {
 	case "mom":
 		suffix = ".mom"
 	default:
-		return errors.New(fmt.Sprintf("internal error:unknown format:%s", format))
+		return fmt.Errorf("internal error:unknown format:%s", format)
 	}
 	name := strings.TrimSuffix(file, ".frundis")
 	info, err := os.Stat(outputDir)
@@ -214,7 +214,7 @@ func testStandalone(file string, format string, toFile bool) error {
 		if info.IsDir() {
 			err = os.RemoveAll(outputDir)
 			if err != nil {
-				return errors.New(fmt.Sprintf("removing outputDir:%v", err))
+				return fmt.Errorf("removing outputDir:%v", err)
 			}
 		} else {
 			os.Remove(outputDir)
@@ -269,11 +269,11 @@ func testStandalone(file string, format string, toFile bool) error {
 			fmt.Fprintf(os.Stderr, "replacing %s with %s\n", ref, outputFile)
 			err := os.RemoveAll(ref)
 			if err != nil {
-				return errors.New(fmt.Sprintf("Error removing directory %s:%v", ref, err))
+				return fmt.Errorf("Error removing directory %s:%v", ref, err)
 			}
 			err = os.Rename(outputDir, ref)
 			if err != nil {
-				return errors.New(fmt.Sprintf("Error renaming to %s", ref))
+				return fmt.Errorf("Error renaming to %s", ref)
 			}
 		}
 	}
