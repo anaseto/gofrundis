@@ -206,11 +206,6 @@ func macroDefVar(exp Exporter) {
 func macroRun(exp Exporter) {
 	// macro .#run
 	ctx := exp.Context()
-	if !ctx.Unrestricted {
-		ctx.Error("skipping disallowed external command")
-		return
-	}
-	_, _, args := ctx.ParseOptions(specOptRun, ctx.Args)
 	if !ctx.Process {
 		// NOTE: it could eventually be interesting to add an option
 		// that populates stdin of command with information which the
@@ -218,6 +213,11 @@ func macroRun(exp Exporter) {
 		// data during info pass.
 		return
 	}
+	if !ctx.Unrestricted {
+		ctx.Error("skipping disallowed external command")
+		return
+	}
+	_, _, args := ctx.ParseOptions(specOptRun, ctx.Args)
 	sargs := make([]string, 0, len(args))
 	for _, elt := range args {
 		sargs = append(sargs, ctx.InlinesToText(elt))
