@@ -24,13 +24,18 @@ func main() {
 	optOutputFile := flag.String("o", "", "`output-file`")
 	optTemplate := flag.Bool("t", false, "template operation mode")
 	optExec := flag.Bool("x", false, "unrestricted mode (#run and shell filters allowed)")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s -T format [-a] [-s] [-t] [-x] [-o output-file] path\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr, "See man page frundis(1) for details.")
+	}
 	flag.Parse()
 
 	if *cpuprofile != "" {
 		// profiling
 		f, err := os.Create(*cpuprofile)
 		if err != nil {
-			Error(err)
+			Error(false, err)
 		}
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
@@ -41,22 +46,22 @@ func main() {
 	if len(args) > 0 {
 		filename = args[0]
 	} else {
-		Error("filename required")
+		Error(true, "filename required")
 	}
 	if len(args) > 1 {
-		Error("too many arguments")
+		Error(true, "too many arguments")
 	}
 
 	switch *optFormat {
 	case "epub", "xhtml", "latex", "markdown", "mom":
 	case "":
-		Error("-T option required")
+		Error(true, "-T option required")
 	default:
-		Error("invalid format argument to -T option")
+		Error(true, "invalid format argument to -T option")
 	}
 	if *optOutputFile == "" {
 		if *optFormat == "epub" || *optFormat == "xhtml" && !*optAllInOneFile {
-			Error("-o option required with formats epub and xhtml (without -a)")
+			Error(true, "-o option required with formats epub and xhtml (without -a)")
 		}
 	}
 
@@ -105,13 +110,16 @@ func main() {
 func export(exp frundis.Exporter, filename string, unrestricted bool) {
 	err := frundis.ProcessFrundisSource(exp, filename, unrestricted)
 	if err != nil {
-		Error(err)
+		Error(false, err)
 	}
 }
 
-func Error(msgs ...interface{}) {
-	s := "frundis:"
+func Error(usage bool, msgs ...interface{}) {
+	s := "frundis: "
 	s += fmt.Sprint(msgs...)
 	fmt.Fprintln(os.Stderr, s)
+	if usage {
+		flag.Usage()
+	}
 	os.Exit(1)
 }

@@ -59,7 +59,7 @@ func (exp *exporter) Reset() error {
 		var err error
 		exp.curOutputFile, err = os.Create(exp.OutputFile)
 		if err != nil {
-			return fmt.Errorf("frundis:%v\n", err)
+			return fmt.Errorf("%v\n", err)
 		}
 	}
 	if exp.curOutputFile == nil {
@@ -251,10 +251,6 @@ func (exp *exporter) TableOfContentsInfos(flags map[string]bool) {
 
 func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 	return frundis.Dtag{}
-}
-
-func (exp *exporter) Xftag(shell string) frundis.Ftag {
-	return frundis.Ftag{Shell: shell}
 }
 
 func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {

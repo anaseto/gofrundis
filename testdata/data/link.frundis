@@ -1,0 +1,28 @@
+.Lk http://bardinflor.perso.aquilenet/frundis/ "Frundis"
+.Lk http://bardinflor.perso.aquilenet/frundis/
+.#if -f xhtml,epub,latex,markdown
+.Im -id label1 data/image.png
+.Sx label1 image1
+.#;
+.#if -f xhtml,epub
+.Im -link http://bardinflor.perso.aquilenet/bigimage.png image.png
+.#;
+.#if -f xhtml,epub,latex,markdown
+.Im -id imagelabel data/image.png "image label"
+.Sx imagelabel "image label"
+.#;
+.Lk http://bardinflor.perso.aquilenet/haréka/#001
+.#if -f xhtml,epub,latex,markdown
+.Sx imagelabel "image label"
+.#;
+.P
+.Sm -id label3 Text
+.Sx label3 "link to label"
+.Bm -id label2
+Text with label2
+.Em
+.Sx label2 "link to label2"
+.Lk http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=
+.Bm
+.Lk http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=
+.Em

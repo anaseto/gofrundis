@@ -134,9 +134,6 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 			}
 			previousTitleLevel = titleLevel
 			level = level + diference
-			if level < 1 {
-				level = 1
-			}
 		case titleLevel == previousTitleLevel:
 			fmt.Fprintf(w, "%s%s\n", strings.Repeat("  ", level+1), closeItem)
 		}
@@ -191,12 +188,12 @@ func (exp *exporter) xhtmlLoX(w io.Writer, class string) {
 	switch class {
 	case "lot", "lof", "lop":
 	default:
-		ctx.Error(fmt.Sprintf("warning:unknown List-of-X class:%s", class))
+		ctx.Errorf("warning:unknown List-of-X class:%s", class)
 		return
 	}
 	tocStack := ctx.LoXstack[class]
 	if len(tocStack) == 0 {
-		ctx.Error(fmt.Sprintf("warning:no '%s' information found, skipping '%s' generation", class, class))
+		ctx.Errorf("warning:no '%s' information found, skipping '%s' generation", class, class)
 		return
 	}
 	fmt.Fprintf(w, "<div class=\"%s\">\n", class)
@@ -273,7 +270,7 @@ func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 	if title != "" {
 		fmt.Fprintf(w, "    <title>%s</title>\n", title)
 	}
-	if favicon, ok := ctx.Params["favicon"]; ok {
+	if favicon, ok := ctx.Params["xhtml-favicon"]; ok && ctx.Format == "xhtml" {
 		fmt.Fprintf(w, "    <link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"%s\" />\n", favicon)
 	}
 	switch ctx.Format {
@@ -292,11 +289,11 @@ func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 	if xhtmltop, ok := ctx.Params["xhtml-top"]; ok && ctx.Format == "xhtml" {
 		f, ok := frundis.SearchIncFile(exp, xhtmltop)
 		if !ok {
-			ctx.Error("latex preamble:", xhtmltop, ":no such file")
+			ctx.Errorf("xhtml-top: %s: no such file", xhtmltop)
 		} else {
 			data, err := ioutil.ReadFile(f)
 			if err != nil {
-				ctx.Error("xhtml-top:", f, ":", err)
+				ctx.Errorf("xhtml-top: %s: %s", f, err)
 				return
 			}
 			w.Write(data)
@@ -309,11 +306,11 @@ func (exp *exporter) XHTMLdocumentFooter(w io.Writer) {
 	if xhtmlbottom, ok := ctx.Params["xhtml-bottom"]; ok && ctx.Format == "xhtml" {
 		f, ok := frundis.SearchIncFile(exp, xhtmlbottom)
 		if !ok {
-			ctx.Error("latex preamble:", xhtmlbottom, ":no such file")
+			ctx.Errorf("xhtml-bottom: %s: no such file", xhtmlbottom)
 		} else {
 			data, err := ioutil.ReadFile(f)
 			if err != nil {
-				ctx.Error("xhtml-bottom:", f, ":", err)
+				ctx.Errorf("xhtml-bottom: %s: %s", f, err)
 				return
 			}
 			w.Write(data)

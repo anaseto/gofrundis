@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"html"
+	"io"
 	"net/url"
 	"os"
 	"path"
@@ -20,6 +21,7 @@ type Options struct {
 	Format       string // "epub" or "xhtml"
 	OutputFile   string // name of output file or directory
 	Standalone   bool   // generate complete document with headers (default unless AllInOneFile)
+	Werror       io.Writer
 }
 
 // NewExporter returns a frundis.Exporter suitable to produce EPUB or HTML.
@@ -29,7 +31,8 @@ func NewExporter(opts *Options) frundis.Exporter {
 		AllInOneFile: opts.AllInOneFile,
 		Format:       opts.Format,
 		OutputFile:   opts.OutputFile,
-		Standalone:   opts.Standalone}
+		Standalone:   opts.Standalone,
+		Werror:       opts.Werror}
 }
 
 type exporter struct {
@@ -38,6 +41,7 @@ type exporter struct {
 	AllInOneFile        bool
 	Standalone          bool
 	OutputFile          string
+	Werror              io.Writer
 	curOutputFile       *os.File
 	xhtmlNavigationText *bytes.Buffer
 }
@@ -45,6 +49,7 @@ type exporter struct {
 func (exp *exporter) Init() {
 	ctx := &frundis.Context{Wout: bufio.NewWriter(os.Stdout), Format: exp.Format}
 	exp.Ctx = ctx
+	ctx.Werror = exp.Werror
 	ctx.Init()
 	ctx.Params["xhtml-index"] = "full"
 	ctx.Filters["escape"] = escapeFilter
@@ -61,21 +66,21 @@ func (exp *exporter) Reset() error {
 			if err != nil {
 				err = os.Mkdir(exp.OutputFile, 0755)
 				if err != nil {
-					return fmt.Errorf("frundis:%v\n", err)
+					return fmt.Errorf("%v\n", err)
 				}
 			} else {
-				fmt.Fprintf(os.Stderr, "frundis:warning:directory %s already exists\n", exp.OutputFile)
+				fmt.Fprintf(os.Stderr, "warning: directory %s already exists\n", exp.OutputFile)
 			}
 			index := path.Join(exp.OutputFile, "index.html")
 			exp.curOutputFile, err = os.Create(index)
 			if err != nil {
-				return fmt.Errorf("frundis:%v\n", err)
+				return fmt.Errorf("%v\n", err)
 			}
 		} else if exp.OutputFile != "" {
 			var err error
 			exp.curOutputFile, err = os.Create(exp.OutputFile)
 			if err != nil {
-				return fmt.Errorf("frundis:%v\n", err)
+				return fmt.Errorf("%v\n", err)
 			}
 		}
 		if exp.curOutputFile == nil {
@@ -117,7 +122,7 @@ func (exp *exporter) Reset() error {
 
 		exp.curOutputFile, err = os.Create(path.Join(exp.OutputFile, "EPUB", "index.xhtml"))
 		if err != nil {
-			return fmt.Errorf("frundis:%v\n", err)
+			return fmt.Errorf("%v\n", err)
 		}
 		ctx.Wout = bufio.NewWriter(exp.curOutputFile)
 		exp.XHTMLdocumentHeader(ctx.Wout, ctx.Params["document-title"])
@@ -131,7 +136,7 @@ func makeDirectory(filename string) error {
 	if err != nil {
 		err = os.Mkdir(filename, 0755)
 		if err != nil {
-			return fmt.Errorf("frundis:%v\n", err)
+			return fmt.Errorf("%v\n", err)
 		}
 	}
 	return nil
@@ -650,10 +655,6 @@ func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 	return frundis.Dtag{Cmd: cmd, Pairs: pairs}
 }
 
-func (exp *exporter) Xftag(shell string) frundis.Ftag {
-	return frundis.Ftag{Shell: shell}
-}
-
 func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
 	var c string
 	if cmd == nil {
@@ -667,7 +668,7 @@ func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string
 		"meta", "meter", "noscript", "object", "output", "progress", "q", "ruby", "s", "samp", "script", "select",
 		"small", "span", "strong", "sub", "sup", "svg", "template", "textarea", "time", "u", "var", "video", "wbr", "text":
 	default:
-		exp.Context().Error(c, ":not an html phrasing element")
+		exp.Context().Errorf("%s: not an html phrasing element", c)
 	}
 	// TODO: perhaps process pairs here and do some error checking
 	return frundis.Mtag{Begin: html.EscapeString(begin), End: html.EscapeString(end), Cmd: c, Pairs: pairs}

@@ -18,7 +18,7 @@ func (exp *exporter) beginMomDocument() {
 	if preamble != "" {
 		p, ok := frundis.SearchIncFile(exp, preamble)
 		if !ok {
-			ctx.Error("mom preamble:", preamble, ":no such file")
+			ctx.Errorf("mom preamble: %s: no such file", preamble)
 		} else {
 			source, err := ioutil.ReadFile(p)
 			if err != nil {

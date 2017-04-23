@@ -1,4 +1,4 @@
-.\" Copyright (c) 2014, 2015 Yon <anaseto@bardinflor.perso.aquilenet.fr>
+.\" Copyright (c) 2014-2017 Yon <anaseto@bardinflor.perso.aquilenet.fr>
 .\"
 .\" Permission to use, copy, modify, and distribute this software for any
 .\" purpose with or without fee is hereby granted, provided that the above
@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd February 12, 2017
+.Dd April 17, 2017
 .Dt FRUNDIS 1
 .Os
 .Sh NAME
@@ -132,7 +132,7 @@ To produce a pdf document using groff mom output format:
 .Sh DIAGNOSTICS
 Standard error messages have the following form:
 .Pp
-.D1 Nm Ns : Ns Ar file Ns : Ns Ar lnum Ns : Ns Ar message
+.D1 Nm Ns : Ar file Ns : Ns Ar lnum Ns : Ns Ar macro Ns : Ar message
 .Pp
 The
 .Ar file
@@ -144,14 +144,18 @@ The
 .Ar lnum
 field specifies the number of the line in the source file where the error has
 been detected.
+The
+.Ar macro
+field is the name of the macro being called (if any).
 One or more
 .Ar message
 fields provide further details on the nature of the error.
 .Pp
 The
-.Ar file
-and
+.Ar file ,
 .Ar lnum
+and
+.Ar macro
 fields appear only when it makes sense.
 .Sh SEE ALSO
 .Xr frundis_syntax 5

@@ -15,26 +15,35 @@ import (
 
 // Error writes msgs to ctx.Werror with some additional context information.
 func (ctx *Context) Error(msgs ...interface{}) {
+	if ctx.quiet {
+		return
+	}
 	var s string
 	if ctx.uMacroCall.loc != nil {
 		file := ctx.uMacroCall.loc.curFile
 		b := ctx.uMacroCall.loc.curBlocks[ctx.uMacroCall.loc.curBlock].(*ast.Macro)
-		s = fmt.Sprint("frundis:", file, ":", b.Line,
+		s = fmt.Sprint("frundis: ", file, ":", b.Line,
 			":in user macro `.", b.Name, "':")
 	} else if ctx.loc != nil {
 		if ctx.loc.curBlock >= 0 {
 			b := ctx.block()
 			line := b.GetLine()
-			s = fmt.Sprint("frundis:", ctx.loc.curFile, ":", line, ":")
+			s = fmt.Sprint("frundis: ", ctx.loc.curFile, ":", line, ":")
 		} else {
-			s = fmt.Sprint("frundis:", ctx.loc.curFile, ":")
+			s = fmt.Sprint("frundis: ", ctx.loc.curFile, ":")
 		}
 	} else {
-		s = fmt.Sprint("frundis:")
+		s = fmt.Sprint("frundis: ")
 	}
-	s += ctx.Macro + ":"
-	s += fmt.Sprint(msgs...)
-	fmt.Fprintln(ctx.Werror, s)
+	if ctx.Macro != "" {
+		s += ctx.Macro + ": "
+	}
+	s += fmt.Sprintln(msgs...)
+	fmt.Fprint(ctx.Werror, s)
+}
+
+func (ctx *Context) Errorf(format string, msgs ...interface{}) {
+	ctx.Error(fmt.Sprintf(format, msgs...))
 }
 
 // block returns current block.
@@ -145,12 +154,12 @@ func (ctx *Context) InlinesToText(elts []ast.Inline) string {
 }
 
 // argsToText stringifies a list of arguments args using separator sep.
-func argsToText(exp Exporter, args [][]ast.Inline, sep string) string {
+func argsToText(exp Exporter, args [][]ast.Inline) string {
 	ctx := exp.Context()
 	ctx.bufa2t.Reset()
 	for i, arg := range args {
 		if i > 0 {
-			ctx.bufa2t.WriteString(sep)
+			ctx.bufa2t.WriteRune(' ')
 		}
 		ctx.bufa2t.WriteString(ctx.InlinesToText(arg))
 	}
@@ -216,7 +225,10 @@ func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 // storeId stores an id with reference string ref, and of type idtype.
 func (ctx *Context) storeID(id, ref string, idtype IDType) {
 	if _, ok := ctx.IDs[id]; ok {
+		q := ctx.quiet
+		ctx.quiet = false
 		ctx.Error("already used id")
+		ctx.quiet = q
 	}
 	ctx.IDs[id] = IDInfo{Ref: ref, Type: idtype}
 }
@@ -266,7 +278,7 @@ func shellFilter(exp Exporter, args []string, text string) string {
 	cmd.Stderr = os.Stderr
 	bytes, err := cmd.Output()
 	if err != nil {
-		ctx.Error("shell command:", args, ":", err)
+		ctx.Errorf("shell command: %v: %s", args, err)
 		return ""
 	}
 	return string(bytes)
@@ -289,7 +301,7 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 				switch c {
 				case '!', ':', ';', '?', 0xbb:
 					if space {
-						ctx.Error("incorrect regular space before '", fmt.Sprintf("%c", c), "'")
+						ctx.Errorf("incorrect regular space before '%c'", c)
 					}
 					if !noinsertnbsp {
 						if start != j {
@@ -311,7 +323,7 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 							start = next
 						}
 						if r == ' ' {
-							ctx.Error("incorrect regular space after '", fmt.Sprintf("%c", c), "'")
+							ctx.Errorf("incorrect regular space after '%c'", c)
 						}
 
 					} else if i < len(text)-1 {
@@ -344,10 +356,10 @@ func readPairs(s string) ([]string, error) {
 	sr := strings.NewReader(s)
 	r, size, err := sr.ReadRune()
 	if err != nil {
-		return nil, err
+		return nil, err // this probably cannot happen
 	}
 	s = s[size:]
-	repls := strings.Split(s, fmt.Sprintf("%c", r))
+	repls := strings.Split(s, string(r))
 	if len(repls)%2 != 0 {
 		return nil, fmt.Errorf("odd number of items in '%s'", s)
 	}
@@ -357,14 +369,14 @@ func readPairs(s string) ([]string, error) {
 func checkPairs(ctx *Context, pairs []string) {
 	for i := 0; i < len(pairs)-1; i += 2 {
 		if pairs[i] == "" {
-			ctx.Error(fmt.Sprintf("in -a option:key %d is empty", (i/2)+1))
+			ctx.Errorf("in -a option: key %d is empty", (i/2)+1)
 		}
 		if strings.ContainsAny(pairs[i], "\"'>/=") {
-			ctx.Error(fmt.Sprintf("in -a option:key %d contains invalid characters", (i/2)+1))
+			ctx.Errorf("in -a option: key %d contains invalid characters", (i/2)+1)
 		}
 		for _, c := range pairs[i] {
 			if unicode.IsSpace(c) {
-				ctx.Error(fmt.Sprintf("in -a option:key %d contains space", (i/2)+1))
+				ctx.Errorf("in -a option: key %d contains space", (i/2)+1)
 			}
 		}
 	}

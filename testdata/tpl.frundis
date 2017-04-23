@@ -1,0 +1,15 @@
+.X mtag -f xhtml -t emphasis -b <em> -e </em>
+Some text.
+.Sm -t emphasis Important things .
+Some more text.
+.#de macro
+Some stuff.
+.Bd
+Div text.
+.Ed
+.#.
+.macro
+.Bf -f xhtml
+<em>as-is</em> text.
+.Ef
+<em> is escaped.

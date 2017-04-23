@@ -19,6 +19,10 @@ func main() {
 	if err != nil {
 		fmt.Fprint(os.Stderr, "could not set environment variable")
 	}
+	err = os.Setenv("FRUNDISLIB", "data/includes")
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
+	}
 	for _, f := range []func() error{doFragments, doStandalones} {
 		err := f()
 		if err != nil {
@@ -32,14 +36,14 @@ func main() {
 }
 
 func doFragments() error {
-	dataDir, err := os.Open("t/data")
+	dataDir, err := os.Open("data")
 	if err != nil {
-		return fmt.Errorf("Error reading t/data:%v", err)
+		return fmt.Errorf("Error reading data:%v", err)
 	}
 	defer func() {
 		err := dataDir.Close()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error closing t/data:%v", err)
+			fmt.Fprintf(os.Stderr, "Error closing data:%v", err)
 		}
 	}()
 	names, err := dataDir.Readdirnames(-1)
@@ -47,26 +51,27 @@ func doFragments() error {
 		if b, _ := path.Match("*.frundis", f); !b {
 			continue
 		}
-		fullPath := path.Join("t", "data", f)
+		fullPath := path.Join("data", f)
 		for _, format := range []string{"latex", "mom", "xhtml", "markdown"} {
-			err := testFile(fullPath, format)
+			err := doFile(fullPath, format, false)
 			if err != nil {
 				return err
 			}
 		}
 	}
+	doFile("tpl.frundis", "xhtml", true)
 	return nil
 }
 
 func doStandalones() error {
-	dataDir, err := os.Open("t/data-dirs")
+	dataDir, err := os.Open("data-dirs")
 	if err != nil {
-		return fmt.Errorf("Error reading t/data-dirs:%v", err)
+		return fmt.Errorf("Error reading data-dirs:%v", err)
 	}
 	defer func() {
 		err = dataDir.Close()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error closing t/data-dirs:%v", err)
+			fmt.Fprintf(os.Stderr, "Error closing data-dirs:%v", err)
 		}
 	}()
 	names, err := dataDir.Readdirnames(-1)
@@ -74,38 +79,38 @@ func doStandalones() error {
 		if b, _ := path.Match("*.frundis", f); !b {
 			continue
 		}
-		fullPath := path.Join("t", "data-dirs", f)
+		fullPath := path.Join("data-dirs", f)
 		if b, _ := path.Match("*-epub*", f); b {
-			err := testStandalone(fullPath, "epub", false)
+			err := doStandalone(fullPath, "epub", false)
 			if err != nil {
 				return err
 			}
 			continue
 		}
 		if b, _ := path.Match("*-xhtml*", f); b {
-			err := testStandalone(fullPath, "xhtml", false)
+			err := doStandalone(fullPath, "xhtml", false)
 			if err != nil {
 				return err
 			}
-			err = testStandalone(fullPath, "xhtml", true)
+			err = doStandalone(fullPath, "xhtml", true)
 			if err != nil {
 				return err
 			}
 			continue
 		}
 		if b, _ := path.Match("*-latex*", f); b {
-			err := testStandalone(fullPath, "latex", true)
+			err := doStandalone(fullPath, "latex", true)
 			if err != nil {
 				return err
 			}
 			continue
 		}
-		err := testStandalone(fullPath, "xhtml", false)
+		err := doStandalone(fullPath, "xhtml", false)
 		if err != nil {
 			return err
 		}
 		for _, format := range []string{"xhtml", "latex", "mom"} {
-			err = testStandalone(fullPath, format, true)
+			err = doStandalone(fullPath, format, true)
 			if err != nil {
 				return err
 			}
@@ -126,7 +131,7 @@ func getBinPath() (string, error) {
 	return binPath, nil
 }
 
-func testFile(file string, format string) error {
+func doFile(file string, format string, tpl bool) error {
 	binPath, err := getBinPath()
 	if err != nil {
 		return err
@@ -134,9 +139,13 @@ func testFile(file string, format string) error {
 	name := strings.TrimSuffix(file, ".frundis")
 	suffix := strings.Replace(format, "xhtml", "html", -1)
 	suffix = strings.Replace(suffix, "latex", "tex", -1)
-	cmd := exec.Command(binPath, "-T", format, "-x", "-a", "-o", outputFile, file)
-	cmdout, err := cmd.CombinedOutput()
-	fmt.Fprint(os.Stderr, string(cmdout))
+	var cmd *exec.Cmd
+	if tpl {
+		cmd = exec.Command(binPath, "-T", format, "-t", "-o", outputFile, file)
+	} else {
+		cmd = exec.Command(binPath, "-T", format, "-x", "-a", "-o", outputFile, file)
+	}
+	_, err = cmd.CombinedOutput()
 	ref := name + "." + suffix
 	if err != nil {
 		ok(false, ref)
@@ -186,7 +195,7 @@ func testFile(file string, format string) error {
 	return nil
 }
 
-func testStandalone(file string, format string, toFile bool) error {
+func doStandalone(file string, format string, toFile bool) error {
 	binPath, err := getBinPath()
 	if err != nil {
 		return err
@@ -226,8 +235,7 @@ func testStandalone(file string, format string, toFile bool) error {
 	} else {
 		cmd = exec.Command(binPath, "-T", format, "-o", outputDir, file)
 	}
-	cmdout, err := cmd.CombinedOutput()
-	fmt.Fprint(os.Stderr, string(cmdout))
+	_, err = cmd.CombinedOutput()
 	ref := name + suffix
 	cmdExpression := strings.Join(cmd.Args, " ")
 	if err != nil {

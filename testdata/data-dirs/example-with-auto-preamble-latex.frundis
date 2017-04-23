@@ -1,0 +1,6 @@
+.X set title-page 1
+.X set document-author "The author"
+.X set document-title "The Title"
+.X set document-date 2042
+.X set lang en
+.If data-dirs/content.frundis

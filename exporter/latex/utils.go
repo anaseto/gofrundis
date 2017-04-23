@@ -65,7 +65,7 @@ var miniLangs = map[string]string{
 
 var babelLangs map[string]string
 
-func Init() {
+func init() {
 	babelLangs = make(map[string]string)
 	for k, v := range miniLangs {
 		babelLangs[k] = v
@@ -140,7 +140,7 @@ func (exp *exporter) beginLatexDocument() {
 	if preamble != "" {
 		p, ok := frundis.SearchIncFile(exp, preamble)
 		if !ok {
-			ctx.Error("latex preamble:", preamble, ":no such file")
+			ctx.Errorf("latex preamble: %s: no such file", preamble)
 		} else {
 			source, err := ioutil.ReadFile(p)
 			if err != nil {

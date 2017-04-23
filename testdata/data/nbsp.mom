@@ -1,0 +1,16 @@
+Quelques ponctuations! Pour voir qu\(cqest-ce que ça donne! Génial, non ?
+Et voilà: c\(cqest fini; presque\&. 
+«texte»
+« texte»
+« texte »
+:::
+Pas d\(cqespace insécable!
+De nouveau des espaces insécables!
+.PP
+.CODE
+Frundis::Processing
+.CODE OFF
+.PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet\&.fr/frundis/intro-en SUFFIX ""
+! avec espace avant et «sans espace après ou avec un slash «\e\&.
+text:
+.PP

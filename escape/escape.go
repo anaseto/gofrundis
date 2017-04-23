@@ -1,7 +1,6 @@
 package escape
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -18,7 +17,7 @@ var latexEscapes = []string{
 	"^", "\\^{}",
 	"\\", "\\textbackslash{}",
 	"~", "\\~{}",
-	fmt.Sprintf("%c", '\xa0'), "~"}
+	string('\xa0'), "~"}
 
 var latexEscaper = strings.NewReplacer(latexEscapes...)
 

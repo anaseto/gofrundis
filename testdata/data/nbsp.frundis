@@ -1,0 +1,27 @@
+.X set -f latex lang fr
+.X set -f xhtml lang fr
+.X set -f markdown lang fr
+.X mtag -t espace-insecable -f xhtml -c em -b «\~ -e \~»
+.If data/includes/code.frundis
+Quelques ponctuations! Pour voir qu'est-ce que ça donne! Génial, non ?
+Et voilà: c'est fini; presque. 
+«texte»
+« texte»
+« texte »
+\&:\&:\&:
+.\".#fl fr-nbsp-auto 0
+Pas d'espace insécable\&!
+.\".#fl fr-nbsp-auto 1
+De nouveau des espaces insécables!
+.P
+.Bcode
+Frundis::Processing
+.Ecode
+.Lk http://bardinflor.perso.aquilenet.fr/frundis/intro-en
+.#if -f xhtml
+.Sm -t espace-insecable blabla blabla
+.#;
+! avec espace avant et «\&sans espace après ou avec un slash «\e.
+.#dv var :
+.\" no nbsp in this case:
+text\*[var]

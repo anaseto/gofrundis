@@ -40,12 +40,12 @@ scanOptions:
 		args = args[1:]
 		optionType, ok := spec[name]
 		if !ok {
-			ctx.Error("unrecognized option: -", name)
+			ctx.Errorf("unrecognized option: -%s", name)
 			continue scanOptions
 		}
 		if optionType == ArgOption {
 			if len(args) == 0 {
-				ctx.Error("option -", name, " requires an argument")
+				ctx.Errorf("option -%s requires an argument", name)
 				continue scanOptions
 			}
 			arg := args[0]

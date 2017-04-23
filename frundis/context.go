@@ -156,8 +156,6 @@ type Exporter interface {
 	Renderer
 	// Xdtag builds a Dtag (e.g. frundis.Dtag{Cmd: cmd}).
 	Xdtag(cmd string, pairs []string) Dtag
-	// Xftag builds a Ftag.
-	Xftag(shell string) Ftag
 	// Xmtag builds a Mtag. The begin and end arguments are unescaped and
 	// may require processing. The cmd argument can benefit from checks.
 	// pairs is a list of even length of key=value pairs.
@@ -210,6 +208,7 @@ type Context struct {
 	uMacroDef     *uMacroDefInfo                 // information related to user macro definition
 	uMacros       map[string]uMacroDefInfo       // user defined textual macros
 	validFormats  []string                       // list of valid export formats
+	quiet         bool                           // Do not print errors to Werror
 }
 
 // Location information
@@ -379,6 +378,7 @@ func (ctx *Context) Reset() {
 		Unrestricted: ctx.Unrestricted,
 		Toc:          ctx.Toc,
 		Wout:         ctx.Wout,
+		Werror:       ctx.Werror,
 		files:        ctx.files}
 	ctx.Table.info = tableinfo
 	ctx.Toc.resetCounters()

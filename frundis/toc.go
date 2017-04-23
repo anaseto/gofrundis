@@ -2,7 +2,6 @@ package frundis
 
 import (
 	"fmt"
-	"os"
 )
 
 // TocInfo gathers information about headers.
@@ -86,8 +85,7 @@ func (t *TocInfo) HeaderLevel(macro string) int {
 	case "Ss":
 		level += 3
 	default:
-		// should not happen
-		fmt.Fprintf(os.Stdout, "HeaderLevel:invalid macro:%s", macro)
+		panic(fmt.Sprintf("HeaderLevel:invalid macro:%s", macro))
 	}
 	return level
 }

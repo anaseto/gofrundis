@@ -1,0 +1,52 @@
+.Tc -summary -title "Summary" -nonum
+.#if -f xhtml,epub,latex
+.Im data-dirs/img/image.png
+.#;
+.#if -f mom
+.Im data-dirs/img/image.pdf
+.#;
+.Sh -id abstract -nonum Abstract
+Text.
+.Sm -id label1 Emphasized text with a label .
+.Pt Part1
+.Tc -mini -summary
+.Ch -id chap1 Chap1
+Text.
+.Ch -id chap2 Chap2
+.Tc -mini
+Text.
+.P Title of paragraph
+Text.
+.Bl -t table -columns 2 Table1
+.It a
+.Ta b
+.El
+.P
+Normal paragraph.
+.Sh Section1
+Text.
+.Ss Subsection1
+Text.
+.Sh -id section2 Section2
+Text.
+.Bl -id table2 -t table -columns 2 Table2
+.It c
+.Ta d
+.It e
+.Ta f
+.El
+.Ss Subsection2
+Text.
+.Pt -id part2 Part2
+.Ch Chap3
+.Tc -mini -title "Mini Toc"
+Text. Some cross-references:
+.Sx section2 Section2
+.Sx chap1 Chap1
+.Sx part2 Part2
+.Sx abstract Abstract
+.Sx table2 Table2
+.Sx label1 "Link to emphasized text"
+.Sh Section3
+Text.
+.Tc -lot

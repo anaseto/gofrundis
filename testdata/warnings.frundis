@@ -1,0 +1,298 @@
+.Em
+.Ed
+.Ef
+.El
+.Tc -mini
+Text
+.Bm
+Text
+.Sh
+.Lk url label huh
+.Lk
+.X set a b 
+.X set a
+.X set a b c
+.X mtag
+.X mtag -f a
+.X mtag -c a
+.X mtag -f xhtml
+.X mtag -f xhtml -c
+.X mtag -f xhtml -b
+.X mtag -f xhtml -t «»
+.X mtag -f xhtml -t empty -c ""
+.X mtag -f latex -t empty -c ""
+.X dtag -t tag
+.X dtag -f a
+.X dtag -f xhtml
+.X dtag -f xhtml -t «»
+.X dtag -f xhtml -t tag -c «»
+.Sm -t empty text
+.#fl
+.#fl a b c
+.auie
+.@
+.Bm args
+Text
+.Bd useless arguments
+Text
+.Sh Section
+.Ch Chapter
+.Sh Section
+.Ft Text
+.Bf -f xhtml
+.Sx Section
+.Ef
+.Sx -a Section
+.Sx
+.Bf
+Text.
+.Ef
+.Ef
+.Sh Section 2
+.Sm -t pototo Text
+.Sm
+.It
+.Bl
+.Ft -f xhtml Text
+Text
+.It
+.Ft -f xhtml -c Text
+Text
+.El
+.\" nested list
+.Bl
+.It
+Text before nested list.
+.Bl
+.It a
+.Ta
+.It b
+.El
+.El
+.Bl
+Text.
+.P
+.El
+.Bl -t table -columns 2
+.Ta
+.It a
+.Ta b
+.El
+.Bf -t escape
+.Ta
+.Ef
+\" macros
+.#de test
+.Sm -t unknown
+.#.
+.test
+.Bd
+.Bm
+Text.
+.Em @ # ?
+.Bm
+Text.
+.Sx Unknown
+.If
+.Im {}
+.Im {} {} \&{}
+.Ta
+.#.
+.X mtag -f xhtml -t tag -c div
+.X set xhtml-index unknown
+\*[var]
+.#if
+.#if
+.#;
+.#;
+.#;
+.#de want-args
+\$1
+.#.
+.want-args
+.\" Bd with invalid identifier
+.Bd -id "has spaces"
+.Ed
+.\" Bd with invalid tag
+.Bd -t invalid
+.Ed
+.\" Bf with useless arguments
+.Bf useless args
+.Ef
+.\" Bf with invalid tag
+.Bf -t invalid
+.Ef
+.\" Bl with invalid type
+.Bl -t invalid
+.El
+.\" Bl with useless arguments
+.Bl useless arguments
+.El
+.\" invalid nested lists
+.Bl -t desc
+.Bl
+.El
+.El
+.\" invalid tag to Bm
+.Bm -t invalid
+.Em
+.\" invalid stuff in list
+.Bl
+.It
+.D
+.P
+.El
+.\" useless arguments in D
+.D useless arguments
+.\" useless arguments in Ed
+.Bd
+.Ed useless arguments
+.\" Tag stuff
+.X dtag -t thistag
+.Bd -t thistag -r
+.Ed -t badtag
+.Bd -t thistag -r
+.Ed \" missing tag
+.X mtag -t thistag
+.Bm -t thistag -r
+.Em -t badtag
+.Bm -t thistag -r
+.Em \" missing tag
+.\" useless args in Ef
+.Bf -f xhtml
+.Ef useless arguments
+.\" empty lists
+.Bl -t enum
+.El
+.Bl -t desc
+.El
+.Bl
+stuff before item
+.El useless arguments
+.Bl -t table
+stuff outside row
+.El
+.\" desc list without named item
+.Bl -t desc
+.It
+description
+.El
+.\" invalid table
+.Bl -t table
+.It
+.Ta
+.Ta
+.It
+.Ta
+.It
+.Ta
+.Ta
+.Ta
+.El
+.\" table of contents
+.Tc useless arguments
+.Tc -toc -lof -lot
+.\" X macro
+.X
+.X dtag -f xhtml -t ""
+.X dtag -f xhtml -t with-attrs -a |invalid
+.X ftag -t ""
+.X ftag
+.X ftag -t tag -shell
+.X ftag -t disallowed -shell "wc"
+.Ft -t disallowed stuff
+.X ftag -t tag -gsub ""
+.X ftag -t tag -gsub |string
+.X ftag -t tag -regexp ""
+.X ftag -t tag -regexp |pattern
+.X ftag -t tag
+.X ftag -f invalid
+.X mtag -f xhtml -t ""
+.X mtag -f xhtml -t with-attrs -a |invalid
+.X mtag -f xhtml -t with-attrs2 -a ||invalid
+.X mtag -f xhtml -t with-attrs3 -a |=|invalid
+.X mtag -f xhtml -t with-attrs4 -a "|has space|invalid"
+.\" invalid filter for Ft
+.Ft -t invalid stuff
+.\" including files
+.If FileThatDoesNotExist
+.If -as-is FileThatDoesNotExist
+.If -as-is -t badtag warnings.frundis
+.\" unclosed format block in macro
+.#de in-format-block
+.Sm stuff
+.#.
+.Bf -f xhtml
+.in-format-block
+.Ef
+.\" unclosed list/markup/block
+.Bl
+.Ch new chapter before end of list
+.X mtag -t tag -f xhtml
+.Bm -t tag
+.Ch end of Bm
+.X dtag -t tag -f xhtml
+.Bd -t tag
+.Ch end of Bd
+.\" already used id
+.Sm -id myid text
+.Sm -id myid text
+.\" empty lines
+
+
+.\" builtins error cases stuff
+.\" if with too many arguments
+.#if 1 2
+.\" end with useless arguments
+.#; useless
+.\" #dv with no argument
+.#dv
+.\" disallowed #run
+.#run
+.#de first
+.\" nested macro definition
+.#de nested
+.\" useless args in #.
+.#. useless args
+.#de
+.\" conflicting options
+.#de conflicting-options
+\$[opt]
+\$?[opt]
+\$?[flag]
+\$[flag]
+.#.
+.\" #dv with invalid format
+.#dv -f invalid arg stuff
+.\" #dv without value
+.#dv -f xhtml arg
+.#de macro-with-strange-stuff
+.Sm
+.Bl
+.El \$1
+.#.
+.macro-with-strange-stuff
+.macro-with-strange-stuff too many args
+.\" conflicting options
+.#de conflicting-options
+\$[opt]
+\$?[opt]
+\$?[flag]
+\$[flag]
+.#.
+.\" recursive macro
+.#de rec
+.rec
+.#.
+.rec
+.\" unknown flag and missing named argument
+.#de macro-without-flags
+\$[named-arg]
+.#.
+.macro-without-flags -flag
+.\" non terminated macro
+.#de non-terminated-if
+.#if 1
+.#.
+.non-terminated-if
+.#de my-non-terminated-macro

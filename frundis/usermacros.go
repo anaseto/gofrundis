@@ -20,7 +20,9 @@ scanText:
 		switch elt := elt.(type) {
 		case ast.ArgEscape:
 			if int(elt) > len(args) || int(elt) <= 0 {
-				ctx.Error("missing argument:$", elt)
+				if ctx.Process {
+					ctx.Errorf("missing argument: $%v", elt)
+				}
 				res = append(res, ast.Text(fmt.Sprint("\\$", int(elt))))
 				continue scanText
 			}
@@ -28,7 +30,9 @@ scanText:
 		case ast.NamedArgEscape:
 			arg, ok := opts[string(elt)]
 			if !ok {
-				ctx.Error("missing named argument:$[", elt, "]")
+				if ctx.Process {
+					ctx.Errorf("missing named argument: $[%s]", string(elt))
+				}
 				continue scanText
 			}
 			res = append(res, arg...)
@@ -89,18 +93,23 @@ func processUserMacro(exp Exporter, m uMacroDefInfo) {
 	ctx := exp.Context()
 	// Do not allow too much depth
 	if ctx.uMacroCall.depth > 42 {
-		ctx.Error("user macro invocation:too much depth (infinite recursive calls?)")
+		if ctx.Process {
+			ctx.Error("recursive macro: too much depth (infinite recursive calls?)")
+		}
 		return
 	}
 
 	// curBlock: user defined macro
-	opts, flags, args := ctx.ParseOptions(m.opts, ctx.Args)
-
-	if len(args) > m.argsc {
-		ctx.Error("too many arguments")
+	if !ctx.Process {
+		ctx.quiet = true
 	}
-	if len(m.opts) == 0 && (len(opts) > 0 || len(flags) > 0) {
-		ctx.Error("unrecognized options")
+	opts, flags, args := ctx.ParseOptions(m.opts, ctx.Args)
+	if !ctx.Process {
+		ctx.quiet = false
+	}
+
+	if len(args) > m.argsc && ctx.Process {
+		ctx.Error("too many arguments")
 	}
 	var blocks []ast.Block
 	if m.argsc > 0 || len(m.opts) > 0 {

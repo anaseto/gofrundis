@@ -1,0 +1,13 @@
+.X set epub-version 36
+.X set epub-subject "very interesting subject"
+.X set epub-css notexist.css
+.X set epub-nav-landmarks notexists.xhtml
+.X set epub-metadata notexist.xhtml
+.X set epub-cover notexist.lol
+.X set xhtml-bottom notexist.xhtml
+.X set xhtml-top notexist.xhtml
+.X set title-page 1
+.Ch Title
+.Im doesnotexisttoo.jpg
+.Im doesnotexisttoo2.jpg
+Some text.

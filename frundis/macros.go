@@ -34,9 +34,6 @@ func processText(exp Exporter) {
 			// things are not perfect either)
 			fmt.Fprint(&ctx.buf, "\n")
 		}
-		if !ctx.parScope {
-			ctx.parScope = true
-		}
 		text := exp.RenderText(ctx.text)
 		if len(text) > 0 && hasBlankLine(text) {
 			ctx.Error("empty line")
@@ -373,11 +370,11 @@ func macroEd(exp Exporter) {
 	if tag, ok := opts["t"]; ok {
 		if ctx.InlinesToText(tag) != scope.tag {
 			location := ctx.scopeLocation(scope)
-			ctx.Error("tag doesn't match tag '", scope.tag, "' of current block opened ", location)
+			ctx.Errorf("tag doesn't match tag '%s' of current block opened %s", scope.tag, location)
 		}
 	} else if scope.tagRequired {
 		location := ctx.scopeLocation(scope)
-		ctx.Error("missing required tag matching tag '", scope.tag, "' of current block opened ", location)
+		ctx.Errorf("missing required tag matching tag '%s' of current block opened %s", scope.tag, location)
 	}
 	softbreak := false
 	if ctx.Dtags[scope.tag].Cmd != "" {
@@ -547,11 +544,11 @@ func macroEm(exp Exporter) {
 	if tag, ok := opts["t"]; ok {
 		if ctx.InlinesToText(tag) != scope.tag {
 			location := ctx.scopeLocation(scope)
-			ctx.Error("tag doesn't match tag '", scope.tag, "' of current block opened ", location)
+			ctx.Errorf("tag doesn't match tag '%s' of current block opened %s", scope.tag, location)
 		}
 	} else if scope.tagRequired {
 		location := ctx.scopeLocation(scope)
-		ctx.Error("missing required tag matching tag '", scope.tag, "' of current block opened ", location)
+		ctx.Error("missing required tag matching tag '%s' of current block opened %s", scope.tag, location)
 	}
 	tag := scope.tag
 	id := scope.id
@@ -607,13 +604,13 @@ func macroFt(exp Exporter) {
 		tag := ctx.InlinesToText(tag)
 		goFilter, okGoFilter := ctx.Filters[tag]
 		if okGoFilter {
-			text = goFilter(argsToText(exp, args, " "))
+			text = goFilter(argsToText(exp, args))
 		} else {
-			ctx.Error("undefined filter tag '", tag)
+			ctx.Error("undefined filter tag:", tag)
 			text = renderArgs(exp, args)
 		}
 	} else {
-		text = argsToText(exp, args, " ")
+		text = argsToText(exp, args)
 	}
 	w := ctx.W()
 	fmt.Fprint(w, text)
@@ -624,7 +621,9 @@ func macroIncludeFile(exp Exporter) {
 	opts, flags, args := ctx.ParseOptions(specOptIncludeFile, ctx.Args)
 	if format, ok := opts["f"]; ok {
 		formats := strings.Split(ctx.InlinesToText(format), ",")
-		ctx.checkFormats(formats)
+		if ctx.Process {
+			ctx.checkFormats(formats)
+		}
 		if ctx.notExportFormat(formats) {
 			return
 		}
@@ -667,7 +666,9 @@ func macroIncludeFile(exp Exporter) {
 		// frundis source file
 		filename, ok := SearchIncFile(exp, filename)
 		if !ok {
-			ctx.Error("no such frundis source file")
+			if ctx.Process {
+				ctx.Errorf("%s: no such frundis source file", filename)
+			}
 			return
 		}
 		err := processFile(exp, filename)
@@ -997,7 +998,7 @@ func macroSx(exp Exporter) {
 		idtype = idinfo.Type
 		ref = idinfo.Ref
 	} else {
-		ctx.Error("reference to unknown id '", id, "'")
+		ctx.Error("reference to unknown id:", id)
 	}
 	beginPhrasingMacro(exp, flags["ns"])
 	ctx.WantsSpace = true
@@ -1111,7 +1112,7 @@ func macroX(exp Exporter) {
 	}
 	args := ctx.Args
 	if len(args) == 0 {
-		ctx.Error("not enough a")
+		ctx.Error("not enough arguments")
 		return
 	}
 	cmd := ctx.InlinesToText(args[0])
@@ -1211,7 +1212,7 @@ func macroXftag(exp Exporter, args [][]ast.Inline) {
 			return
 		}
 		s = s[size:]
-		repls := strings.Split(s, fmt.Sprintf("%c", r))
+		repls := strings.Split(s, string(r))
 		if len(repls)%2 != 0 {
 			ctx.Error("invalid -gsub argument (non even number of strings)")
 			return
@@ -1229,7 +1230,7 @@ func macroXftag(exp Exporter, args [][]ast.Inline) {
 			return
 		}
 		s = s[size:]
-		repls := strings.Split(s, fmt.Sprintf("%c", r))
+		repls := strings.Split(s, string(r))
 		if len(repls) != 2 {
 			ctx.Error("invalid -regexp argument (missing separator?)")
 			return
@@ -1317,12 +1318,12 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 	var value string
 	switch param {
 	case "dmark", "document-author", "document-date", "document-title",
-		"epub-cover", "epub-css", "epub-metadata", "epub-subject", "epub-uuid", "epub-version",
+		"epub-cover", "epub-css", "epub-metadata", "epub-subject", "epub-uuid", "epub-version", "epub-nav-landmarks",
 		"lang",
 		"latex-preamble", "latex-xelatex",
 		"mom-preamble",
 		"nbsp", "title-page",
-		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-go-up", "xhtml-top", "xhtml5":
+		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-favicon", "xhtml-go-up", "xhtml-top", "xhtml5":
 	default:
 		ctx.Error("unknown parameter:", param)
 	}
@@ -1358,6 +1359,7 @@ func macroHeaderProcess(exp Exporter) {
 	numbered := !flags["nonum"]
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
+	closeUnclosedBlocks(exp, "Bd")
 	endParagraph(exp, false)
 	ctx.Toc.updateHeadersCount(ctx.Macro, flags["nonum"])
 	title := processInlineMacros(exp, args)
@@ -1454,6 +1456,9 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 	ws := ctx.WantsSpace
 	oldpar := ctx.parScope
 	proc := ctx.Process
+	if !ctx.Process {
+		ctx.quiet = true
+	}
 	ctx.WantsSpace = false
 	ctx.Inline = true
 	ctx.parScope = true
@@ -1466,6 +1471,7 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 		ctx.Inline = false
 		ctx.parScope = oldpar
 		ctx.Process = proc
+		ctx.quiet = false
 	}()
 	ctx.loc = &location{curBlocks: blocks, curFile: loc.curFile}
 	processBlocks(exp)
@@ -1641,7 +1647,7 @@ func checkForUnclosedBlock(exp Exporter, macro string) bool {
 		var msg string
 		var m = ctx.Macro
 		if !ctx.Inline {
-			msg = fmt.Sprintf("found %s while `.%s' macro %s%s isn't closed yet by a `.%s'",
+			msg = fmt.Sprintf("found %s while `.%s' macro%s %s isn't closed yet by a `.%s'",
 				m, beginmacro, tag, location, endmacro)
 		} else {
 			var inUserMacroMsg string
@@ -1682,7 +1688,7 @@ func checkForUnclosedDe(exp Exporter) {
 	if ctx.uMacroDef == nil {
 		return
 	}
-	ctx.Error("found End Of File while `.#de' macro at line ", ctx.uMacroDef.line, " of file ", ctx.uMacroDef.file, " isn't closed by a `.#.'")
+	ctx.Errorf("found End Of File while `.#de' macro at line %d of file %s isn't closed by a `.#.'", ctx.uMacroDef.line, ctx.uMacroDef.file)
 }
 
 // checkForList checks whether in list (not including verse)

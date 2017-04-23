@@ -15,13 +15,17 @@ func macroDefStart(exp Exporter) {
 	// macro .#de
 	ctx := exp.Context()
 	if ctx.uMacroDef != nil {
-		ctx.Error("not allowed in the scope of a previous `.#de' at line ",
-			ctx.uMacroDef.line, " of file ", ctx.uMacroDef.file)
+		if ctx.Process {
+			ctx.Error("not allowed in the scope of a previous `.#de' at line ",
+				ctx.uMacroDef.line, " of file ", ctx.uMacroDef.file)
+		}
 		return
 	}
 	opts, _, args := ctx.ParseOptions(specOptIf, ctx.Args)
 	if len(args) < 1 {
-		ctx.Error("'.#de' requires name argument")
+		if ctx.Process {
+			ctx.Error("'.#de' requires name argument")
+		}
 		return
 	}
 	ignore := false
@@ -44,11 +48,13 @@ func macroDefStart(exp Exporter) {
 func macroDefEnd(exp Exporter) {
 	// macro .#.
 	ctx := exp.Context()
-	if len(ctx.Args) > 0 {
+	if len(ctx.Args) > 0 && ctx.Process {
 		ctx.Error("useless arguments")
 	}
 	if ctx.uMacroDef == nil {
-		ctx.Error("found '.#.' without previous '.#de'")
+		if ctx.Process {
+			ctx.Error("found '.#.' without previous '.#de'")
+		}
 		return
 	}
 	if !ctx.uMacroDef.ignore {
@@ -104,14 +110,18 @@ func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) i
 			if !ok {
 				opts[string(elt)] = ArgOption
 			} else if opt != ArgOption {
-				ctx.Error("both as flag and option with argument:", elt)
+				if ctx.Process {
+					ctx.Error("both as flag and option with argument:", elt)
+				}
 			}
 		case ast.NamedFlagEscape:
 			opt, ok := opts[string(elt)]
 			if !ok {
 				opts[string(elt)] = FlagOption
 			} else if opt != FlagOption {
-				ctx.Error("both as flag and option with argument:", elt)
+				if ctx.Process {
+					ctx.Error("both as flag and option with argument:", elt)
+				}
 			}
 		case ast.Escape:
 			if elt == ast.Escape("$@") {
@@ -133,18 +143,22 @@ func macroIfStart(exp Exporter) {
 	opts, flags, args := ctx.ParseOptions(specOptIf, ctx.Args)
 	fmt, ok := opts["f"]
 	if !(len(args) > 0) && !ok {
-		ctx.Error("useless `.#if' invocation")
+		if ctx.Process {
+			ctx.Error("useless `.#if' invocation")
+		}
 	}
 	if ok {
 		formats := strings.Split(ctx.InlinesToText(fmt), ",")
-		ctx.checkFormats(formats)
+		if ctx.Process {
+			ctx.checkFormats(formats)
+		}
 		if ctx.notExportFormat(formats) {
 			ctx.ifIgnoreDepth = 1
 			return
 		}
 	}
 	if len(args) > 0 {
-		if len(args) > 1 {
+		if len(args) > 1 && ctx.Process {
 			ctx.Error("too many arguments")
 		}
 		var flag int
@@ -164,14 +178,14 @@ func macroIfStart(exp Exporter) {
 func macroIfEnd(exp Exporter) {
 	// macro .#;
 	ctx := exp.Context()
-	if len(ctx.Args) > 0 {
+	if len(ctx.Args) > 0 && ctx.Process {
 		ctx.Error("useless arguments")
 	}
 	if ctx.ifIgnoreDepth > 0 {
 		ctx.ifIgnoreDepth--
 	}
 	scope := ctx.popScope("#if")
-	if scope == nil {
+	if scope == nil && ctx.Process {
 		ctx.Error("no corresponding `.#if'")
 	}
 }
@@ -181,12 +195,16 @@ func macroDefVar(exp Exporter) {
 	ctx := exp.Context()
 	opts, _, args := ctx.ParseOptions(specOptDefVar, ctx.Args)
 	if len(args) == 0 {
-		ctx.Error("requires a name argument")
+		if ctx.Process {
+			ctx.Error("requires a name argument")
+		}
 		return
 	}
 	if fmt, ok := opts["f"]; ok {
 		formats := strings.Split(ctx.InlinesToText(fmt), ",")
-		ctx.checkFormats(formats)
+		if ctx.Process {
+			ctx.checkFormats(formats)
+		}
 		if ctx.notExportFormat(formats) {
 			return
 		}
@@ -230,7 +248,7 @@ func macroRun(exp Exporter) {
 	cmd.Stderr = os.Stderr
 	bytes, err := cmd.Output()
 	if err != nil {
-		ctx.Error("shell command:", sargs, ":", err)
+		ctx.Errorf("shell command: %v: %s", sargs, err)
 		return
 	}
 	ctx.W().Write(bytes)

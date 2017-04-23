@@ -1,0 +1,15 @@
+.X set epub-uuid very-unique-identifier
+.X set epub-subject "very interesting subject"
+.X set epub-css data-dirs/example-with-params.css
+.X set epub-metadata data-dirs/example-with-params-metadata.xhtml
+.X set xhtml-top data-dirs/example-with-params-top.xhtml
+.X set xhtml-bottom data-dirs/example-with-params-bottom.xhtml
+.X set xhtml-css ../examples/stylesheet.css
+.X set epub-cover data-dirs/img/image.png
+.X set latex-preamble examples/preamble.tex
+.X set title-page 1
+.X set document-author "The author"
+.X set document-title "The Title"
+.X set document-date 2042
+.X set lang en
+.If data-dirs/content.frundis

@@ -25,7 +25,7 @@ func (exp *exporter) epubCopyImages() {
 	if err != nil || !info.Mode().IsDir() {
 		err := os.Mkdir(imagesDir, 0755) // XXX really 0755 ? (umask probably 022 anyway)
 		if err != nil {
-			ctx.Error(imagesDir, ":", err)
+			ctx.Errorf("%s: %s", imagesDir, err)
 			return
 		}
 	}
@@ -37,7 +37,7 @@ func (exp *exporter) epubCopyImages() {
 		var ok bool
 		image, ok = frundis.SearchIncFile(exp, image)
 		if !ok {
-			ctx.Error("image copy:", image, ":no such file")
+			ctx.Errorf("image copy: no such file: %s", image)
 			continue
 		}
 		newImage := path.Join(imagesDir, imageName)
@@ -46,12 +46,12 @@ func (exp *exporter) epubCopyImages() {
 		}
 		data, err := ioutil.ReadFile(image)
 		if err != nil {
-			ctx.Error("image copy:reading image:", image, ":", err)
+			ctx.Errorf("image copy: reading image: %s: %s", image, err)
 			continue
 		}
 		err = ioutil.WriteFile(newImage, data, 0644)
 		if err != nil {
-			ctx.Error("image copy:writing image to:", newImage, ":", err)
+			ctx.Errorf("image copy: writing image to %s: %s", newImage, err)
 		}
 	}
 }
@@ -96,7 +96,7 @@ func (exp *exporter) epubGenContainer() {
 </container>
 `), 0644)
 	if err != nil {
-		ctx.Error("writing container.xml at:", containerXML, ":", err)
+		ctx.Errorf("writing container.xml at %s: %s", containerXML, err)
 	}
 }
 
@@ -230,6 +230,9 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 			mediaType = "image/gif"
 		case strings.HasSuffix(imageName, ".svg"):
 			mediaType = "image/svg"
+		default:
+			ctx.Error("unknown image format:", imageName)
+			continue
 		}
 		imageBname := path.Base(imageName)
 		imagePath := path.Join("images", imageBname)
@@ -269,7 +272,7 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 `)
 	err := ioutil.WriteFile(contentOpf, buf.Bytes(), 0644)
 	if err != nil {
-		ctx.Error("writing opf file:", contentOpf, ":", err)
+		ctx.Errorf("writing opf file %s: %s", contentOpf, err)
 	}
 }
 
@@ -292,7 +295,7 @@ func (exp *exporter) epubGenCover(title string, cover string) {
 
 	err := ioutil.WriteFile(coverXhtml, buf.Bytes(), 0644)
 	if err != nil {
-		ctx.Error("writing cover file:", coverXhtml, ":", err)
+		ctx.Errorf("writing cover file %s: %s", coverXhtml, err)
 	}
 }
 
@@ -310,7 +313,7 @@ func (exp *exporter) epubGenCSS() {
 		}
 		contents, err := ioutil.ReadFile(epubCSS)
 		if err != nil {
-			ctx.Error("reading epub css:", epubCSS, ":", err)
+			ctx.Errorf("reading epub css %s: %s", epubCSS, err)
 			return
 		}
 		buf.Write(contents)
@@ -318,7 +321,7 @@ func (exp *exporter) epubGenCSS() {
 
 	err := ioutil.WriteFile(stylesheetCSS, buf.Bytes(), 0644)
 	if err != nil {
-		ctx.Error("writing css file:", stylesheetCSS, ":", err)
+		ctx.Errorf("writing css file %s: %s", stylesheetCSS, err)
 	}
 }
 
@@ -327,7 +330,7 @@ func (exp *exporter) epubGenMimetype() {
 	mimetype := path.Join(exp.OutputFile, "mimetype")
 	err := ioutil.WriteFile(mimetype, []byte("application/epub+zip"), 0644)
 	if err != nil {
-		ctx.Error("writing mimetype file:", mimetype, ":", err)
+		ctx.Errorf("writing mimetype file %s: %s", mimetype, err)
 	}
 }
 
@@ -353,9 +356,10 @@ func (exp *exporter) epubGenNav(title string) {
 `)
 	exp.writeTOC(buf, navToc, map[string][]ast.Inline{}, map[string]bool{})
 	if landmarks, ok := ctx.Params["epub-nav-landmarks"]; ok {
+		// TODO: document this if it turns out useful, or remove
 		data, err := ioutil.ReadFile(landmarks)
 		if err != nil {
-			ctx.Error("epub-nav-lanmarks:", landmarks, ":", err)
+			ctx.Errorf("epub-nav-lanmarks %s: %s", landmarks, err)
 			return
 		}
 		buf.Write(data)
@@ -367,7 +371,7 @@ func (exp *exporter) epubGenNav(title string) {
 
 	err := ioutil.WriteFile(navFile, buf.Bytes(), 0644)
 	if err != nil {
-		ctx.Error("writing nav file:", navFile, ":", err)
+		ctx.Errorf("writing nav file %s: %s", navFile, err)
 	}
 }
 
@@ -396,6 +400,6 @@ func (exp *exporter) epubGenNCX(title string) {
 
 	err := ioutil.WriteFile(ncxFile, buf.Bytes(), 0644)
 	if err != nil {
-		ctx.Error("writing ncx file:", ncxFile, ":", err)
+		ctx.Errorf("writing ncx file %s: %s", ncxFile, err)
 	}
 }

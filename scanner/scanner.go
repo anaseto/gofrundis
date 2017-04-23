@@ -78,7 +78,7 @@ func (s *Scanner) error(msg string) {
 		line--
 		col = s.prevcol
 	}
-	fmt.Fprintf(s.Werror, "frundis:%s:%d:%d:%s\n", s.File, line, col, msg)
+	fmt.Fprintf(s.Werror, "frundis:%s:%d:%d: %s\n", s.File, line, col, msg)
 }
 
 func (s *Scanner) scanMacroName() (token.Token, string) {

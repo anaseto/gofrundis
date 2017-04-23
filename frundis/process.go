@@ -99,6 +99,8 @@ func processBlock(exp Exporter) {
 			switch b.Name {
 			case "#.":
 				macroDefEnd(exp)
+			case "#de":
+				macroDefStart(exp)
 			default:
 				if !ctx.uMacroDef.ignore {
 					ctx.uMacroDef.blocks = append(ctx.uMacroDef.blocks, b)
@@ -130,7 +132,7 @@ func processBlock(exp Exporter) {
 			}
 			handler(exp)
 			ctx.PrevMacro = b.Name
-		} else if b.Name != "" {
+		} else if b.Name != "" && ctx.Process {
 			ctx.Error("unknown macro:", b.Name)
 		}
 	case *ast.TextBlock:
