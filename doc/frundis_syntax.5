@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd April 15, 2017
+.Dd May 16, 2017
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -103,16 +103,10 @@ The accepted sequences are described in the following table:
 character
 .It \e& Ta a non-printing zero-width character
 .It \e~ Ta a non-breaking space
-.It \e*[ Ns Ar name Ns ]
-.Ta variable interpolation, see
-.Sx \&#dv
-macro description.
-.It \e$ Ns Ar N
-.Ta numbered argument
-.It \e$[ Ns Ar name Ns ]
-.Ta named argument
-.It \e$?[ Ns Ar name Ns ]
-.Ta named flag
+.It \e*[ Ns Ar name Ns ] Ta variable interpolation, see Sx \&#dv Ns \& macro description.
+.It \e$ Ns Ar N Ta numbered argument
+.It \e$[ Ns Ar name Ns ] Ta named argument
+.It \e$?[ Ns Ar name Ns ] Ta named flag
 .El
 .Pp
 The character
@@ -193,22 +187,17 @@ define exporting parameters and tags:
 .El
 .Ss Macros, variables and conditionals
 .Bl -column "Brq, Bro, Brc" description
-.It Sx \&#de ,
-\&#.
-.Ta define a macro:
+.It Sx \&#de Ns , \&#. Ta define a macro:
 .Op Fl f Ar formats
 .Ar name
 .It Sx \&#dv Ta define a variable:
 .Op Fl f Ar formats
 .Ar name
 .Ar args ...
-.It Sx \&#if ,
-\&#;
-.Ta conditional:
+.It Sx \&#if Ns , \&#; Ta conditional:
 .Op Fl f Ar formats
 .Op Ar string
-.It Sx \&#run
-.Ta run command:
+.It Sx \&#run Ta run command:
 .Ar args ...
 .El
 .Sh FORMATS
