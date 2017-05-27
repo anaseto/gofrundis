@@ -15,27 +15,35 @@
 .START
 .NEWPAGE
 .HEADING 1 NAMED s:1 "Part1"
+.PP
 .NEWPAGE
 .HEADING 2 NAMED s:2 "Chap1"
+.PP
 Text\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:3 "Chap2"
+.PP
 Text\&.
 .PP
 .HEADING 3 NAMED s:4 "Section1"
+.PP
 Text\&.
 .PP
 .HEADING 3 NAMED s:5 "Section2"
+.PP
 Text\&.
 .PP
 .HEADING 4 NAMED s:6 "Subsection1"
+.PP
 Text\&.
 .PP
 .NEWPAGE
 .HEADING 1 NAMED s:7 "Part2"
+.PP
 .NEWPAGE
 .HEADING 2 NAMED s:8 "Chap3"
+.PP
 Text\&.
 .PDF_LINK "s:5" SUFFIX "" "Section2"
 .PDF_LINK "s:2" SUFFIX "" "Chap1"

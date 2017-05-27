@@ -1,5 +1,6 @@
 .NEWPAGE
 .HEADING 2 NAMED s:1 "An interesting chapter"
+.PP
 .LIST
 .ITEM
 I no see really why it is interesting\&.
@@ -29,6 +30,7 @@ quatre\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:2 "Another interesting chapter"
+.PP
 It is an interesting chapter:
 .PP
 .LIST

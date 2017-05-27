@@ -3,6 +3,7 @@ A backslash `\e\(cq is written `\ee\(cq\&. To begin a line with a period you can
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:1 "\(dqtitle"
+.PP
 A `~\(cqcharacter
 A non-breaking space !
 [bla]
@@ -19,7 +20,6 @@ Text \e\e
 normal text
 Text\&. \e% #\(cq\(dq&$
 .CODE OFF
-.PP
 .HEADING 5 PARAHEAD "strange title:\e%$#"
 Text\&.
 .PDF_WWW_LINK %C2%AB%C2%BB#%5C SUFFIX ""

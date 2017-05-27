@@ -1,7 +1,9 @@
 .NEWPAGE
 .HEADING 1 NAMED s:1 "Primera parte"
+.PP
 .NEWPAGE
 .HEADING 2 NAMED s:2 "Prólogo \f[I]muy corto\f[R]"
+.PP
 Esta es la historia de Shaedra, pero en más breve, porque no tengo tiempo para
 escribir todo\&.
 .PP
@@ -12,6 +14,7 @@ Otro párrafo, que con uno no se hace
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:3 "Primer capítulo"
+.PP
 Bueno, ¿\f[I]no\f[R]
 \f[I]@\f[R]
 vamos a escribir demasiado tampoco\&.
@@ -20,6 +23,7 @@ vamos a escribir demasiado tampoco\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:4 "Nested spanning blocks"
+.PP
 This
 \f[I]is a
 \f[I]nested\f[]\f[R]
@@ -30,6 +34,7 @@ two paragraphs\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:5 "Spanning block"
+.PP
 \f[I]this is a\f[R]
 .PP
 \f[I]spanning block\f[R]
@@ -45,16 +50,19 @@ Text\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:6 "Some \f[I]important\f[R] thing"
+.PP
 .NEWPAGE
 .HEADING 2 NAMED s:7 "More \f[I]emph\f[R] and \f[I]more\f[R]"
+.PP
 .HEADING 3 NAMED s:8 "Bla \f[I]Emphblabla\f[R]Bla"
+.PP
 .HEADING 4 NAMED s:9 "Bla \f[I]Emphblabla\f[R] Bla"
+.PP
 .LIST USER ""
 .ITEM
 \f[B]\f[I]Blabla\f[R]\f[R]
 Bla\&.
 .LIST OFF
-.PP
 .HEADING 5 PARAHEAD "\f[I]Emph\f[R]"
 Text\&.
 .PP
@@ -64,3 +72,4 @@ Text\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:10 "SmThisIsNotAnEmphasizedTitle"
+.PP

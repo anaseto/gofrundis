@@ -1,17 +1,21 @@
 .NEWPAGE
 .HEADING 2 NAMED s:1 "Prologue"
+.PP
 .NEWPAGE
 .HEADING 2 NAMED s:2 "A first chapter"
 .PP
 paragraph text\&.
 .PP
 .HEADING 3 NAMED s:3 "A first section"
+.PP
 paragraph text\&.
 .PP
 .HEADING 4 NAMED s:4 "A subsection"
+.PP
 paragraph text\&.
 .PP
 .HEADING 4 NAMED s:5 "Another subsection"
+.PP
 paragraph text\&. A reference to the subsection
 .PDF_LINK "s:5" SUFFIX "\&." "Another subsection"
 .PDF_LINK "s:5" SUFFIX "" "Another subsection"
@@ -19,10 +23,13 @@ paragraph text\&. A reference to the subsection
 .PDF_LINK "s:5" SUFFIX "\&." "link text to Another subsection"
 .PP
 .HEADING 3 NAMED s:6 "Another section"
+.PP
 paragraph text\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:7 "A second \f[I]chapter\f[R]"
+.PP
 paragraph text\&.
 .PP
 .HEADING 3 NAMED s:8 "A last section"
+.PP

@@ -16,18 +16,22 @@
 .PDF_IMAGE "data-dirs/img/image\&.pdf"
 .PP
 .HEADING 3 NAMED s:1 "Abstract"
+.PP
 Text\&.
 .PDF_TARGET "label1"
 \f[I]Emphasized text with a label\f[R]\&.
 .PP
 .NEWPAGE
 .HEADING 1 NAMED s:2 "Part1"
+.PP
 .NEWPAGE
 .HEADING 2 NAMED s:3 "Chap1"
+.PP
 Text\&.
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:4 "Chap2"
+.PP
 Text\&.
 .PP
 .HEADING 5 PARAHEAD "Title of paragraph"
@@ -42,16 +46,18 @@ a	b
 .CAPTION "Table1" TO_LIST TABLES
 .PDF_TARGET "tbl:1"
 .FLOAT OFF
-.PP
 Normal paragraph\&.
 .PP
 .HEADING 3 NAMED s:5 "Section1"
+.PP
 Text\&.
 .PP
 .HEADING 4 NAMED s:6 "Subsection1"
+.PP
 Text\&.
 .PP
 .HEADING 3 NAMED s:7 "Section2"
+.PP
 Text\&.
 .PP
 .FLOAT
@@ -65,12 +71,15 @@ e	f
 .PDF_TARGET "tbl:2"
 .FLOAT OFF
 .HEADING 4 NAMED s:8 "Subsection2"
+.PP
 Text\&.
 .PP
 .NEWPAGE
 .HEADING 1 NAMED s:9 "Part2"
+.PP
 .NEWPAGE
 .HEADING 2 NAMED s:10 "Chap3"
+.PP
 Text\&. Some cross-references:
 .PDF_LINK "s:7" SUFFIX "" "Section2"
 .PDF_LINK "s:3" SUFFIX "" "Chap1"
@@ -80,5 +89,6 @@ Text\&. Some cross-references:
 .PDF_LINK "label1" SUFFIX "" "Link to emphasized text"
 .PP
 .HEADING 3 NAMED s:11 "Section3"
+.PP
 Text\&.
 .PP

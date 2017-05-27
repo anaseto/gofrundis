@@ -290,6 +290,7 @@ func (exp *exporter) EndHeader(macro string, numbered bool, title string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, "\"\n")
+	fmt.Fprint(w, ".PP\n")
 	// if !numbered {
 	// 	fmt.Fprintf(w, "\\addcontentsline{toc}{%s}{%s}\n", cmd, titleText)
 	// }
@@ -341,7 +342,8 @@ func (exp *exporter) EndParagraphUnsoftly() {
 	if exp.verse {
 		fmt.Fprint(w, "\n\n")
 	} else {
-		fmt.Fprint(w, ".PP\n")
+		// XXX: in mom several .PP add up so this was buggy
+		//fmt.Fprint(w, ".PP\n")
 	}
 }
 

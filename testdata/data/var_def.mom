@@ -1,12 +1,12 @@
 The date:42\&.
 .PP
-.PP
 Some text\&. The date:42
 .PP
 Some text\&. The date:today
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:1 "today"
+.PP
 .PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet\&.fr/frundis/intro-en SUFFIX ""
 «\e»
 Environment:ok

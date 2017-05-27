@@ -1,10 +1,13 @@
 .NEWPAGE
 .HEADING 2 NAMED s:1 "Chapter name"
+.PP
 Some introductory text\&.
 .PP
 .HEADING 3 NAMED s:2 "section name"
+.PP
 Some section text\&.
 .PP
 .HEADING 4 NAMED s:3 "subsection name"
+.PP
 Some subsection text\&.
 .PP
