@@ -52,6 +52,10 @@ Text.
 .Sm -t pototo Text
 .Sm
 .It
+.Bm
+.Bl -t verse
+.It verse
+.El
 .Bl
 .Ft -f xhtml Text
 Text

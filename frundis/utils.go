@@ -25,7 +25,7 @@ func (ctx *Context) Error(msgs ...interface{}) {
 		s = fmt.Sprint("frundis: ", file, ":", b.Line,
 			":in user macro `.", b.Name, "':")
 	} else if ctx.loc != nil {
-		if ctx.loc.curBlock >= 0 {
+		if ctx.loc.curBlock >= 0 && len(ctx.loc.curBlocks) > 0 {
 			b := ctx.block()
 			line := b.GetLine()
 			s = fmt.Sprint("frundis: ", ctx.loc.curFile, ":", line, ":")

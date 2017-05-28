@@ -245,6 +245,7 @@ func macroBlProcess(exp Exporter) {
 			ctx.Error("useless arguments")
 		}
 	}
+	closeUnclosedBlocks(exp, "Bm")
 	scopes, ok := ctx.scopes["Bl"]
 	if ok && len(scopes) > 0 {
 		last := scopes[len(scopes)-1]
