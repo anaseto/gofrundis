@@ -1451,6 +1451,11 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 			}
 		}
 	}
+	if len(blocks) == 0 {
+		// Ensure that we have at least one block, allowing for line
+		// error reporting should an error occur.
+		blocks = append(blocks, &ast.TextBlock{Line: ctx.line})
+	}
 	loc := ctx.loc
 	curMacro := ctx.Macro
 	curArgs := ctx.Args
