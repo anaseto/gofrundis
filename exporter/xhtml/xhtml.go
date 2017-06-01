@@ -483,7 +483,7 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 	return text
 }
 
-func (exp *exporter) FigureImage(image string, label string, link string) {
+func (exp *exporter) FigureImage(image string, caption string, link string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprintf(w, "<div id=\"fig%d\" class=\"figure\">\n", ctx.FigCount)
@@ -500,14 +500,13 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 	if ctx.Format == "epub" {
 		u = path.Join("images", u)
 	}
-	image = html.EscapeString(image)
 	link = exp.processLink(link)
 	if link != "" && ctx.Format == "xhtml" {
-		fmt.Fprintf(w, "  <a href=\"%s\"><img src=\"%s\" alt=\"%s\" /></a>\n", link, u, image)
+		fmt.Fprintf(w, "  <a href=\"%s\"><img src=\"%s\" alt=\"%s\" /></a>\n", link, u, caption)
 	} else {
-		fmt.Fprintf(w, "  <img src=\"%s\" alt=\"%s\" />\n", u, image)
+		fmt.Fprintf(w, "  <img src=\"%s\" alt=\"%s\" />\n", u, caption)
 	}
-	fmt.Fprintf(w, "  <p class=\"caption\">%s</p>\n", label)
+	fmt.Fprintf(w, "  <p class=\"caption\">%s</p>\n", caption)
 	fmt.Fprint(w, "</div>\n")
 }
 
@@ -584,15 +583,14 @@ func (exp *exporter) InlineImage(image string, link string, id string, punct str
 	if ctx.Format == "epub" {
 		u = path.Join("images", u)
 	}
-	image = html.EscapeString(image)
 	link = exp.processLink(link)
 	if id != "" {
 		id = " id=\"" + id + "\""
 	}
 	if link != "" && ctx.Format == "xhtml" {
-		fmt.Fprintf(w, "<a href=\"%s\"><img src=\"%s\" alt=\"%s\"%s /></a>%s", link, u, image, id, punct)
+		fmt.Fprintf(w, "<a href=\"%s\"><img src=\"%s\" alt=\"\"%s /></a>%s", link, u, id, punct)
 	} else {
-		fmt.Fprintf(w, "<img src=\"%s\" alt=\"%s\"%s />%s", u, image, id, punct)
+		fmt.Fprintf(w, "<img src=\"%s\" alt=\"\"%s />%s", u, id, punct)
 	}
 }
 

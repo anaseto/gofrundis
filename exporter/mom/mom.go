@@ -387,7 +387,7 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 	return text // TODO: do something?
 }
 
-func (exp *exporter) FigureImage(image string, label string, link string) {
+func (exp *exporter) FigureImage(image string, caption string, link string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	_, err := os.Stat(image)
@@ -402,7 +402,7 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 	image = escape.Roff(image)
 	fmt.Fprintf(w, ".FLOAT\n")
 	fmt.Fprintf(w, ".PDF_IMAGE \"%s\"\n", image)
-	fmt.Fprintf(w, ".CAPTION \"%s\" TO_LIST FIGURES\n", label)
+	fmt.Fprintf(w, ".CAPTION \"%s\" TO_LIST FIGURES\n", caption)
 	fmt.Fprintf(w, ".PDF_TARGET \"fig:%d\"\n", ctx.FigCount)
 	fmt.Fprintf(w, ".FLOAT OFF\n")
 }

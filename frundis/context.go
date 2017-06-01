@@ -118,9 +118,9 @@ type Renderer interface {
 	EndVerseLine()
 	// FormatParagraph can be used to do post-processing of paragraph-like text.
 	FormatParagraph(text []byte) []byte
-	// FigureImage handles an image with caption (label); image argument is
+	// FigureImage handles an image with a caption; image argument is
 	// not escaped. The image can be embeded in a link.
-	FigureImage(image string, label string, link string)
+	FigureImage(image string, caption string, link string)
 	// GenRef generates a suitable reference string using a prefix and an
 	// id.
 	GenRef(prefix string, id string, hasfile bool) string
@@ -132,7 +132,7 @@ type Renderer interface {
 	InlineImage(image string, link string, id string, punct string)
 	// LkWithLabel produces a labeled link (e.g. "<a href="url">label</a>").
 	LkWithLabel(url string, label string, punct string)
-	// LkWithLabel produces a link (e.g. "<a href="url">url</a>").
+	// LkWithoutLabel produces a link (e.g. "<a href="url">url</a>").
 	LkWithoutLabel(url string, punct string)
 	// ParagraphTitle starts a titled paragraph (e.g. "<p><strong>title</strong>\n").
 	ParagraphTitle(title string)

@@ -717,9 +717,9 @@ func macroImProcess(exp Exporter) {
 		closeUnclosedBlocks(exp, "Bl")
 		endParagraph(exp, false)
 		image := ctx.InlinesToText(args[0])
-		label := exp.RenderText(args[1])
+		caption := exp.RenderText(args[1])
 		ctx.FigCount++
-		exp.FigureImage(image, label, link)
+		exp.FigureImage(image, caption, link)
 	}
 }
 

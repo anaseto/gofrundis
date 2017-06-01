@@ -375,10 +375,10 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 	return text
 }
 
-func (exp *exporter) FigureImage(image string, label string, link string) {
+func (exp *exporter) FigureImage(image string, caption string, link string) {
 	ctx := exp.Context()
-	if strings.ContainsAny(image, "{}") || strings.ContainsAny(label, "{}") {
-		ctx.Error("path argument and label should not contain the characters `{', or `}")
+	if strings.ContainsAny(image, "{}") || strings.ContainsAny(caption, "{}") {
+		ctx.Error("path argument and caption should not contain the characters `{', or `}")
 		return
 	}
 	w := ctx.W()
@@ -391,7 +391,7 @@ func (exp *exporter) FigureImage(image string, label string, link string) {
 	fmt.Fprint(w, "\\begin{center}\n")
 	fmt.Fprint(w, "\\begin{figure}[htbp]\n")
 	fmt.Fprintf(w, "\\includegraphics{%s}\n", image)
-	fmt.Fprintf(w, "\\caption{%s}\n", label)
+	fmt.Fprintf(w, "\\caption{%s}\n", caption)
 	fmt.Fprintf(w, "\\label{fig:%d}\n", ctx.FigCount)
 	fmt.Fprint(w, "\\end{figure}\n")
 	fmt.Fprint(w, "\\end{center}\n")
@@ -412,7 +412,7 @@ func (exp *exporter) HeaderReference(macro string) string {
 func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
 	ctx := exp.Context()
 	if strings.ContainsAny(image, "{}") {
-		ctx.Error("path argument and label should not contain the characters `{', or `}")
+		ctx.Error("path argument should not contain the characters `{', or `}")
 		return
 	}
 	w := ctx.W()

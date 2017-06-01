@@ -216,7 +216,7 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 	return text
 }
 
-func (exp *exporter) FigureImage(image string, label string, link string) {
+func (exp *exporter) FigureImage(image string, caption string, link string) {
 }
 
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
