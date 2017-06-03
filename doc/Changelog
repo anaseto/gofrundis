@@ -1,3 +1,5 @@
+v0.5:
+
   + interpolate environment variables with \*[$ENVVAR]
   + some bug fixes
 
