@@ -28,6 +28,7 @@ _build/*
 blib/*
 frundis/frundis
 testdata/testdata
+testdata/.gofrundis_warnings_test
 gofrundis
 *.prof
 .fossil-settings/
