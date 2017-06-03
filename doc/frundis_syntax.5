@@ -1425,9 +1425,6 @@ Table of contents and cross-references:
 .Pp
 Syntax highlighting through external command:
 .Bd -literal -offset indent
-\&.\e" Create dtag suitable for code with a <pre>
-\&.X dtag -f xhtml -t code -c pre
-\&.Bd -t code
 \&.\e" Source code highlight with the GNU source-highlight program
 \&.\e" (see https://www.gnu.org/software/src-highlite/)
 \&.X ftag -f xhtml -t sh-perl -shell "source-highlight -s perl"
@@ -1440,7 +1437,6 @@ Syntax highlighting through external command:
 \&.Bf -f xhtml -t highlight-perl
 \&print "Hello, World!\een";
 \&.Ef
-\&.Ed
 .Ed
 .Pp
 More examples can be found by looking at the test files in the
