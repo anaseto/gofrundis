@@ -361,7 +361,7 @@ func (exp *exporter) LkWithoutLabel(url string, punct string) {
 
 func (exp *exporter) ParagraphTitle(title string) {
 	w := exp.Context().W()
-	fmt.Fprint(w, "**"+title+"**. ")
+	fmt.Fprint(w, "**"+title+"** ")
 }
 
 func (exp *exporter) RenderText(text []ast.Inline) string {

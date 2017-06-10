@@ -8,7 +8,7 @@ A subsection
 
 Some text
 
-**paragraph with title**. Text. *Text.*
+**paragraph with title** Text. *Text.*
 
-**another paragraph with title**. *Text.*
+**another paragraph with title** *Text.*
 

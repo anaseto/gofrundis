@@ -49,9 +49,9 @@ More *emph* and *more*
 *Blabla*
   ~ Bla.
 
-***Emph***. Text.
+***Emph*** Text.
 
-**Not Emph and *Emph***. Text. *This does not end in
+**Not Emph and *Emph*** Text. *This does not end in
 punctuation *
 
 SmThisIsNotAnEmphasizedTitle

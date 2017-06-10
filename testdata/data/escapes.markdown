@@ -19,7 +19,7 @@ normal text
 Text. \% #'"&$
 ```
 
-**strange title:\\%$\#**. Text.
+**strange title:\\%$\#** Text.
 ![http://example.com/image.png?thing=2&stuff=4%](http://example.com/image.png?thing=2&stuff=4%)
 
 ![«»](example.com/image-«».png)![&<](https://example.com/image.png?thing=3)<«»#\> <«»#\>). \\lolailo *Some Text* *Some "Text*
