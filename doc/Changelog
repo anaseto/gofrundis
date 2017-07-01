@@ -1,3 +1,7 @@
+v0.6:
+  + minor markdown export fix for paragraph title
+  + minor documentation fixes	
+
 v0.5:
 
   + interpolate environment variables with \*[$ENVVAR]
