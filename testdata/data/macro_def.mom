@@ -15,12 +15,14 @@ The book title is
 text
 \f[I]The Title of the Book\f[R]
 .LIST OFF
+.PP
 .LIST USER ""
 .ITEM
 \f[B]text\f[R]
 \f[I]The Title of the Book\f[R]
 Text\&.
 .LIST OFF
+.PP
 «»
 \f[I]START one two three\f[R]\&.
 one two three \&.

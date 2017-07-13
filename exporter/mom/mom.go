@@ -254,7 +254,7 @@ func (exp *exporter) DescName(name string) {
 }
 
 func (exp *exporter) EndDescList() {
-	exp.Context().Wout.WriteString(".LIST OFF\n")
+	exp.Context().Wout.WriteString(".LIST OFF\n.PP\n")
 }
 
 func (exp *exporter) EndDescValue() {
@@ -278,7 +278,7 @@ func (exp *exporter) EndDisplayBlock(tag string) {
 }
 
 func (exp *exporter) EndEnumList() {
-	exp.Context().Wout.WriteString(".LIST OFF\n")
+	exp.Context().Wout.WriteString(".LIST OFF\n.PP\n")
 }
 
 func (exp *exporter) EndEnumItem() {
@@ -297,7 +297,7 @@ func (exp *exporter) EndHeader(macro string, numbered bool, title string) {
 }
 
 func (exp *exporter) EndItemList() {
-	exp.Context().Wout.WriteString(".LIST OFF\n")
+	exp.Context().Wout.WriteString(".LIST OFF\n.PP\n")
 }
 
 func (exp *exporter) EndItem() {

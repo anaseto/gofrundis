@@ -63,6 +63,7 @@ Text\&.
 \f[B]\f[I]Blabla\f[R]\f[R]
 Bla\&.
 .LIST OFF
+.PP
 .HEADING 5 PARAHEAD "\f[I]Emph\f[R]"
 Text\&.
 .PP

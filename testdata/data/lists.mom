@@ -7,6 +7,7 @@ I no see really why it is interesting\&.
 .ITEM
 But it is\&.
 .LIST OFF
+.PP
 .PDF_TARGET "label1"
 .LIST
 .ITEM
@@ -16,6 +17,7 @@ deux
 .ITEM
 trois
 .LIST OFF
+.PP
 .PDF_LINK "label1" SUFFIX "" "untitled item list"
 .PP
 .LIST
@@ -26,6 +28,7 @@ deux
 .ITEM
 trois
 .LIST OFF
+.PP
 quatre\&.
 .PP
 .NEWPAGE
@@ -40,6 +43,7 @@ I no see really why it is interesting to write a very long text of more than
 .ITEM
 But it is\&.
 .LIST OFF
+.PP
 .LIST
 .ITEM
 first point
@@ -52,6 +56,7 @@ and more text
 and even more text
 \f[I]in fourth point\f[R]
 .LIST OFF
+.PP
 .PDF_TARGET "label3"
 .LIST USER ""
 .ITEM
@@ -61,6 +66,7 @@ is this\&.
 \f[B]a poem\f[R]
 is another thing\&.
 .LIST OFF
+.PP
 .PDF_LINK "label3" SUFFIX "" "untitled desc list"
 .PP
 .LIST
@@ -71,10 +77,12 @@ a nested
 .ITEM
 list
 .LIST OFF
+.PP
 
 .ITEM
 Item text\&.
 .LIST OFF
+.PP
 .PDF_TARGET "label2"
 .LIST
 .ITEM
@@ -84,10 +92,12 @@ some text in the nested list that is too long to fit in a single 55 character li
 .ITEM
 some other text in the nested list
 .LIST OFF
+.PP
 
 .ITEM
 some text in the main list
 .LIST OFF
+.PP
 .LIST
 .ITEM
 \f[I]emphasized text\f[R]
@@ -96,5 +106,6 @@ Text
 \f[I]more emphasized text\f[R]
 Text\&.
 .LIST OFF
+.PP
 .PDF_LINK "label2" SUFFIX "" "untitled enum list"
 .PP
