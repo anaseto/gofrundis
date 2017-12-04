@@ -15,5 +15,5 @@ text
   ~ The Title of the Book Text.
 
 «» *START one two three*. one two three . *START**bla*
-Got a flag. argument *otherargument*
+Got a flag. argument *otherargument* *one* two three
 

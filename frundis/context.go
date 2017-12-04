@@ -206,7 +206,7 @@ type Context struct {
 	text          []ast.Inline                   // current/last text block text
 	uMacroCall    *uMacroCallInfo                // information related to user macro call
 	uMacroDef     *uMacroDefInfo                 // information related to user macro definition
-	uMacros       map[string]uMacroDefInfo       // user defined textual macros
+	uMacros       map[string]*uMacroDefInfo      // user defined textual macros
 	validFormats  []string                       // list of valid export formats
 	quiet         bool                           // Do not print errors to Werror
 }
@@ -230,9 +230,10 @@ type uMacroDefInfo struct {
 	line   int    // .#de
 	name   string // new macro name
 	ignore bool   // whether definition has to be ignored
-	argsc  int    // argument count (math.MaxInt32 if $@ is present)
+	argsc  int    // argument count
 	opts   map[string]Option
 	blocks []ast.Block // list of blocks defining the new macro
+	list   bool        // whether $@ is present
 }
 
 // VerseInfo gathers verse information.
@@ -331,7 +332,7 @@ func (ctx *Context) Init() {
 	ctx.bufa2t = bytes.Buffer{}
 	ctx.bufra = bytes.Buffer{}
 	ctx.scopes = make(map[string]([]*scope))
-	ctx.uMacros = make(map[string]uMacroDefInfo)
+	ctx.uMacros = make(map[string]*uMacroDefInfo)
 	ctx.ivars = make(map[string]string)
 	ctx.validFormats = []string{"markdown", "xhtml", "latex", "epub", "mom"}
 	if ctx.files == nil {

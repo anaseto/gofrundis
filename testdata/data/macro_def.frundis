@@ -102,3 +102,8 @@ Got a flag.
 .Sm \$[otheroption]
 .#.
 .options -option argument -otheroption otherargument
+.#de mixed
+.Sm \$1
+\$@
+.#.
+.mixed one two three

@@ -11,6 +11,7 @@ import (
 // argsSubst returns inline text where numbered arguments are substituted with
 // values from args
 func (ctx *Context) argsSubstText(
+	m *uMacroDefInfo,
 	args [][]ast.Inline, opts map[string][]ast.Inline,
 	flags map[string]bool, text []ast.Inline) []ast.Inline {
 
@@ -45,7 +46,11 @@ scanText:
 			res = append(res, ast.Text(boolText))
 		case ast.Escape:
 			if elt == ast.Escape("$@") {
-				for i, arg := range args {
+				min := len(args)
+				if min > m.argsc {
+					min = m.argsc
+				}
+				for i, arg := range args[min:] {
 					if i > 0 {
 						res = append(res, ast.Text(" "))
 					}
@@ -62,6 +67,7 @@ scanText:
 }
 
 func (ctx *Context) argsSubstBlock(
+	m *uMacroDefInfo,
 	args [][]ast.Inline, opts map[string][]ast.Inline,
 	flags map[string]bool, b ast.Block) ast.Block {
 
@@ -71,10 +77,14 @@ func (ctx *Context) argsSubstBlock(
 		nargs := [][]ast.Inline{}
 		for _, arg := range b.Args {
 			if len(arg) == 1 && arg[0] == ast.Escape("$@") {
-				nargs = append(nargs, args...)
+				min := len(args)
+				if min > m.argsc {
+					min = m.argsc
+				}
+				nargs = append(nargs, args[min:]...)
 				continue
 			}
-			narg := ctx.argsSubstText(args, opts, flags, arg)
+			narg := ctx.argsSubstText(m, args, opts, flags, arg)
 			nargs = append(nargs, narg)
 		}
 		res = &ast.Macro{
@@ -84,12 +94,12 @@ func (ctx *Context) argsSubstBlock(
 	case *ast.TextBlock:
 		res = &ast.TextBlock{
 			Line: b.Line,
-			Text: ctx.argsSubstText(args, opts, flags, b.Text)}
+			Text: ctx.argsSubstText(m, args, opts, flags, b.Text)}
 	}
 	return res
 }
 
-func processUserMacro(exp Exporter, m uMacroDefInfo) {
+func processUserMacro(exp Exporter, m *uMacroDefInfo) {
 	ctx := exp.Context()
 	// Do not allow too much depth
 	if ctx.uMacroCall.depth > 42 {
@@ -108,15 +118,15 @@ func processUserMacro(exp Exporter, m uMacroDefInfo) {
 		ctx.quiet = false
 	}
 
-	if len(args) > m.argsc && ctx.Process {
+	if !m.list && len(args) > m.argsc && ctx.Process {
 		ctx.Error("too many arguments")
 	}
 	var blocks []ast.Block
-	if m.argsc > 0 || len(m.opts) > 0 {
+	if m.argsc > 0 || m.list || len(m.opts) > 0 {
 		// substitute $N arguments
 		blocks = []ast.Block{}
 		for _, b := range m.blocks {
-			blocks = append(blocks, ctx.argsSubstBlock(args, opts, flags, b))
+			blocks = append(blocks, ctx.argsSubstBlock(m, args, opts, flags, b))
 		}
 	} else {
 		blocks = m.blocks

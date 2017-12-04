@@ -30,4 +30,6 @@ one two three \&.
 Got a flag\&.
 argument
 \f[I]otherargument\f[R]
+\f[I]one\f[R]
+two three
 .PP

@@ -4,7 +4,6 @@ package frundis
 
 import (
 	"bytes"
-	"math"
 	"os"
 	"strings"
 
@@ -58,47 +57,59 @@ func macroDefEnd(exp Exporter) {
 		return
 	}
 	if !ctx.uMacroDef.ignore {
-		ctx.uMacroDef.argsc, ctx.uMacroDef.opts = ctx.searchArgInBlocks(ctx.uMacroDef.blocks)
-		ctx.uMacros[ctx.uMacroDef.name] = *ctx.uMacroDef
+		ctx.uMacroDef.argsc, ctx.uMacroDef.list, ctx.uMacroDef.opts = ctx.searchArgInBlocks(ctx.uMacroDef.blocks)
+		ctx.uMacros[ctx.uMacroDef.name] = ctx.uMacroDef
 	}
 	ctx.uMacroDef = nil
 }
 
-// searchArgInBlocks returns the greatest number N of an $N argument, as well
-// as a specification of macro options found.
-func (ctx *Context) searchArgInBlocks(blocks []ast.Block) (int, map[string]Option) {
+// searchArgInBlocks returns the greatest number N of an $N argument, whether
+// $@ is used, as well as a specification of macro options found.
+func (ctx *Context) searchArgInBlocks(blocks []ast.Block) (int, bool, map[string]Option) {
 	max := 0
 	opts := make(map[string]Option)
+	list := false
 	for _, b := range blocks {
-		m := ctx.searchArgInBlock(b, opts)
+		m, l := ctx.searchArgInBlock(b, opts)
 		if m > max {
 			max = m
 		}
+		if l {
+			list = true
+		}
 	}
-	return max, opts
+	return max, list, opts
 }
 
-func (ctx *Context) searchArgInBlock(b ast.Block, opts map[string]Option) int {
+func (ctx *Context) searchArgInBlock(b ast.Block, opts map[string]Option) (int, bool) {
 	max := 0
+	list := false
 	switch b := b.(type) {
 	case *ast.Macro:
 		for _, arg := range b.Args {
-			m := ctx.searchArgInText(arg, opts)
+			m, l := ctx.searchArgInText(arg, opts)
 			if m > max {
 				max = m
 			}
+			if l {
+				list = true
+			}
 		}
 	case *ast.TextBlock:
-		m := ctx.searchArgInText(b.Text, opts)
+		m, l := ctx.searchArgInText(b.Text, opts)
 		if m > max {
 			max = m
 		}
+		if l {
+			list = true
+		}
 	}
-	return max
+	return max, list
 }
 
-func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) int {
+func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) (int, bool) {
 	max := 0
+	list := false
 	for _, elt := range text {
 		switch elt := elt.(type) {
 		case ast.ArgEscape:
@@ -125,11 +136,11 @@ func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) i
 			}
 		case ast.Escape:
 			if elt == ast.Escape("$@") {
-				max = math.MaxInt32
+				list = true
 			}
 		}
 	}
-	return max
+	return max, list
 }
 
 func macroIfStart(exp Exporter) {
