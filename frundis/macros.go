@@ -1134,7 +1134,7 @@ func macroX(exp Exporter) {
 func macroXdtag(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	var opts map[string][]ast.Inline
-	opts, _, args = ctx.ParseOptions(specOptXdtag, args)
+	opts, _, _ = ctx.ParseOptions(specOptXdtag, args)
 	var formats []string
 	if format, okFmt := opts["f"]; okFmt {
 		formats = strings.Split(ctx.InlinesToText(format), ",")
@@ -1251,7 +1251,7 @@ func macroXftag(exp Exporter, args [][]ast.Inline) {
 func macroXmtag(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	var opts map[string][]ast.Inline
-	opts, _, args = ctx.ParseOptions(specOptXmtag, args)
+	opts, _, _ = ctx.ParseOptions(specOptXmtag, args)
 	var formats []string
 	if format, okFmt := opts["f"]; okFmt {
 		formats = strings.Split(ctx.InlinesToText(format), ",")
