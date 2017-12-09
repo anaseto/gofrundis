@@ -549,7 +549,7 @@ func macroEm(exp Exporter) {
 		}
 	} else if scope.tagRequired {
 		location := ctx.scopeLocation(scope)
-		ctx.Error("missing required tag matching tag '%s' of current block opened %s", scope.tag, location)
+		ctx.Errorf("missing required tag matching tag '%s' of current block opened %s", scope.tag, location)
 	}
 	tag := scope.tag
 	id := scope.id
