@@ -340,7 +340,7 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 				space = c == ' ' || c == '\n'
 			}
 			if start <= len(elt)-1 {
-				newtext = append(newtext, ast.Text(elt[start:len(elt)]))
+				newtext = append(newtext, ast.Text(elt[start:]))
 			}
 		default:
 			newtext = append(newtext, elt)
