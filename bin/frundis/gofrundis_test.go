@@ -77,6 +77,9 @@ func TestFragments(t *testing.T) {
 		}
 	}()
 	names, err := dataDir.Readdirnames(-1)
+	if err != nil {
+		t.Logf("Could not read directory: %v", err)
+	}
 	for _, f := range names {
 		if b, _ := path.Match("*.frundis", f); !b {
 			continue
@@ -105,6 +108,9 @@ func TestStandalones(t *testing.T) {
 		}
 	}()
 	names, err := dataDir.Readdirnames(-1)
+	if err != nil {
+		t.Logf("Could not read directory: %v", err)
+	}
 	for _, f := range names {
 		if b, _ := path.Match("*.frundis", f); !b {
 			continue
