@@ -14,7 +14,7 @@ import (
 
 // Scanner gathers information and methods for scanning frundis files.
 type Scanner struct {
-	File    string    // file beeing read (for error messages only)
+	File    string    // file being read (for error messages only)
 	Reader  io.Reader // reader to scan from
 	Werror  io.Writer // where to output non-fatal errors
 	bReader *bufio.Reader

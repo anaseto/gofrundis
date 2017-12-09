@@ -119,7 +119,7 @@ type Renderer interface {
 	// FormatParagraph can be used to do post-processing of paragraph-like text.
 	FormatParagraph(text []byte) []byte
 	// FigureImage handles an image with a caption; image argument is
-	// not escaped. The image can be embeded in a link.
+	// not escaped. The image can be embedded in a link.
 	FigureImage(image string, caption string, link string)
 	// GenRef generates a suitable reference string using a prefix and an
 	// id.
