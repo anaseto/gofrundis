@@ -13,6 +13,7 @@ import (
 	"github.com/anaseto/gofrundis/token"
 )
 
+// Parser gathers state data for parsing.
 type Parser struct {
 	Source string    // for error messages location information (e.g. filename)
 	Werror io.Writer // where non-fatal scanning error messages go (default os.Stderr)

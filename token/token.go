@@ -1,5 +1,7 @@
 package token
 
+// Token represents a token in frundis syntax: basically a text or an escape,
+// as well as some special cases such as illegal tokens or end of file.
 type Token int
 
 const (

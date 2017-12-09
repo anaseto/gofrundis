@@ -42,6 +42,7 @@ func (ctx *Context) Error(msgs ...interface{}) {
 	fmt.Fprint(ctx.Werror, s)
 }
 
+// Errorf writes formatted msgs to ctx.Werror with some additional context information.
 func (ctx *Context) Errorf(format string, msgs ...interface{}) {
 	ctx.Error(fmt.Sprintf(format, msgs...))
 }

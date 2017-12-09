@@ -10,11 +10,6 @@ import (
 var pbuf bytes.Buffer    // paragraph buffer
 var wordbuf bytes.Buffer // word buffer
 
-func Init() {
-	pbuf = bytes.Buffer{}
-	wordbuf = bytes.Buffer{}
-}
-
 func processText(indent int, text []byte) []byte {
 	pbuf.Reset()
 	wordbuf.Reset()

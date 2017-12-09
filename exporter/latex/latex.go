@@ -400,9 +400,8 @@ func (exp *exporter) FigureImage(image string, caption string, link string) {
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 	if prefix != "" {
 		return fmt.Sprintf("%s:%s", prefix, id)
-	} else {
-		return fmt.Sprintf("%s", id)
 	}
+	return fmt.Sprintf("%s", id)
 }
 
 func (exp *exporter) HeaderReference(macro string) string {
