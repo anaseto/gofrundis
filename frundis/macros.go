@@ -419,7 +419,7 @@ func macroEf(exp Exporter) {
 		fmt.Fprint(w, text)
 		if ctx.parScope && !flags["ns"] {
 			ctx.WantsSpace = true
-		} else {
+		} else if !flags["ns"] {
 			fmt.Fprint(w, "\n")
 		}
 	}

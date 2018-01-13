@@ -21,3 +21,7 @@ xhtml text\"comment
 .Ef
 Some text.
 .Ft -ns -f xhtml <em>"'&gt</em>
+.Bf -f xhtml
+Some
+.Ef -ns
+text

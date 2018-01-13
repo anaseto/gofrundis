@@ -4,5 +4,5 @@ Some text. More text. More:
 
 <!-- -->
 
-Some text: Some text.
+Some text: Some text. text
 
