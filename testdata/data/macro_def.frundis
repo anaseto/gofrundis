@@ -107,3 +107,16 @@ Got a flag.
 \$@
 .#.
 .mixed one two three
+.#de deep1
+.deep2
+.#.
+.#de deep2
+.deep3
+.Sm 2
+.Sm 3
+.Sm 4
+.#.
+.#de deep3
+.Sm deep3
+.#.
+.deep1

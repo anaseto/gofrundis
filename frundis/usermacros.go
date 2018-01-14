@@ -136,19 +136,20 @@ func processUserMacro(exp Exporter, m *uMacroDefInfo) {
 	if ctx.uMacroCall.depth == 0 {
 		ctx.uMacroCall.loc = ctx.loc
 	}
-	ctx.uMacroCall.depth++
-
-	// process user macro blocks
+	oloc := ctx.loc
 	ctx.loc = &location{
 		curBlock:  0,
 		curBlocks: blocks,
 		curFile:   m.file}
-	processBlocks(exp)
+	ctx.uMacroCall.depth++
+	defer func() {
+		ctx.uMacroCall.depth--
+		ctx.loc = oloc
+		if ctx.uMacroCall.depth == 0 {
+			ctx.uMacroCall.loc = nil
+		}
+	}()
 
-	// recover location
-	ctx.uMacroCall.depth--
-	if ctx.uMacroCall.depth == 0 {
-		ctx.loc = ctx.uMacroCall.loc
-		ctx.uMacroCall.loc = nil
-	}
+	// process user macro blocks
+	processBlocks(exp)
 }

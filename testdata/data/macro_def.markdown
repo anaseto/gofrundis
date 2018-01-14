@@ -16,4 +16,5 @@ text
 
 «» *START one two three*. one two three . *START**bla*
 Got a flag. argument *otherargument* *one* two three
+*deep3* *2* *3* *4*
 
