@@ -68,10 +68,9 @@ type Renderer interface {
 	BeginVerse(title string, id string)
 	// CheckParamAssignement checks parameter assignement.
 	CheckParamAssignement(param string, value string) bool
-	// Crossreference builds a reference link with a given name. It can
-	// have an explicit id from Context.IDs, or it can corresond to a
-	// loXentry.
-	CrossReference(idf IDInfo, name string, punct string)
+	// Crossreference builds a reference link. It can have an explicit id
+	// from Context.IDs, or it can correspond to a loXentry.
+	CrossReference(idf IDInfo, punct string)
 	// DescName generates a description list item name (e.g. "<dt>" + name
 	// + "</dt>")
 	DescName(name string)
@@ -293,6 +292,7 @@ const (
 // IDInfo gathers identifier information.
 type IDInfo struct {
 	Ref  string
+	Name string
 	Type IDType
 }
 

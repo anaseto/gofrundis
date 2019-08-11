@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd Dec 04, 2017
+.Dd Aug 11, 2019
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -823,14 +823,15 @@ The syntax is as follows:
 .Pf \. Sx \&Sx
 .Op Fl ns
 .Ar label
-.Ar args ...
+.Op Ar args ...
 .Op Ar delimiter
 .Ed
 .Pp
-The
+If given,
 .Ar args
 arguments are joined with spaces interleaved, and used as text for the
 cross-reference link.
+Otherwise, the header number, title or label are used as the text.
 The argument
 .Ar label
 should correspond to a valid label passed to any macro supporting

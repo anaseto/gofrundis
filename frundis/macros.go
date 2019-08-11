@@ -71,7 +71,7 @@ func macroBd(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			ctx.storeID(id, ref, BdID)
+			ctx.storeID(id, IDInfo{Ref: ref, Type: BdID})
 		}
 		return
 	}
@@ -178,7 +178,7 @@ func macroBlInfos(exp Exporter) {
 		if t, ok := opts["id"]; ok {
 			id := exp.RenderText(t)
 			ref := exp.GenRef("", id, false)
-			ctx.storeID(id, ref, UntitledList)
+			ctx.storeID(id, IDInfo{Ref: ref, Type: UntitledList})
 		}
 	case "verse":
 		ctx.Verse.Used = true
@@ -187,7 +187,7 @@ func macroBlInfos(exp Exporter) {
 			if t, ok := opts["id"]; ok {
 				id := exp.RenderText(t)
 				ref := exp.GenRef("", id, false)
-				ctx.storeID(id, ref, UntitledList)
+				ctx.storeID(id, IDInfo{Ref: ref, Type: UntitledList})
 			}
 			return
 		}
@@ -206,7 +206,7 @@ func macroBlInfos(exp Exporter) {
 			if t, ok := opts["id"]; ok {
 				id := exp.RenderText(t)
 				ref := exp.GenRef("", id, false)
-				ctx.storeID(id, ref, UntitledList)
+				ctx.storeID(id, IDInfo{Ref: ref, Type: UntitledList})
 				ctx.Table.id = id
 			}
 			return
@@ -302,7 +302,7 @@ func macroBm(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			ctx.storeID(id, ref, SmID)
+			ctx.storeID(id, IDInfo{Ref: ref, Type: SmID})
 		}
 		return
 	}
@@ -738,7 +738,7 @@ func macroImInfos(exp Exporter) {
 		if t, ok := opts["id"]; ok {
 			id := exp.RenderText(t)
 			ref := exp.GenRef("", id, false)
-			ctx.storeID(id, ref, InlineImID)
+			ctx.storeID(id, IDInfo{Ref: ref, Type: InlineImID})
 		}
 		return
 	}
@@ -948,7 +948,7 @@ func macroSm(exp Exporter) {
 	if !ctx.Process {
 		if id != "" {
 			ref := exp.GenRef("", id, false)
-			ctx.storeID(id, ref, SmID)
+			ctx.storeID(id, IDInfo{Ref: ref, Type: SmID})
 		}
 		return
 	}
@@ -992,26 +992,19 @@ func macroSx(exp Exporter) {
 		return
 	}
 	id := ctx.InlinesToText(args[0])
-	var idtype IDType
-	var ref string
 	idinfo, ok := ctx.IDs[id]
-	if ok {
-		idtype = idinfo.Type
-		ref = idinfo.Ref
-	} else {
+	if !ok {
 		ctx.Error("reference to unknown id:", id)
 	}
 	beginPhrasingMacro(exp, flags["ns"])
 	ctx.WantsSpace = true
-	var name string
 	if len(args) > 1 {
 		args = args[1:]
-		name = processInlineMacros(exp, args)
-	} else {
-		name = id
-		ctx.Error("not enough arguments: cross-reference text missing")
+		idinfo.Name = processInlineMacros(exp, args)
+	} else if idinfo.Name == "" {
+		idinfo.Name = id
 	}
-	exp.CrossReference(IDInfo{Ref: ref, Type: idtype}, name, punct)
+	exp.CrossReference(idinfo, punct)
 }
 
 func macroTa(exp Exporter) {
@@ -1385,10 +1378,10 @@ func macroHeaderInfos(exp Exporter) {
 		ctx.Toc.HasChapter = true
 	}
 	ref := exp.HeaderReference(ctx.Macro)
-	if id := ctx.InlinesToText(opts["id"]); id != "" {
-		ctx.storeID(id, ref, HeaderID)
-	}
 	num := ctx.Toc.HeaderNum(ctx.Macro, flags["nonum"])
+	if id := ctx.InlinesToText(opts["id"]); id != "" {
+		ctx.storeID(id, IDInfo{Ref: ref, Name: num, Type: HeaderID})
+	}
 	title := processInlineMacros(exp, args)
 	info := &LoXinfo{
 		Count:     ctx.Toc.HeaderCount,

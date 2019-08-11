@@ -219,19 +219,19 @@ func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 		case "lop":
 			idtype = PoemID
 		}
-		ctx.storeID(loXinfo.id, loXinfo.Ref, idtype)
+		ctx.storeID(loXinfo.id, IDInfo{Ref: loXinfo.Ref, Name: loXinfo.Title, Type: idtype})
 	}
 }
 
 // storeId stores an id with reference string ref, and of type idtype.
-func (ctx *Context) storeID(id, ref string, idtype IDType) {
+func (ctx *Context) storeID(id string, idinfo IDInfo) {
 	if _, ok := ctx.IDs[id]; ok {
 		q := ctx.quiet
 		ctx.quiet = false
 		ctx.Error("already used id")
 		ctx.quiet = q
 	}
-	ctx.IDs[id] = IDInfo{Ref: ref, Type: idtype}
+	ctx.IDs[id] = idinfo
 }
 
 // getCommand returns a command from a list of arguments. If there is only one

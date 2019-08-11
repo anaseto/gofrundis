@@ -234,14 +234,14 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	switch idf.Type {
 	case frundis.NoID:
-		fmt.Fprintf(w, "%s%s", name, punct)
+		fmt.Fprintf(w, "%s%s", idf.Name, punct)
 	default:
-		fmt.Fprintf(w, ".PDF_LINK \"%s\" SUFFIX \"%s\" \"%s\"", idf.Ref, punct, name)
+		fmt.Fprintf(w, ".PDF_LINK \"%s\" SUFFIX \"%s\" \"%s\"", idf.Ref, punct, idf.Name)
 		// FIXME?: name could mess with surrounding markup if it has
 		// markup (the problem is groff \f[..] that cannot simply be
 		// reliably closed).

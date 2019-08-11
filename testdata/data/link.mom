@@ -8,6 +8,7 @@
 .PDF_TARGET "label2"
 \f[I]Text with label2\f[R]
 .PDF_LINK "label2" SUFFIX "" "link to label2"
+.PDF_LINK "label2" SUFFIX "" "label2"
 .PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/forum/?bla=thing&blabla= SUFFIX ""
 \f[I].PDF_WWW_LINK http://bardinflor\&.perso\&.aquilenet/forum/?bla=thing&blabla= SUFFIX ""
 \f[R]

@@ -194,10 +194,10 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, punct string) {
 	w := exp.Context().W()
 	// TODO: do some kind of cross-references (pandoc-like ?)
-	fmt.Fprintf(w, "%s%s", name, punct)
+	fmt.Fprintf(w, "%s%s", idf.Name, punct)
 }
 
 func (exp *exporter) DescName(name string) {

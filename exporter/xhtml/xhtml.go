@@ -350,7 +350,7 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	fmt.Fprint(w, "<a")
@@ -359,7 +359,7 @@ func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct strin
 	default:
 		fmt.Fprintf(w, " href=\"%s\"", idf.Ref)
 	}
-	fmt.Fprintf(w, ">%s</a>%s", name, punct)
+	fmt.Fprintf(w, ">%s</a>%s", idf.Name, punct)
 }
 
 func (exp *exporter) DescName(name string) {

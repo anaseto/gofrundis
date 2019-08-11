@@ -144,7 +144,7 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, punct string) {
 }
 
 func (exp *exporter) DescName(name string) {

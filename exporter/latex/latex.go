@@ -243,16 +243,16 @@ func (exp *exporter) Context() *frundis.Context {
 	return exp.Ctx
 }
 
-func (exp *exporter) CrossReference(idf frundis.IDInfo, name string, punct string) {
+func (exp *exporter) CrossReference(idf frundis.IDInfo, punct string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	switch idf.Type {
 	case frundis.HeaderID, frundis.FigureID, frundis.TableID, frundis.PoemID:
-		fmt.Fprintf(w, "\\hyperref[%s]{%s}%s", idf.Ref, name, punct)
+		fmt.Fprintf(w, "\\hyperref[%s]{%s}%s", idf.Ref, idf.Name, punct)
 	case frundis.NoID:
-		fmt.Fprintf(w, "%s%s", name, punct)
+		fmt.Fprintf(w, "%s%s", idf.Name, punct)
 	default:
-		fmt.Fprintf(w, "\\hyperlink{%s}{%s}%s", idf.Ref, name, punct)
+		fmt.Fprintf(w, "\\hyperlink{%s}{%s}%s", idf.Ref, idf.Name, punct)
 	}
 }
 

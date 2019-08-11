@@ -22,6 +22,7 @@
 Text with label2
 .Em
 .Sx label2 "link to label2"
+.Sx label2
 .Lk http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=
 .Bm
 .Lk http://bardinflor.perso.aquilenet/forum/?bla=thing&blabla=

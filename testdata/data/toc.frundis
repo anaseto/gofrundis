@@ -16,6 +16,7 @@ paragraph text. A reference to the subsection
 .Sx myid Another subsection
 .Sx myid "link to other section"
 .Sx myid "link text to Another subsection" .
+.Sx myid .
 .Sh Another section
 paragraph text.
 .Ch A second Sm chapter

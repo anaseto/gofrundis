@@ -19,7 +19,7 @@ paragraph text.
 
 paragraph text. A reference to the subsection Another
 subsection. Another subsection link to other section
-link text to Another subsection.
+link text to Another subsection. 1.1.2.
 
 Another section
 ---------------
