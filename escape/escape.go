@@ -54,7 +54,9 @@ var roffEscapes = []string{
 	"…", "...", // bug with groff
 	"'", "\\(cq",
 	".", "\\&.",
-	"\\", "\\e"}
+	"\\", "\\e",
+	string('\xa0'), "\\~",
+}
 
 var roffEscaper = strings.NewReplacer(roffEscapes...)
 

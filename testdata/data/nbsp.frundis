@@ -1,7 +1,7 @@
 .X set -f latex lang fr
 .X set -f xhtml lang fr
 .X set -f markdown lang fr
-.X mtag -t espace-insecable -f xhtml -c em -b «\~ -e \~»
+.X mtag -t espace-insecable -f xhtml -c em -b « -e »
 .If data/includes/code.frundis
 Quelques ponctuations! Pour voir qu'est-ce que ça donne! Génial, non ?
 Et voilà: c'est fini; presque. 

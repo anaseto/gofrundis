@@ -655,7 +655,7 @@ func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 
 func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
 	var c string
-	if cmd == nil {
+	if cmd == nil || *cmd == "" {
 		c = "em"
 	} else {
 		c = *cmd
@@ -669,5 +669,5 @@ func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string
 		exp.Context().Errorf("%s: not an html phrasing element", c)
 	}
 	// TODO: perhaps process pairs here and do some error checking
-	return frundis.Mtag{Begin: html.EscapeString(begin), End: html.EscapeString(end), Cmd: c, Pairs: pairs}
+	return frundis.Mtag{Begin: begin, End: end, Cmd: c, Pairs: pairs}
 }

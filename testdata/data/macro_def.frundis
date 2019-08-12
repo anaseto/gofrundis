@@ -53,7 +53,7 @@ hay \$2.
 .\" Define a tag "title" for xhtml rendered as an "<em>" element
 .X mtag -t title -f xhtml -c em
 .X mtag -t title -f latex -c emph
-.X mtag -t title -f markdown
+.X mtag -t title -f markdown -c ""
 .X mtag -t title -f mom
 .\" Define a macro to be used latter
 .#de mytitle

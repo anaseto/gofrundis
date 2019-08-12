@@ -5,12 +5,12 @@ A backslash `\e\(cq is written `\ee\(cq\&. To begin a line with a period you can
 .HEADING 2 NAMED s:1 "\(dqtitle"
 .PP
 A `~\(cqcharacter
-A non-breaking space !
+A non-breaking space\~!
 [bla]
 <bla>
 ^bla#$%\(dq\(cq
 .PP
-— A dialogue starts with a mark\&.
+—\~A dialogue starts with a mark\&.
 Two backslashes \e\e\&.
 .PP
 .CODE
@@ -18,7 +18,7 @@ Text \e\e*
 Text \e\e\&.
 Text \e\e
 normal text
-Text\&. \e% #\(cq\(dq&$
+Text\&. \e%\~#\(cq\(dq&$
 .CODE OFF
 .HEADING 5 PARAHEAD "strange title:\e%$#"
 Text\&.

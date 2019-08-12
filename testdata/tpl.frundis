@@ -1,4 +1,4 @@
-.X mtag -f xhtml -t emphasis -b <em> -e </em>
+.X mtag -f xhtml -t emphasis -c em
 Some text.
 .Sm -t emphasis Important things .
 Some more text.

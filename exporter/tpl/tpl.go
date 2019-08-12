@@ -112,6 +112,18 @@ func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	w := ctx.W()
 	mtag, ok := ctx.Mtags[tag]
 	if ok {
+		if mtag.Cmd != "" {
+			switch ctx.Format {
+			case "xhtml":
+				fmt.Fprintf(w, "<%s>", mtag.Cmd)
+			case "latex":
+				fmt.Fprintf(w, "\\%s{", mtag.Cmd)
+			case "markdown":
+				fmt.Fprint(w, mtag.Cmd)
+			case "mom":
+				fmt.Fprintf(w, "\\f[%s]", mtag.Cmd)
+			}
+		}
 		fmt.Fprint(w, mtag.Begin)
 	}
 }
@@ -180,6 +192,18 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	mtag, ok := ctx.Mtags[tag]
 	if ok {
 		fmt.Fprint(w, mtag.End)
+		if mtag.Cmd != "" {
+			switch ctx.Format {
+			case "xhtml":
+				fmt.Fprintf(w, "</%s>", mtag.Cmd)
+			case "latex":
+				fmt.Fprintf(w, "\\%s{", mtag.Cmd)
+			case "markdown":
+				fmt.Fprint(w, mtag.Cmd)
+			case "mom":
+				fmt.Fprintf(w, "\\f[%s]", mtag.Cmd)
+			}
+		}
 	}
 	fmt.Fprint(w, punct)
 }
@@ -254,6 +278,9 @@ func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 }
 
 func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
-	// NOTE: in contrast with other export formats, we don't escape begin and end.
-	return frundis.Mtag{Begin: begin, End: end}
+	var c string
+	if cmd != nil {
+		c = *cmd
+	}
+	return frundis.Mtag{Begin: begin, End: end, Cmd: c}
 }

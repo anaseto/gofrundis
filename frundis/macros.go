@@ -1267,13 +1267,10 @@ func macroXmtag(exp Exporter, args [][]ast.Inline) {
 		ctx.Error("-t option should be specified")
 		return
 	}
-	b, e := ctx.InlinesToText(opts["b"]), ctx.InlinesToText(opts["e"])
+	b, e := exp.RenderText(opts["b"]), exp.RenderText(opts["e"])
 	var cmd *string
 	if t, ok := opts["c"]; ok {
 		s := ctx.InlinesToText(t)
-		if s == "" {
-			ctx.Error("empty string argument to -c option")
-		}
 		cmd = &s
 	}
 	var pairs []string

@@ -155,6 +155,7 @@ func (exp *exporter) BeginMarkupBlock(tag string, id string) {
 	if !ok {
 		fmt.Fprint(w, "*")
 	} else {
+		fmt.Fprint(w, mtag.Cmd)
 		fmt.Fprint(w, mtag.Begin)
 	}
 }
@@ -276,6 +277,7 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 		fmt.Fprint(w, "*")
 	} else {
 		fmt.Fprint(w, mtag.End)
+		fmt.Fprint(w, mtag.Cmd)
 	}
 	fmt.Fprint(w, punct)
 }
@@ -383,5 +385,16 @@ func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 }
 
 func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
-	return frundis.Mtag{Begin: begin, End: end}
+	var c string
+	if cmd == nil {
+		c = "*"
+	} else {
+		c = *cmd
+	}
+	switch c {
+	case "*", "**", "_", "__", "`", "":
+	default:
+		exp.Context().Errorf("%s: not a supported markdown inline markup delimiter", c)
+	}
+	return frundis.Mtag{Begin: begin, End: end, Cmd: c}
 }

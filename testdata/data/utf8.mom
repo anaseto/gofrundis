@@ -1,15 +1,15 @@
-«text» «text»
+«text»\~«text»
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:1 "«text»"
 .PP
-«text» «text»
-«text» «text»
+«text»\~«text»
+«text»\~«text»
 «macro-text»
-«text» :
-«text» «text»
-«text» «text»
-«text» :
+«text»\~:
+«text»\~«text»
+«text»\~«text»
+«text»\~:
 .PDF_LINK "s:1" SUFFIX "" "«text»"
 \f[I]«Sm-text»\f[R]
 «\f[I]some text\f[R]»

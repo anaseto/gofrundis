@@ -519,11 +519,11 @@ func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 
 func (exp *exporter) Xmtag(cmd *string, begin string, end string, pairs []string) frundis.Mtag {
 	var c string
-	if cmd == nil {
+	if cmd == nil || *cmd == "" {
 		c = "emph"
 	} else {
 		c = *cmd
 	}
 	// TODO: perhaps process pairs here and do some error checking
-	return frundis.Mtag{Begin: escape.LaTeX(begin), End: escape.LaTeX(end), Cmd: c, Pairs: pairs}
+	return frundis.Mtag{Begin: begin, End: end, Cmd: c, Pairs: pairs}
 }

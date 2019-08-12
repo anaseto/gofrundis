@@ -6,7 +6,7 @@ This is a new paragraph.
 
 Some text
 
-And more text Some more text. «Things»
+And more text Some more text. *«Things»*
 
 
 more things blabla

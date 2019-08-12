@@ -4,7 +4,7 @@
 .X mtag -f mom -t dm
 .X mtag -f latex -t quotes -c textrm -b «\~ -e \~» -a "|key|value"
 .X mtag -f xhtml -t quotes -c span -b «\~ -e \~» -a "|key|value"
-.X mtag -f markdown -t quotes -b «\~ -e \~»
+.X mtag -f markdown -t quotes -b «\~ -e \~» -c ""
 .X mtag -f mom -t quotes -b «\~ -e \~»
 .X set -f xhtml dmark "—"
 .Pt Primera parte
@@ -68,7 +68,7 @@ spanning block
 Text.
 .X mtag -f latex -t ** -c textbf
 .X mtag -f xhtml -t ** -c strong
-.X mtag -f markdown -t ** -b ** -e **
+.X mtag -f markdown -t ** -c **
 .X mtag -f mom -t ** -c B
 .Sm -t ** Strong .
 .Bm

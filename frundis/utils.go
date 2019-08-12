@@ -334,6 +334,9 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 							newtext = append(newtext, ast.Text(elt[start:next]), ast.Escape("~"))
 							start = next
 						}
+					} else {
+						newtext = append(newtext, ast.Text(elt[start:next]), ast.Escape("~"))
+						start = next
 					}
 				default:
 					noinsertnbsp = false

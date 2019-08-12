@@ -19,7 +19,7 @@ Bueno, ¿\f[I]no\f[R]
 \f[I]@\f[R]
 vamos a escribir demasiado tampoco\&.
 \f[I]Syu, no comas tantos plátanos!\f[R]
-\f[I]« quoted string »\f[R]
+\f[I]«\~quoted string\~»\f[R]
 .PP
 .NEWPAGE
 .HEADING 2 NAMED s:4 "Nested spanning blocks"
