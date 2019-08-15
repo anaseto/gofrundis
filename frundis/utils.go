@@ -117,7 +117,7 @@ func (ctx *Context) isPunctArg(arg []ast.Inline) bool {
 	return true
 }
 
-// IsTrue returns true if string is empty or "0".
+// IsTrue returns true unless string is empty or "0".
 func IsTrue(s string) bool {
 	return !(s == "" || s == "0")
 }
