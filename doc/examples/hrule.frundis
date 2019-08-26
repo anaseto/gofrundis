@@ -1,5 +1,5 @@
 .\" horizontal rule macro
-.#de Hr
+.#de hr
 .P
 .Bf -f xhtml
 <hr>
