@@ -1,3 +1,12 @@
+v0.7-dev:
+  + Add support for reference by header number in cross-references.
+  + Minor breaking change: when mixing $1, $2, etc. and $@, the latter gets only
+  remaining arguments.
+  + Fix french non-breaking space handling in -b and -e mtag options.
+  + Fix bug in handling of deeply nested macros.
+  + Fix bug in ".Ef -ns"
+  + Improvements and updates in man page.
+
 v0.6:
   + minor markdown export fix for paragraph title
   + minor documentation fixes	

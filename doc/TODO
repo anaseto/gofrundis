@@ -1,10 +1,16 @@
-+ export to sile http://sile-typesetter.org/ ?
+Features (maybe)
+--------
+
++ export to sile http://sile-typesetter.org/ ? Seems to lack some features still.
 + decide on an stable API to be able to use gofrundis as a library and extend
-  it easily.
+  it easily?
 
-groff mom issues:
+Issues
+------
 
-+ Lk and Sx don't play well with spaces (-ns)
-+ mom complains if ids contain non ascii characters in PDF_TARGET, but seems to
+groff mom:
+
++ Lk and Sx cannot be followed by a macro using -ns option: you probably never
+  want to do that in practice, but it's a deviation from the manual.
++ It complains if ids contain non ascii characters in PDF_TARGET, but seems to
   work nevertheless.
-
