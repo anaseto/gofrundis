@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd Aug 25, 2019
+.Dd Oct 20, 2019
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -1115,9 +1115,11 @@ If a parameter is defined more than once, the last definition prevails.
 .Ss \&#de
 Define a macro.
 The syntax is as follows:
-.Bd -literal -offset indent
+.Bd -ragged -offset indent
 .Pf . Sx \&#de Oo Fl f Ar formats Oc Ar name
+.br
 .Ar macro definition
+.br
 \&.#.
 .Ed
 .Pp
@@ -1218,9 +1220,11 @@ empty string is returned.
 Use of an undefined variable is an error in the general case.
 .Ss \&#if
 Begin a conditional. The syntax is as follows:
-.Bd -literal -offset indent
+.Bd -ragged -offset indent
 .Pf . Sx \&#if Oo Fl f Ar formats Oc Oo Fl not Oc Oo Ar string Oc
+.br
 .Ar body of conditional
+.br
 \&.#;
 .Ed
 .Pp
