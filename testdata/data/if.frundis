@@ -25,3 +25,22 @@ True
 .#if 1
 .#;
 .#;
+.P
+.#if -eq x x
+printed
+.#;
+.#if -eq x y
+ignored
+.#;
+.#if -not -eq x y
+printed
+.#;
+.#if -not -f latex
+not latex
+.#;
+.#if -f latex -eq x x
+latex printed
+.#;
+.#if -f latex -eq x y
+latex ignored
+.#;

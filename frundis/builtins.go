@@ -152,37 +152,45 @@ func macroIfStart(exp Exporter) {
 		return
 	}
 	opts, flags, args := ctx.ParseOptions(specOptIf, ctx.Args)
-	fmt, ok := opts["f"]
-	if !(len(args) > 0) && !ok {
-		if ctx.Process {
-			ctx.Error("useless `.#if' invocation")
-		}
+	if len(args) > 1 && ctx.Process {
+		ctx.Error("too many arguments")
 	}
-	if ok {
+	ignore := false
+	fmt, okf := opts["f"]
+	if okf {
 		formats := strings.Split(ctx.InlinesToText(fmt), ",")
 		if ctx.Process {
 			ctx.checkFormats(formats)
 		}
-		if ctx.notExportFormat(formats) {
-			ctx.ifIgnoreDepth = 1
-			return
+		ignore = ignore || ctx.notExportFormat(formats)
+	}
+	cmpstr, okeq := opts["eq"]
+	if okeq {
+		if len(args) == 0 {
+			if ctx.Process {
+				ctx.Error("compare string argument required")
+			}
+		} else {
+			ignore = ignore || ctx.InlinesToText(cmpstr) != ctx.InlinesToText(args[0])
 		}
 	}
-	if len(args) > 0 {
-		if len(args) > 1 && ctx.Process {
-			ctx.Error("too many arguments")
+	if !okeq && !okf && len(args) == 0 {
+		if ctx.Process {
+			ctx.Error("boolean argument required")
 		}
-		var flag int
+	}
+	if len(args) > 0 && !okeq {
 		switch ctx.InlinesToText(args[0]) {
 		case "0", "":
-			flag = 0
-		default:
-			flag = 1
+			ignore = true
 		}
-		if flags["not"] {
-			flag = 1 - flag
-		}
-		ctx.ifIgnoreDepth = 1 - flag
+	}
+	if flags["not"] {
+		ignore = !ignore
+	}
+	ctx.ifIgnoreDepth = 0
+	if ignore {
+		ctx.ifIgnoreDepth = 1
 	}
 }
 
@@ -207,7 +215,7 @@ func macroDefVar(exp Exporter) {
 	opts, _, args := ctx.ParseOptions(specOptDefVar, ctx.Args)
 	if len(args) == 0 {
 		if ctx.Process {
-			ctx.Error("requires a name argument")
+			ctx.Error("name argument required")
 		}
 		return
 	}

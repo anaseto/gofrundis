@@ -1,4 +1,9 @@
-v0.7-dev:
+v0.8:
+  + New -eq option for #if macro. Mainly a convenience that allows to use a
+  single #dv flag variable instead of several when more than two cases are to
+  be considered.
+
+v0.7:
   + Add support for reference by header number in cross-references.
   + Minor breaking change: when mixing $1, $2, etc. and $@, the latter gets only
   remaining arguments.

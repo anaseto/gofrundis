@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd Oct 20, 2019
+.Dd Nov 09, 2019
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -1221,7 +1221,7 @@ Use of an undefined variable is an error in the general case.
 .Ss \&#if
 Begin a conditional. The syntax is as follows:
 .Bd -ragged -offset indent
-.Pf . Sx \&#if Oo Fl f Ar formats Oc Oo Fl not Oc Oo Ar string Oc
+.Pf . Sx \&#if Oo Fl eq Ar cmpstr Oc Oo Fl f Ar formats Oc Oo Fl not Oc Oo Ar string Oc
 .br
 .Ar body of conditional
 .br
@@ -1234,25 +1234,35 @@ can consist of any number of
 .Nm
 text and macro lines.
 The optional
+.Fl eq Ar cmpstr
+argument specifies that the body should be executed only if
+.Ar cmpstr
+and
+.Ar string
+are equal.
+The optional
 .Fl f Ar formats
-argument specifies that the conditional should be executed only for specific
+argument specifies that the body should be executed only for specific
 target formats, see
 .Sx FORMATS
 for a description of possible values for
 .Ar formats .
-The optional
+If
+.Fl eq
+is not provided, the optional
 .Ar string
-argument specifies that the conditional should be executed only if
+argument specifies that the body should be executed only if
 .Ar string
 is non-zero and non-null.
-At least one of
-.Ar formats
+At least one among
+.Fl eq ,
+.Fl f
 or
 .Ar string
-should be specified.
+should be provided.
 The
 .Fl not
-flag negates the condition.
+flag negates the whole condition.
 .Pp
 The
 .Sx \&#if

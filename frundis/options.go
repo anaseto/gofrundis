@@ -95,6 +95,7 @@ var specOptFt = map[string]Option{
 	"f":  ArgOption,
 	"ns": FlagOption}
 var specOptIf = map[string]Option{
+	"eq":  ArgOption,
 	"f":   ArgOption,
 	"not": FlagOption}
 var specOptIncludeFile = map[string]Option{
