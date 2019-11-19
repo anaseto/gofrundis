@@ -71,7 +71,6 @@ func init() {
 		babelLangs[k] = v
 	}
 	babelLangs["de"] = "ngerman"
-	babelLangs["fr"] = "frenchb"
 }
 
 func (exp *exporter) beginLatexDocument() {
