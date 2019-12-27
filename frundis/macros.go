@@ -274,6 +274,7 @@ func macroBlProcess(exp Exporter) {
 			ctx.Verse.verseCount++
 			id = fmt.Sprintf("%d", ctx.Verse.verseCount)
 		}
+		ctx.Verse.Scope = true
 		exp.BeginVerse(title, id)
 	case "desc":
 		exp.BeginDescList(id)
@@ -489,8 +490,9 @@ func macroElProcess(exp Exporter) {
 	case "verse":
 		processParagraph(exp)
 		closeUnclosedBlocks(exp, "Bm")
-		exp.EndParagraph()
+		exp.EndStanza()
 		exp.EndVerse()
+		ctx.Verse.Scope = false
 	case "desc":
 		processParagraph(exp)
 		closeUnclosedBlocks(exp, "Bm")
@@ -869,9 +871,11 @@ func macroItVerse(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	if !ctx.parScope {
 		exp.BeginParagraph()
+		exp.BeginVerseLine()
 		ctx.parScope = true
 	} else if ctx.itemScope {
 		exp.EndVerseLine()
+		exp.BeginVerseLine()
 	}
 	if len(args) > 0 {
 		w := ctx.W()
@@ -923,7 +927,11 @@ func macroP(exp Exporter) {
 	if ctx.parScope {
 		closeSpanningBlocks(exp)
 		processParagraph(exp)
-		exp.EndParagraph()
+		if ctx.Verse.Scope {
+			exp.EndStanza()
+		} else {
+			exp.EndParagraph()
+		}
 	} else {
 		exp.EndParagraphUnsoftly()
 		ctx.parScope = false
@@ -1577,6 +1585,7 @@ func closeUnclosedBlocks(exp Exporter, macro string) {
 			ctx.Macro = "El"
 			for len(ctx.scopes["Bl"]) > 0 {
 				macroEl(exp)
+				ctx.Verse.Scope = false
 			}
 		case "Bd":
 			ctx.Macro = "Ed"

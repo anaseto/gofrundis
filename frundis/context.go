@@ -66,6 +66,8 @@ type Renderer interface {
 	BeginTableRow()
 	// BeginVerse starts a poem.
 	BeginVerse(title string, id string)
+	// BeginVerseLine begins a poem line.
+	BeginVerseLine()
 	// CheckParamAssignement checks parameter assignement.
 	CheckParamAssignement(param string, value string) bool
 	// Crossreference builds a reference link. It can have an explicit id
@@ -105,6 +107,8 @@ type Renderer interface {
 	// LaTeX, to force a real paragraph break (not a soft break) before a
 	// list)
 	EndParagraphUnsoftly()
+	// EndStanza ends a stanza.
+	EndStanza()
 	// EndTable ends a table (e.g. "</table>").
 	EndTable(*TableData)
 	// EndTableCell ends a table cell (e.g. "</td>").
@@ -239,6 +243,7 @@ type uMacroDefInfo struct {
 type VerseInfo struct {
 	Used       bool // whether there is a poem in the source
 	verseCount int  // current titled poem number
+	Scope      bool // currently processing poem
 }
 
 // TableInfo contains table information.

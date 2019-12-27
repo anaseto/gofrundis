@@ -147,6 +147,9 @@ func (exp *exporter) BeginTableRow() {
 func (exp *exporter) BeginVerse(title string, id string) {
 }
 
+func (exp *exporter) BeginVerseLine() {
+}
+
 func (exp *exporter) CheckParamAssignement(param string, value string) bool {
 	return true
 	// XXX: nothing for now
@@ -219,6 +222,10 @@ func (exp *exporter) EndParagraphSoftly() {
 
 func (exp *exporter) EndParagraphUnsoftly() {
 	// do nothing
+}
+
+func (exp *exporter) EndStanza() {
+	exp.EndParagraph()
 }
 
 func (exp *exporter) EndTable(tableinfo *frundis.TableData) {

@@ -234,6 +234,9 @@ func (exp *exporter) BeginVerse(title string, id string) {
 	fmt.Fprint(w, "\\begin{verse}\n")
 }
 
+func (exp *exporter) BeginVerseLine() {
+}
+
 func (exp *exporter) CheckParamAssignement(param string, value string) bool {
 	return true
 	// XXX: nothing to be done for now
@@ -338,6 +341,10 @@ func (exp *exporter) EndParagraphSoftly() {
 func (exp *exporter) EndParagraphUnsoftly() {
 	w := exp.Context().W()
 	fmt.Fprint(w, "\n")
+}
+
+func (exp *exporter) EndStanza() {
+	exp.EndParagraph()
 }
 
 func (exp *exporter) EndTable(tableinfo *frundis.TableData) {

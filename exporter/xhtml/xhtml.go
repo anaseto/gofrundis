@@ -327,6 +327,11 @@ func (exp *exporter) BeginVerse(title string, id string) {
 	fmt.Fprintf(w, "<div class=\"verse\"%s>\n", id)
 }
 
+func (exp *exporter) BeginVerseLine() {
+	w := exp.Context().W()
+	fmt.Fprint(w, "<span class=\"verse\">")
+}
+
 func (exp *exporter) CheckParamAssignement(param string, value string) bool {
 	ctx := exp.Context()
 	switch param {
@@ -451,6 +456,12 @@ func (exp *exporter) EndParagraphUnsoftly() {
 	// do nothing
 }
 
+func (exp *exporter) EndStanza() {
+	w := exp.Context().W()
+	fmt.Fprint(w, "</span>\n")
+	exp.EndParagraph()
+}
+
 func (exp *exporter) EndTable(tableinfo *frundis.TableData) {
 	w := exp.Context().W()
 	fmt.Fprint(w, "</table>\n")
@@ -476,7 +487,7 @@ func (exp *exporter) EndVerse() {
 
 func (exp *exporter) EndVerseLine() {
 	w := exp.Context().W()
-	fmt.Fprint(w, "<br />\n")
+	fmt.Fprint(w, "</span><br />\n")
 }
 
 func (exp *exporter) FormatParagraph(text []byte) []byte {
