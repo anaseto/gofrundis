@@ -74,11 +74,11 @@ func (exp *exporter) writeTOC(w io.Writer, toctype toc, opts map[string][]ast.In
 		fmt.Fprint(w, "    </navPoint>\n")
 	case navToc:
 		fmt.Fprint(w, "<nav epub:type=\"toc\" id=\"navtoc\">\n")
+		fmt.Fprint(w, "  <ol>\n")
 		title := ctx.Params["document-title"]
 		if title != "" {
-			fmt.Fprintf(w, "  <h2 id=\"toc-title\" class=\"toc-title\">%s</h2>\n", title)
+			fmt.Fprintf(w, "    <li><a href=\"index.xhtml\" class=\"toc-title\">%s</a></li>\n", title)
 		}
-		fmt.Fprint(w, "  <ol>\n")
 	}
 
 	// TOC entries

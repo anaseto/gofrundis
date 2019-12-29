@@ -246,10 +246,10 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 	if cover != "" {
 		buf.WriteString("<itemref idref=\"cover_xhtml\" />\n")
 	}
+	buf.WriteString("<itemref idref=\"index\" />\n")
 	if epub3 {
 		buf.WriteString("<itemref idref=\"nav\" linear=\"yes\" />\n")
 	}
-	buf.WriteString("<itemref idref=\"index\" />\n")
 	for _, entry := range ctx.LoXstack["toc"] {
 		if entry.Macro != "Pt" && entry.Macro != "Ch" {
 			continue

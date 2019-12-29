@@ -43,8 +43,8 @@
 </manifest>
 <spine toc="epub2_ncx">
 <itemref idref="cover_xhtml" />
-<itemref idref="nav" linear="yes" />
 <itemref idref="index" />
+<itemref idref="nav" linear="yes" />
 <itemref idref="body-1-0" />
 <itemref idref="body-1-1" />
 <itemref idref="body-1-2" />
