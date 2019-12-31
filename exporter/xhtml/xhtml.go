@@ -517,7 +517,9 @@ func (exp *exporter) FigureImage(image string, caption string, link string) {
 	} else {
 		fmt.Fprintf(w, "  <img src=\"%s\" alt=\"%s\" />\n", u, caption)
 	}
-	fmt.Fprintf(w, "  <p class=\"caption\">%s</p>\n", caption)
+	if caption != "" {
+		fmt.Fprintf(w, "  <p class=\"caption\">%s</p>\n", caption)
+	}
 	fmt.Fprint(w, "</div>\n")
 }
 
