@@ -375,7 +375,7 @@ func (exp *exporter) ParagraphTitle(title string) {
 
 func (exp *exporter) RenderText(text []ast.Inline) string {
 	if exp.Context().Params["lang"] == "fr" {
-		text = frundis.InsertNbsps(exp, text)
+		text = frundis.FrenchTipography(exp, text)
 	}
 	return escape.Markdown(exp.Context().InlinesToText(text))
 }

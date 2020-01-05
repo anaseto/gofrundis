@@ -4,7 +4,7 @@
 .X mtag -t espace-insecable -f xhtml -c em -b « -e »
 .If data/includes/code.frundis
 Quelques ponctuations! Pour voir qu'est-ce que ça donne! Génial, non ?
-Et voilà: c'est fini; presque. 
+Et voilà: c'est fini; presque.
 «texte»
 « texte»
 « texte »

@@ -285,15 +285,16 @@ func shellFilter(exp Exporter, args []string, text string) string {
 	return string(bytes)
 }
 
-// InsertNbsps inserts non-breaking spaces following french punctuation rules.
-func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
+// FrenchTipography inserts non-breaking spaces following french punctuation
+// rules, as well as replacing quotes with tipographic ones.
+func FrenchTipography(exp Exporter, text []ast.Inline) []ast.Inline {
 	ctx := exp.Context()
 	newtext := []ast.Inline{}
-	noinsertnbsp := false
+	escape := false
 	for i, elt := range text {
 		switch elt := elt.(type) {
 		case ast.Escape:
-			noinsertnbsp = (elt == "&" || elt == "~")
+			escape = (elt == "&" || elt == "~")
 			newtext = append(newtext, elt)
 		case ast.Text:
 			start := 0
@@ -304,7 +305,7 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 					if space {
 						ctx.Errorf("incorrect regular space before '%c'", c)
 					}
-					if !noinsertnbsp {
+					if !escape {
 						if start != j {
 							newtext = append(newtext, ast.Text(elt[start:j]), ast.Escape("~"))
 						} else {
@@ -312,9 +313,10 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 						}
 						start = j
 					}
-					noinsertnbsp = false
+					escape = false
 				case 0xa0:
-					noinsertnbsp = true
+					// XXX somewhat incorrect with respect to ’, but it shouldn't happen in practice.
+					escape = true
 				case 0xab:
 					next := j + utf8.RuneLen(0xab)
 					if next <= len(elt)-1 {
@@ -338,8 +340,18 @@ func InsertNbsps(exp Exporter, text []ast.Inline) []ast.Inline {
 						newtext = append(newtext, ast.Text(elt[start:next]), ast.Escape("~"))
 						start = next
 					}
+				case '\'':
+					next := j + utf8.RuneLen('\'')
+					if !escape {
+						if start != j {
+							newtext = append(newtext, ast.Text(elt[start:j]))
+						}
+						newtext = append(newtext, ast.Text("’"))
+						start = next
+					}
+					escape = false
 				default:
-					noinsertnbsp = false
+					escape = false
 				}
 				space = c == ' ' || c == '\n'
 			}

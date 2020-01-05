@@ -1,6 +1,6 @@
-Quelques ponctuations ! Pour voir qu'est-ce que ça
-donne ! Génial, non ? Et voilà : c'est fini ; presque.
-« texte » « texte » « texte » ::: Pas d'espace
+Quelques ponctuations ! Pour voir qu’est-ce que ça
+donne ! Génial, non ? Et voilà : c’est fini ; presque.
+« texte » « texte » « texte » ::: Pas d’espace
 insécable! De nouveau des espaces insécables !
 
 
