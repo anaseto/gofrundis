@@ -693,7 +693,14 @@ func macroIm(exp Exporter) {
 func macroImProcess(exp Exporter) {
 	ctx := exp.Context()
 	opts, flags, args := ctx.ParseOptions(specOptIm, ctx.Args)
-	args, punct := getClosePunct(exp, args)
+	if len(args) == 0 {
+		ctx.Error("arguments required")
+		return
+	}
+	var punct string
+	if len(args) > 1 {
+		args, punct = getClosePunct(exp, args)
+	}
 	var link string
 	if t, ok := opts["link"]; ok {
 		link = ctx.InlinesToText(t)
@@ -728,7 +735,12 @@ func macroImProcess(exp Exporter) {
 func macroImInfos(exp Exporter) {
 	ctx := exp.Context()
 	opts, _, args := ctx.ParseOptions(specOptIm, ctx.Args)
-	args, _ = getClosePunct(exp, args)
+	if len(args) == 0 {
+		return
+	}
+	if len(args) > 1 {
+		args, _ = getClosePunct(exp, args)
+	}
 	var image string
 	if len(args) == 0 {
 		return
