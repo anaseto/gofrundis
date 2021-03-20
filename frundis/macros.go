@@ -1374,7 +1374,9 @@ func macroHeaderProcess(exp Exporter) {
 	endParagraph(exp, false)
 	ctx.Toc.updateHeadersCount(ctx.Macro, flags["nonum"])
 	title := processInlineMacros(exp, args)
-	ctx.ID = ctx.InlinesToText(opts["id"])
+	if ctx.Macro == "Ch" || ctx.Macro == "Pt" {
+		ctx.ID = ctx.InlinesToText(opts["id"])
+	}
 	exp.BeginHeader(ctx.Macro, numbered, title)
 	fmt.Fprint(ctx.W(), title)
 	closeUnclosedBlocks(exp, "Bm")
@@ -1396,7 +1398,9 @@ func macroHeaderInfos(exp Exporter) {
 		ctx.Toc.HasChapter = true
 	}
 	id := ctx.InlinesToText(opts["id"])
-	ctx.ID = id
+	if ctx.Macro == "Ch" || ctx.Macro == "Pt" {
+		ctx.ID = id
+	}
 	ref := exp.HeaderReference(ctx.Macro)
 	num := ctx.Toc.HeaderNum(ctx.Macro, flags["nonum"])
 	if id != "" {
