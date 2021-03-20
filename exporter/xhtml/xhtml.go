@@ -535,9 +535,6 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 	if ok && (useID != "" && useID != "0") {
 		idText = ctx.ID
 	}
-	if idText != "" {
-		idText = "-" + idText
-	}
 	var href string
 	switch {
 	case exp.AllInOneFile:
@@ -549,12 +546,18 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 		} else {
 			suffix = ".html"
 		}
+		var chapname string
+		if idText != "" {
+			chapname = idText
+		} else {
+			chapname = fmt.Sprintf("%d-%d", toc.PartCount, toc.ChapterCount)
+		}
 		if hasfile {
-			href = fmt.Sprintf("%s-%d-%d%s%s", fprefix, toc.PartCount, toc.ChapterCount, idText, suffix)
+			href = fmt.Sprintf("%s-%s%s", fprefix, chapname, suffix)
 		} else if toc.PartCount > 0 || toc.ChapterCount > 0 {
 			href = fmt.Sprintf("%s-%d-%d%s%s#%s%s", fprefix, toc.PartCount, toc.ChapterCount, idText, suffix, prefix, id)
 		} else {
-			href = fmt.Sprintf("index%s%s#%s%s", idText, suffix, prefix, id)
+			href = fmt.Sprintf("index%s#%s%s", suffix, prefix, id)
 		}
 	}
 	return href

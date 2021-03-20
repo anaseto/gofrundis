@@ -345,17 +345,20 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 	if ok && (useID != "" && useID != "0") {
 		idText = ctx.ID
 	}
+	var chapname string
 	if idText != "" {
-		idText = "-" + idText
+		chapname = idText
+	} else {
+		chapname = fmt.Sprintf("%d-%d", ctx.Toc.PartCount, ctx.Toc.ChapterCount)
 	}
 	var outFile string
 	switch ctx.Format {
 	case "epub":
 		outFile = path.Join(exp.OutputFile, "EPUB",
-			fmt.Sprintf("%s-%d-%d%s.xhtml", fprefix, ctx.Toc.PartCount, ctx.Toc.ChapterCount, idText))
+			fmt.Sprintf("%s-%s%s.xhtml", fprefix, chapname, idText))
 	case "xhtml":
 		outFile = path.Join(exp.OutputFile,
-			fmt.Sprintf("%s-%d-%d%s.html", fprefix, ctx.Toc.PartCount, ctx.Toc.ChapterCount, idText))
+			fmt.Sprintf("%s-%s%s.html", fprefix, chapname, idText))
 	}
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
