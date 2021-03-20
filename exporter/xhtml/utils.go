@@ -355,10 +355,10 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 	switch ctx.Format {
 	case "epub":
 		outFile = path.Join(exp.OutputFile, "EPUB",
-			fmt.Sprintf("%s-%s%s.xhtml", fprefix, chapname, idText))
+			fmt.Sprintf("%s-%s.xhtml", fprefix, chapname))
 	case "xhtml":
 		outFile = path.Join(exp.OutputFile,
-			fmt.Sprintf("%s-%s%s.html", fprefix, chapname, idText))
+			fmt.Sprintf("%s-%s.html", fprefix, chapname))
 	}
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()
