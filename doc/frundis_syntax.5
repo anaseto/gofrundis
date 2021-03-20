@@ -1356,6 +1356,14 @@ parameters.
 .It Cm xhtml-bottom
 Path to XHTML file providing additional bottom content just before terminating
 body in each file, after the navigation bar.
+.It Cm xhtml-chap-prefix
+The prefix for generated files names when producing multi-page XHTML
+or EPUB documents.
+It defaults to
+.Cm body .
+.It Cm xhtml-chap-prefix-ids
+If set to a non-zero value, when producing multi-page XHTML documents, the
+files whose chapter has an id will have that id appended to their filename.
 .It Cm xhtml-css
 Path to the css file when exporting to XHTML.
 It will appear as-is in

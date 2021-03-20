@@ -336,14 +336,26 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 	}
 	exp.XHTMLdocumentFooter(ctx.Wout)
 	ctx.Wout.Flush()
+	fprefix, ok := ctx.Params["xhtml-chap-prefix"]
+	if !ok {
+		fprefix = "body"
+	}
+	idText := ""
+	useID, ok := ctx.Params["xhtml-chap-prefix-ids"]
+	if ok && (useID != "" && useID != "0") {
+		idText = ctx.ID
+	}
+	if idText != "" {
+		idText = "-" + idText
+	}
 	var outFile string
 	switch ctx.Format {
 	case "epub":
 		outFile = path.Join(exp.OutputFile, "EPUB",
-			fmt.Sprintf("body-%d-%d.xhtml", ctx.Toc.PartCount, ctx.Toc.ChapterCount))
+			fmt.Sprintf("%s-%d-%d%s.xhtml", fprefix, ctx.Toc.PartCount, ctx.Toc.ChapterCount, idText))
 	case "xhtml":
 		outFile = path.Join(exp.OutputFile,
-			fmt.Sprintf("body-%d-%d.html", ctx.Toc.PartCount, ctx.Toc.ChapterCount))
+			fmt.Sprintf("%s-%d-%d%s.html", fprefix, ctx.Toc.PartCount, ctx.Toc.ChapterCount, idText))
 	}
 	if exp.curOutputFile != nil {
 		err := exp.curOutputFile.Close()

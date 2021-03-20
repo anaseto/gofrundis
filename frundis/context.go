@@ -173,6 +173,7 @@ type Context struct {
 	Filters       map[string]func(string) string // function filters
 	Format        string                         // export format name
 	Ftags         map[string]Ftag                // filter tags set with "X ftag"
+	ID            string                         // current chapter id (if any)
 	IDs           map[string]IDInfo              // id information
 	Images        []string                       // list of image paths
 	Inline        bool                           // inline processing of Sm-like macros (e.g. in header)

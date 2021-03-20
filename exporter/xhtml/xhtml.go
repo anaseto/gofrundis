@@ -526,6 +526,18 @@ func (exp *exporter) FigureImage(image string, caption string, link string) {
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 	ctx := exp.Context()
 	toc := ctx.Toc
+	fprefix, ok := ctx.Params["xhtml-chap-prefix"]
+	if !ok {
+		fprefix = "body"
+	}
+	idText := ""
+	useID, ok := ctx.Params["xhtml-chap-prefix-ids"]
+	if ok && (useID != "" && useID != "0") {
+		idText = ctx.ID
+	}
+	if idText != "" {
+		idText = "-" + idText
+	}
 	var href string
 	switch {
 	case exp.AllInOneFile:
@@ -538,11 +550,11 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 			suffix = ".html"
 		}
 		if hasfile {
-			href = fmt.Sprintf("body-%d-%d%s", toc.PartCount, toc.ChapterCount, suffix)
+			href = fmt.Sprintf("%s-%d-%d%s%s", fprefix, toc.PartCount, toc.ChapterCount, idText, suffix)
 		} else if toc.PartCount > 0 || toc.ChapterCount > 0 {
-			href = fmt.Sprintf("body-%d-%d%s#%s%s", toc.PartCount, toc.ChapterCount, suffix, prefix, id)
+			href = fmt.Sprintf("%s-%d-%d%s%s#%s%s", fprefix, toc.PartCount, toc.ChapterCount, idText, suffix, prefix, id)
 		} else {
-			href = fmt.Sprintf("index%s#%s%s", suffix, prefix, id)
+			href = fmt.Sprintf("index%s%s#%s%s", idText, suffix, prefix, id)
 		}
 	}
 	return href

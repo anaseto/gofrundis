@@ -1334,7 +1334,7 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 		"latex-preamble", "latex-xelatex",
 		"mom-preamble",
 		"nbsp", "title-page",
-		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-favicon", "xhtml-go-up", "xhtml-top", "xhtml5":
+		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-favicon", "xhtml-go-up", "xhtml-top", "xhtml5", "xhtml-chap-prefix", "xhtml-chap-prefix-ids":
 	default:
 		ctx.Error("unknown parameter:", param)
 	}
@@ -1362,7 +1362,7 @@ func macroHeader(exp Exporter) {
 
 func macroHeaderProcess(exp Exporter) {
 	ctx := exp.Context()
-	_, flags, args := ctx.ParseOptions(specOptHeader, ctx.Args)
+	opts, flags, args := ctx.ParseOptions(specOptHeader, ctx.Args)
 	if len(args) == 0 {
 		ctx.Error("arguments required")
 		return
@@ -1374,6 +1374,7 @@ func macroHeaderProcess(exp Exporter) {
 	endParagraph(exp, false)
 	ctx.Toc.updateHeadersCount(ctx.Macro, flags["nonum"])
 	title := processInlineMacros(exp, args)
+	ctx.ID = ctx.InlinesToText(opts["id"])
 	exp.BeginHeader(ctx.Macro, numbered, title)
 	fmt.Fprint(ctx.W(), title)
 	closeUnclosedBlocks(exp, "Bm")
@@ -1394,9 +1395,11 @@ func macroHeaderInfos(exp Exporter) {
 	case "Ch":
 		ctx.Toc.HasChapter = true
 	}
+	id := ctx.InlinesToText(opts["id"])
+	ctx.ID = id
 	ref := exp.HeaderReference(ctx.Macro)
 	num := ctx.Toc.HeaderNum(ctx.Macro, flags["nonum"])
-	if id := ctx.InlinesToText(opts["id"]); id != "" {
+	if id != "" {
 		ctx.storeID(id, IDInfo{Ref: ref, Name: num, Type: HeaderID})
 	}
 	title := processInlineMacros(exp, args)
