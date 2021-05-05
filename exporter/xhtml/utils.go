@@ -341,7 +341,7 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 		fprefix = "body"
 	}
 	idText := ""
-	useID, ok := ctx.Params["xhtml-chap-prefix-ids"]
+	useID, ok := ctx.Params["xhtml-chap-custom-filenames"]
 	if ok && (useID != "" && useID != "0") {
 		idText = ctx.ID
 	}

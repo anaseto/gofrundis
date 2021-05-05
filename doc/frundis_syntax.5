@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd Nov 09, 2019
+.Dd May 05, 2021
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -1361,13 +1361,17 @@ The prefix for generated files names when producing multi-page XHTML
 or EPUB documents.
 It defaults to
 .Cm body .
-.It Cm xhtml-chap-prefix-ids
+.It Cm xhtml-chap-custom-filenames
 If set to a non-zero value, when producing multi-page XHTML documents, the
 files whose chapter has an id will have that id appended to their filename.
 .It Cm xhtml-css
 Path to the css file when exporting to XHTML.
 It will appear as-is in
 the XHTML file.
+.It Cm xhtml-custom-ids
+If set to a non-zero value, when a header as a particular id, it will be used
+as an html id too.
+This may be useful for providing stable URLs.
 .It Cm xhtml-index
 Automatic index generation in multi-file XHTML documents.
 The value can be

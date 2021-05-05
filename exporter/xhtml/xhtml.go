@@ -531,7 +531,7 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 		fprefix = "body"
 	}
 	idText := ""
-	useID, ok := ctx.Params["xhtml-chap-prefix-ids"]
+	useID, ok := ctx.Params["xhtml-chap-custom-filenames"]
 	if ok && (useID != "" && useID != "0") {
 		idText = ctx.ID
 	}
@@ -567,14 +567,31 @@ func (exp *exporter) HeaderReference(macro string) string {
 	ctx := exp.Context()
 	toc := ctx.Toc
 	var href string
+	idText := ""
+	useID, ok := ctx.Params["xhtml-custom-ids"]
+	if ok && (useID != "" && useID != "0") {
+		idText = ctx.IDX
+	}
 	switch macro {
 	case "Pt", "Ch":
-		href = exp.GenRef("s", strconv.Itoa(toc.HeaderCount), true)
+		if idText != "" {
+			href = exp.GenRef("", idText, true)
+		} else {
+			href = exp.GenRef("s", strconv.Itoa(toc.HeaderCount), true)
+		}
 	case "Sh", "Ss":
 		if exp.AllInOneFile {
-			href = exp.GenRef("s", strconv.Itoa(toc.HeaderCount), false)
+			if idText != "" {
+				href = exp.GenRef("", idText, false)
+			} else {
+				href = exp.GenRef("s", strconv.Itoa(toc.HeaderCount), false)
+			}
 		} else {
-			href = exp.GenRef("s", fmt.Sprintf("%d-%d", toc.SectionCount, toc.SubsectionCount), false)
+			if idText != "" {
+				href = exp.GenRef("", idText, false)
+			} else {
+				href = exp.GenRef("s", fmt.Sprintf("%d-%d", toc.SectionCount, toc.SubsectionCount), false)
+			}
 		}
 	}
 	return href
