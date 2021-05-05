@@ -29,11 +29,11 @@
       href="cover.xhtml"
       media-type="application/xhtml+xml" />
 <item id="index" href="index.xhtml" media-type="application/xhtml+xml" />
-<item id="body-1-0" href="body-1-0.xhtml" media-type="application/xhtml+xml" />
-<item id="body-1-1" href="body-1-1.xhtml" media-type="application/xhtml+xml" />
-<item id="body-1-2" href="body-1-2.xhtml" media-type="application/xhtml+xml" />
-<item id="body-2-2" href="body-2-2.xhtml" media-type="application/xhtml+xml" />
-<item id="body-2-3" href="body-2-3.xhtml" media-type="application/xhtml+xml" />
+<item id="body-1-00" href="body-1-00.xhtml" media-type="application/xhtml+xml" />
+<item id="body-1-01" href="body-1-01.xhtml" media-type="application/xhtml+xml" />
+<item id="body-1-02" href="body-1-02.xhtml" media-type="application/xhtml+xml" />
+<item id="body-2-02" href="body-2-02.xhtml" media-type="application/xhtml+xml" />
+<item id="body-2-03" href="body-2-03.xhtml" media-type="application/xhtml+xml" />
 <item id="css"
       href="stylesheet.css"
       media-type="text/css" />
@@ -45,11 +45,11 @@
 <itemref idref="cover_xhtml" />
 <itemref idref="index" />
 <itemref idref="nav" linear="yes" />
-<itemref idref="body-1-0" />
-<itemref idref="body-1-1" />
-<itemref idref="body-1-2" />
-<itemref idref="body-2-2" />
-<itemref idref="body-2-3" />
+<itemref idref="body-1-00" />
+<itemref idref="body-1-01" />
+<itemref idref="body-1-02" />
+<itemref idref="body-2-02" />
+<itemref idref="body-2-03" />
 </spine>
 <guide>
 <reference type="cover" title="cover" href="cover.xhtml" />

@@ -355,7 +355,7 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 	if idText != "" {
 		chapname = idText
 	} else {
-		chapname = fmt.Sprintf("%d-%d", ctx.Toc.PartCount, ctx.Toc.ChapterCount)
+		chapname = fmt.Sprintf("%d-%02d", ctx.Toc.PartCount, ctx.Toc.ChapterCount)
 	}
 	var outFile string
 	switch ctx.Format {

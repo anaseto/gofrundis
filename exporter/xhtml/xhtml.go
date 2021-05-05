@@ -550,7 +550,7 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 		if idText != "" {
 			chapname = idText
 		} else {
-			chapname = fmt.Sprintf("%d-%d", toc.PartCount, toc.ChapterCount)
+			chapname = fmt.Sprintf("%d-%02d", toc.PartCount, toc.ChapterCount)
 		}
 		if hasfile {
 			href = fmt.Sprintf("%s-%s%s", fprefix, chapname, suffix)

@@ -19,43 +19,43 @@
       <navLabel><text>Abstract</text></navLabel>
       <content src="index.xhtml#s1-0" />
     </navPoint>
-    <navPoint id="body-1-0.xhtml">
+    <navPoint id="body-1-00.xhtml">
       <navLabel><text>1. Part1</text></navLabel>
-      <content src="body-1-0.xhtml" />
-      <navPoint id="body-1-1.xhtml">
+      <content src="body-1-00.xhtml" />
+      <navPoint id="body-1-01.xhtml">
         <navLabel><text>1. Chap1</text></navLabel>
-        <content src="body-1-1.xhtml" />
+        <content src="body-1-01.xhtml" />
       </navPoint>
-      <navPoint id="body-1-2.xhtml">
+      <navPoint id="body-1-02.xhtml">
         <navLabel><text>2. Chap2</text></navLabel>
-        <content src="body-1-2.xhtml" />
-        <navPoint id="body-1-2.xhtml-s1-0">
+        <content src="body-1-02.xhtml" />
+        <navPoint id="body-1-02.xhtml-s1-0">
           <navLabel><text>2.1. Section1</text></navLabel>
-          <content src="body-1-2.xhtml#s1-0" />
-          <navPoint id="body-1-2.xhtml-s1-1">
+          <content src="body-1-02.xhtml#s1-0" />
+          <navPoint id="body-1-02.xhtml-s1-1">
             <navLabel><text>2.1.1. Subsection1</text></navLabel>
-            <content src="body-1-2.xhtml#s1-1" />
+            <content src="body-1-02.xhtml#s1-1" />
           </navPoint>
         </navPoint>
-        <navPoint id="body-1-2.xhtml-s2-0">
+        <navPoint id="body-1-02.xhtml-s2-0">
           <navLabel><text>2.2. Section2</text></navLabel>
-          <content src="body-1-2.xhtml#s2-0" />
-          <navPoint id="body-1-2.xhtml-s2-1">
+          <content src="body-1-02.xhtml#s2-0" />
+          <navPoint id="body-1-02.xhtml-s2-1">
             <navLabel><text>2.2.1. Subsection2</text></navLabel>
-            <content src="body-1-2.xhtml#s2-1" />
+            <content src="body-1-02.xhtml#s2-1" />
           </navPoint>
         </navPoint>
       </navPoint>
     </navPoint>
-    <navPoint id="body-2-2.xhtml">
+    <navPoint id="body-2-02.xhtml">
       <navLabel><text>2. Part2</text></navLabel>
-      <content src="body-2-2.xhtml" />
-      <navPoint id="body-2-3.xhtml">
+      <content src="body-2-02.xhtml" />
+      <navPoint id="body-2-03.xhtml">
         <navLabel><text>3. Chap3</text></navLabel>
-        <content src="body-2-3.xhtml" />
-        <navPoint id="body-2-3.xhtml-s1-0">
+        <content src="body-2-03.xhtml" />
+        <navPoint id="body-2-03.xhtml-s1-0">
           <navLabel><text>3.1. Section3</text></navLabel>
-          <content src="body-2-3.xhtml#s1-0" />
+          <content src="body-2-03.xhtml#s1-0" />
         </navPoint>
       </navPoint>
     </navPoint>
