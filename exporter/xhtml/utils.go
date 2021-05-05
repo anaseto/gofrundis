@@ -223,9 +223,15 @@ func (exp *exporter) xhtmlTOClikeEntry(w io.Writer, entry *frundis.LoXinfo, flag
 }
 
 func (exp *exporter) getID(entry *frundis.LoXinfo) string {
+	ctx := exp.Context()
+	custom := ctx.Params["xhtml-custom-ids"]
 	var id string
 	if exp.AllInOneFile {
-		id = fmt.Sprintf("s%d", entry.Count)
+		if custom != "0" && custom != "" && entry.ID != "" {
+			id = entry.ID
+		} else {
+			id = fmt.Sprintf("s%d", entry.Count)
+		}
 	} else {
 		id = entry.Ref
 		if strings.ContainsRune(id, '#') {

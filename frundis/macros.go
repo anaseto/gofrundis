@@ -194,7 +194,7 @@ func macroBlInfos(exp Exporter) {
 		ctx.Verse.verseCount++
 		loXEntryInfos(exp, "lop",
 			&LoXinfo{
-				id:        ctx.InlinesToText(opts["id"]),
+				ID:        ctx.InlinesToText(opts["id"]),
 				Title:     title,
 				Count:     ctx.Verse.verseCount,
 				RefPrefix: "poem"},
@@ -215,7 +215,7 @@ func macroBlInfos(exp Exporter) {
 		ctx.Table.TitCount++
 		loXEntryInfos(exp, "lot",
 			&LoXinfo{
-				id:        ctx.InlinesToText(opts["id"]),
+				ID:        ctx.InlinesToText(opts["id"]),
 				Title:     title,
 				Count:     ctx.Table.TitCount,
 				RefPrefix: "tbl"},
@@ -763,7 +763,7 @@ func macroImInfos(exp Exporter) {
 	ctx.FigCount++
 	loXEntryInfos(exp, "lof",
 		&LoXinfo{
-			id:        ctx.InlinesToText(opts["id"]),
+			ID:        ctx.InlinesToText(opts["id"]),
 			Title:     label,
 			Count:     ctx.FigCount,
 			RefPrefix: "fig"},
@@ -1411,6 +1411,7 @@ func macroHeaderInfos(exp Exporter) {
 	title := processInlineMacros(exp, args)
 	info := &LoXinfo{
 		Count:     ctx.Toc.HeaderCount,
+		ID:        id,
 		Ref:       ref,
 		RefPrefix: "s",
 		Macro:     ctx.Macro,

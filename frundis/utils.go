@@ -209,7 +209,7 @@ func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 	} else {
 		ctx.LoXstack[class] = []*LoXinfo{loXinfo}
 	}
-	if loXinfo.id != "" {
+	if loXinfo.ID != "" {
 		var idtype IDType
 		switch class {
 		case "lof":
@@ -219,7 +219,7 @@ func loXEntryInfos(exp Exporter, class string, loXinfo *LoXinfo, id string) {
 		case "lop":
 			idtype = PoemID
 		}
-		ctx.storeID(loXinfo.id, IDInfo{Ref: loXinfo.Ref, Name: loXinfo.Title, Type: idtype})
+		ctx.storeID(loXinfo.ID, IDInfo{Ref: loXinfo.Ref, Name: loXinfo.Title, Type: idtype})
 	}
 }
 

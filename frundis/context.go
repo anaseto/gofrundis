@@ -277,7 +277,7 @@ type LoXinfo struct {
 	Ref       string // reference (e.g. in an "href")
 	RefPrefix string // reference prefix (e.g. "fig" for figures)
 	Title     string // title (rendered)
-	id        string // id for ctx.IDs
+	ID        string // id for ctx.IDs
 }
 
 // IDType corresponds to different elements that can have an identifier.
