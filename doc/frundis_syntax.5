@@ -1345,8 +1345,14 @@ from the
 and
 .Cm document-title
 parameters, will be used.
-.It Cm latex-xelatex
-Use an automatic XeLaTeX preamble instead of a plain LaTeX one.
+.It Cm latex-variant
+The LaTeX variant to be produced. Can be
+.Cm pdflatex
+or
+.Cm xelatex .
+It defaults to
+.Cm xelatex .
+Currently, it only affects the kind of automatic preamble that is used.
 .It Cm mom-preamble
 Path to a custom groff mom preamble file (text before
 .Qq \&.START
@@ -1369,13 +1375,14 @@ parameters.
 Path to XHTML file providing additional bottom content just before terminating
 body in each file, after the navigation bar.
 .It Cm xhtml-chap-prefix
-The prefix for generated files names when producing multi-page XHTML
+The name prefix for generated files when producing multi-page XHTML
 or EPUB documents.
 It defaults to
 .Cm body .
 .It Cm xhtml-chap-custom-filenames
-If set to a non-zero value, when producing multi-page XHTML documents, the
-files whose chapter has an id will have that id appended to their filename.
+If set to a non-zero value, when producing multi-page XHTML or EPUB documents,
+the files whose chapter has an id will have that id appended to the filename
+prefix, instead of the part and chapter count numbers.
 .It Cm xhtml-css
 Path to the css file when exporting to XHTML.
 It will appear as-is in
@@ -1503,8 +1510,8 @@ or at the sources of the Shaedra fantasy saga, see
 .Sh HISTORY
 The
 .Nm
-language was created originally for supporting the development of the fantasy
-saga
+language was created originally for supporting the development of the
+multilingual and libre fantasy saga
 .Rs
 .%B "El Ciclo de Shaedra"
 .Re
@@ -1512,8 +1519,9 @@ Incidentally,
 .Nm
 is also the name of a character of the saga.
 The original Perl program was rewritten in Go during the development of the
+libre trilogy
 .Rs
-.%B "Cycle of Dashvara"
+.%B "El Ciclo de Dashvara"
 .Re
 .Pp
 Many macro names are inspired from the language

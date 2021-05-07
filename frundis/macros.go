@@ -1335,7 +1335,7 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 	case "dmark", "document-author", "document-date", "document-title",
 		"epub-cover", "epub-css", "epub-metadata", "epub-subject", "epub-uuid", "epub-version", "epub-nav-landmarks",
 		"lang",
-		"latex-preamble", "latex-xelatex",
+		"latex-preamble", "latex-variant",
 		"mom-preamble",
 		"nbsp", "title-page",
 		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-favicon", "xhtml-go-up", "xhtml-top", "xhtml5", "xhtml-chap-prefix", "xhtml-chap-custom-filenames", "xhtml-custom-ids":

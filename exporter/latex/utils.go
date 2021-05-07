@@ -108,7 +108,7 @@ func (exp *exporter) beginLatexDocument() {
 		Author:    author,
 		Date:      date,
 		Book:      ctx.Toc.HasPart || ctx.Toc.HasChapter,
-		XeLaTeX:   frundis.IsTrue(ctx.Params["latex-xelatex"]),
+		XeLaTeX:   ctx.Params["latex-variant"] == "xelatex",
 		MiniToc:   exp.minitoc,
 		HasVerse:  ctx.Verse.Used,
 		HasImage:  len(ctx.Images) > 0,
