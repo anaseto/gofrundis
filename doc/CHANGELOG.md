@@ -1,6 +1,12 @@
 This changelog file only lists important changes.
 
-## v0.10
+## v0.11.0
+
++ Added option to produce a compressed EPUB out of the box, without requiring
+  manually zipping the directory.
++ Add the “viewport” meta header when producing HTML5.
+
+## v0.10.0
 
 + New xhtml-chap-custom-filenames, xhtml-chap-prefix and xhtml-custom ids
   for better control over file names in multi XHTML and EPUB documents, and
@@ -10,7 +16,7 @@ This changelog file only lists important changes.
 + Replaced xhtml-xelatex parameter with an xhtml-variant parameter, for
   better future extensibility.
 
-## v0.9
+## v0.9.0
 
 Mainly a bugfix release, with also some typographic improvements in
 french documents.
