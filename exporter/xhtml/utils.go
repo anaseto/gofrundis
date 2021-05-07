@@ -265,6 +265,9 @@ func (exp *exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
 	fmt.Fprint(w, "  <head>\n")
 	if ctx.Format == "epub" && epub3 {
 		fmt.Fprint(w, "    <meta charset=\"utf-8\" />\n")
+	} else if ctx.Format == "xhtml" && frundis.IsTrue(ctx.Params["xhtml5"]) {
+		fmt.Fprint(w, "    <meta charset=\"utf-8\" />\n")
+		fmt.Fprint(w, "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
 	} else {
 		fmt.Fprint(w, "    <meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\" />\n")
 	}
