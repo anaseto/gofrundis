@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd May 05, 2021
+.Dd May 5, 2021
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -301,7 +301,8 @@ macro terminates previous paragraph text, if any.
 .Pp
 A
 .Cm div
-block actually does nothing in LaTeX apart from terminating any previous paragraph. It is rendered as a
+block actually does nothing in LaTeX apart from terminating any previous paragraph.
+It is rendered as a
 .Dq div
 element in html.
 .Ss \&Bf
@@ -604,7 +605,7 @@ macro.
 When exporting to XHTML, the optional
 .Fl link Ar url
 embeds the image in a hyperlink given by
-.Ar url.
+.Ar url .
 .Pp
 For html, the
 .Dq alt
@@ -666,7 +667,8 @@ The
 .Cm hyperref
 package is required for LaTeX.
 .Ss \&P
-Break a paragraph. The syntax is as follows:
+Break a paragraph.
+The syntax is as follows:
 .Bd -ragged -offset indent
 .Pf \. Sx \&P
 .Op Ar args ...
@@ -1188,7 +1190,8 @@ macros cannot be nested.
 macros are evaluated dynamically.
 In particular, interpolation is done on use.
 .Ss \&#dv
-Define a variable. The syntax is as follows:
+Define a variable.
+The syntax is as follows:
 .Bd -ragged -offset indent
 .Pf . Sx \&#dv
 .Op Fl f Ar formats
@@ -1268,7 +1271,8 @@ The
 .Sx \&#if
 macros can be nested.
 .Ss \&#run
-Run a command. The syntax is as follows:
+Run a command.
+The syntax is as follows:
 .Bd -ragged -offset indent
 .Pf . Sx \&#run Ar args ...
 .Ed
@@ -1306,10 +1310,11 @@ The path to a file containing epub metadata entries.
 .It Cm epub-subject
 Subject description for epub.
 .It Cm epub-version
-The epub version to produce. Can be 2 or 3.
+The epub version to produce.
+Can be 2 or 3.
 .It Cm epub-uuid
-The text to use as unique identifier for epub. Useful mainly for deterministic
-tests.
+The text to use as unique identifier for epub.
+Useful mainly for deterministic tests.
 .It Cm lang
 The language in which the source is written (eg.\&
 .Cm en ,
@@ -1380,7 +1385,8 @@ for a full table of contents,
 .Cm summary
 for a summary, and
 .Cm none
-to not print any automatic table of contents. The value
+to not print any automatic table of contents.
+The value
 .Cm full
 is the default.
 .It Cm xhtml-favicon
