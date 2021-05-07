@@ -2,10 +2,11 @@ Description
 -----------
 
 The *frundis* language is a semantic markup language with a simplified
-roff-like syntax, originally intended for supporting authoring of novels, but
-it can be used for more varied stuff.  It relies on the exporting capabilities
-of the tool `frundis` to LaTeX, XHTML, EPUB (2 and 3), markdown and groff mom.
-*Only LaTeX, XHTML and EPUB output formats are considered complete and mature.*
+roff-like syntax. It was originally intended for supporting authoring of
+novels, but it can be used for more varied documents.  It relies on the
+exporting capabilities of the tool `frundis` to LaTeX, XHTML, EPUB (2 and 3),
+markdown and groff mom.  *Only LaTeX, XHTML and EPUB output formats are
+considered complete and mature.*
 
 The language focuses on simplicity, using a few flexible built-in macros with
 sensible defaults, and it strives to provide good error messages, while
@@ -23,7 +24,7 @@ Here is a list of its main features:
 
 The tool and language are explained in detail in manpages doc/frundis.1 and
 doc/frundis\_syntax.5. They are available too in html form in the [frundis
-website](http://bardinflor.perso.aquilenet.fr/frundis/intro-en).
+website](https://frundis.tuxfamily.org/).
 
 You can have a look at examples in frundis\_syntax(5) man page in the EXAMPLES
 section, as well as in files in the doc/examples directory.
