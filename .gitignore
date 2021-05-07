@@ -13,6 +13,7 @@
 *.aux
 *.toc
 *.out
+*.core
 *.nav
 *.epub
 *-gen.html
