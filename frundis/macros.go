@@ -705,6 +705,10 @@ func macroImProcess(exp Exporter) {
 	if t, ok := opts["link"]; ok {
 		link = ctx.InlinesToText(t)
 	}
+	var alt string
+	if t, ok := opts["alt"]; ok {
+		alt = ctx.InlinesToText(t)
+	}
 	if len(args) > 2 {
 		ctx.Error("too many arguments")
 		args = args[:2]
@@ -720,7 +724,7 @@ func macroImProcess(exp Exporter) {
 		if t, ok := opts["id"]; ok {
 			id = exp.RenderText(t)
 		}
-		exp.InlineImage(image, link, id, punct)
+		exp.InlineImage(image, link, id, punct, alt)
 	case 2:
 		closeUnclosedBlocks(exp, "Bm")
 		closeUnclosedBlocks(exp, "Bl")
@@ -728,7 +732,7 @@ func macroImProcess(exp Exporter) {
 		image := ctx.InlinesToText(args[0])
 		caption := exp.RenderText(args[1])
 		ctx.FigCount++
-		exp.FigureImage(image, caption, link)
+		exp.FigureImage(image, caption, link, alt)
 	}
 }
 

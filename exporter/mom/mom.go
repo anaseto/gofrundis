@@ -394,7 +394,7 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 	return text // TODO: do something?
 }
 
-func (exp *exporter) FigureImage(image string, caption string, link string) {
+func (exp *exporter) FigureImage(image string, caption string, link string, alt string) {
 	ctx := exp.Context()
 	w := ctx.W()
 	_, err := os.Stat(image)
@@ -425,7 +425,7 @@ func (exp *exporter) HeaderReference(macro string) string {
 	return exp.GenRef("s", strconv.Itoa(exp.Context().Toc.HeaderCount), false)
 }
 
-func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, id string, punct string, alt string) {
 	ctx := exp.Context()
 	if strings.ContainsAny(image, "{}") {
 		ctx.Error("path argument and label should not contain the characters `{', or `}")

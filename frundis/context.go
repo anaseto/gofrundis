@@ -122,8 +122,9 @@ type Renderer interface {
 	// FormatParagraph can be used to do post-processing of paragraph-like text.
 	FormatParagraph(text []byte) []byte
 	// FigureImage handles an image with a caption; image argument is
-	// not escaped. The image can be embedded in a link.
-	FigureImage(image string, caption string, link string)
+	// not escaped. The image can be embedded in a link. The alt argument
+	// provides alternate text for use in exporters when it makes sense.
+	FigureImage(image string, caption string, link string, alt string)
 	// GenRef generates a suitable reference string using a prefix and an
 	// id.
 	GenRef(prefix string, id string, hasfile bool) string
@@ -131,8 +132,9 @@ type Renderer interface {
 	// an html href suitable for pointing to some id of an <h1
 	// id="some-id">)
 	HeaderReference(macro string) string
-	// InlineImage handles an inline image.
-	InlineImage(image string, link string, id string, punct string)
+	// InlineImage handles an inline image. The alt argument
+	// provides alternate text for use in exporters when it makes sense.
+	InlineImage(image string, link string, id string, punct string, alt string)
 	// LkWithLabel produces a labeled link (e.g. "<a href="url">label</a>").
 	LkWithLabel(url string, label string, punct string)
 	// LkWithoutLabel produces a link (e.g. "<a href="url">url</a>").

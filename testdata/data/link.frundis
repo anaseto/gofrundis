@@ -6,6 +6,7 @@
 .#;
 .#if -f xhtml,epub
 .Im -link http://bardinflor.perso.aquilenet/bigimage.png image.png
+.Im -id withalt -alt alternate data/image.png
 .#;
 .#if -f xhtml,epub,latex,markdown
 .Im -id imagelabel data/image.png "image label"

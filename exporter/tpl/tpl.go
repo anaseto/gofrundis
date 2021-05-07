@@ -247,7 +247,7 @@ func (exp *exporter) FormatParagraph(text []byte) []byte {
 	return text
 }
 
-func (exp *exporter) FigureImage(image string, caption string, link string) {
+func (exp *exporter) FigureImage(image string, caption string, link string, alt string) {
 }
 
 func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
@@ -258,7 +258,7 @@ func (exp *exporter) HeaderReference(macro string) string {
 	return ""
 }
 
-func (exp *exporter) InlineImage(image string, link string, id string, punct string) {
+func (exp *exporter) InlineImage(image string, link string, id string, punct string, alt string) {
 }
 
 func (exp *exporter) LkWithLabel(url string, label string, punct string) {

@@ -104,6 +104,7 @@ var specOptIncludeFile = map[string]Option{
 	"as-is": FlagOption,
 	"t":     ArgOption}
 var specOptIm = map[string]Option{
+	"alt":  ArgOption,
 	"id":   ArgOption,
 	"ns":   FlagOption,
 	"link": ArgOption}
