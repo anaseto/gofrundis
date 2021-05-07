@@ -1,4 +1,4 @@
-v0.10-dev:
+v0.10:
   + New xhtml-chap-custom-filenames, xhtml-chap-prefix and xhtml-custom ids
   for better control over file names in multi XHTML and EPUB documents, and
   for facilitating stable URLs.
