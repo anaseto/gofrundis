@@ -1,3 +1,16 @@
+v0.10-dev:
+  + New xhtml-chap-custom-filenames, xhtml-chap-prefix and xhtml-custom ids
+  for better control over file names in multi XHTML and EPUB documents, and
+  for facilitating stable URLs.
+  + New -alt option for Im macro, for providing alternate text in XHTML and
+  EPUB outputs.
+  + Replaced xhtml-xelatex parameter with an xhtml-variant parameter, for
+  better future extensibility.
+
+v0.9:
+  Mainly a bugfix release, with also some typographic improvements in
+  french documents.
+
 v0.8:
   + New -eq option for #if macro. Mainly a convenience that allows to use a
   single #dv flag variable instead of several when more than two cases are to
