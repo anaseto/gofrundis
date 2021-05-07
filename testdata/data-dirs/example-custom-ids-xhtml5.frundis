@@ -1,0 +1,8 @@
+.X set xhtml-custom-ids 1
+.X set xhtml-chap-prefix chap
+.X set xhtml-chap-custom-filenames 1
+.Tc
+.Ch -id a First
+.Sx b
+.Ch -id b Second
+.Sx a

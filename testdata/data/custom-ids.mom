@@ -1,0 +1,10 @@
+.NEWPAGE
+.HEADING 2 NAMED s:1 "First"
+.PP
+.PDF_LINK "s:2" SUFFIX "" "2"
+.PP
+.NEWPAGE
+.HEADING 2 NAMED s:2 "Second"
+.PP
+.PDF_LINK "s:1" SUFFIX "" "1"
+.PP
