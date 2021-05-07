@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd April 17, 2017
+.Dd May 7, 2021
 .Dt FRUNDIS 1
 .Os
 .Sh NAME
@@ -24,6 +24,7 @@
 .Op Fl s
 .Op Fl t
 .Op Fl x
+.Op Fl z
 .Op Fl o Ar output-file
 .Op Ar path
 .Sh DESCRIPTION
@@ -62,8 +63,8 @@ of exporting to EPUB, and XHTML unless
 .Fl a
 is specified, this option is mandatory and specifies the name of a new
 directory that will contain all the necessary files.
-For EPUB, zipping has to
-be done manually after.
+For EPUB, zipping has to be done manually after, or by using the
+.Fl z option .
 .It Fl s
 Specify that a standalone document should be produced.
 This is the default for
@@ -73,6 +74,10 @@ Use template-like restricted mode (experimental).
 .It Fl x
 Allow #run macro and external filters.
 Use this option only for trusted sources.
+.It Fl z
+When exporting to EPUB, produce a finalized compressed EPUB file with the name
+suffix
+.Sq .epub .
 .El
 .Sh ENVIRONMENT
 .Nm
@@ -107,7 +112,18 @@ To create a directory with XHTML files and an index:
 .Pp
 .Dl "$ frundis -T xhtml -o output-dir input.frundis"
 .Pp
-To create an EPUB file, assuming the zip program from
+The following command will create an EPUB, both the uncompressed directory with
+the contents, named
+.Sq output ,
+and the compressed, ready-to-use EPUB file
+.Sq output.epub :
+.Pp
+.Dl "$ frundis -T epub -o output -z input.frundis"
+.Pp
+If the
+.Fl z
+option is ommited, compression can be done manually.
+Assuming the zip program from
 .Lk http://infozip.sourceforge.net/
 is installed:
 .Pp

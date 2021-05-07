@@ -22,6 +22,7 @@ func main() {
 	optAllInOneFile := flag.Bool("a", false, "all in one file (for xhtml only)")
 	optStandalone := flag.Bool("s", false, "standalone document (default for xhtml and epub)")
 	optOutputFile := flag.String("o", "", "`output-file`")
+	optCompress := flag.Bool("z", false, "produce a finalized compressed EPUB (zipped)")
 	optTemplate := flag.Bool("t", false, "template operation mode")
 	optExec := flag.Bool("x", false, "unrestricted mode (#run and shell filters allowed)")
 	flag.Usage = func() {
@@ -85,6 +86,9 @@ func main() {
 				AllInOneFile: *optAllInOneFile}),
 			filename,
 			*optExec)
+		if *optFormat == "epub" && *optCompress {
+			writeEpub(*optOutputFile, *optOutputFile+".epub")
+		}
 	case "latex":
 		export(
 			latex.NewExporter(&latex.Options{
@@ -122,4 +126,8 @@ func Error(usage bool, msgs ...interface{}) {
 		flag.Usage()
 	}
 	os.Exit(1)
+}
+
+func Log(format string, msgs ...interface{}) {
+	fmt.Fprintf(os.Stderr, "frundis: "+format, msgs...)
 }
