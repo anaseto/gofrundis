@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd May 7, 2021
+.Dd May 8, 2021
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -1301,7 +1301,9 @@ This section is a list of the parameters that can be set with the
 macro, along with their descriptions, in alphabetic order.
 .Bl -tag -width 13n
 .It Cm dmark
-The mark that starts a dialogue.
+The mark that starts a dialogue when using the
+.Sx \&D
+macro.
 .It Cm document-author
 The author of the document.
 .It Cm document-date
@@ -1313,7 +1315,7 @@ The path to the cover.
 .It Cm epub-css
 The path to the css file to use when exporting to EPUB.
 .It Cm epub-metadata
-The path to a file containing epub metadata entries.
+The path to a file containing arbitrary epub metadata entries.
 .It Cm epub-subject
 Subject description for epub.
 .It Cm epub-version
@@ -1374,10 +1376,12 @@ parameters.
 .It Cm xhtml-bottom
 Path to XHTML file providing additional bottom content just before terminating
 body in each file, after the navigation bar.
+Used in multi-file XHTML documents.
 .It Cm xhtml-chap-custom-filenames
 If set to a non-zero value, when producing multi-page XHTML or EPUB documents,
-the files whose chapter has an id will have that id appended to the filename
-prefix, instead of the part and chapter count numbers.
+the files whose chapter has an identifier will have that identifier appended to
+the filename prefix, instead of the part and chapter count numbers.
+This may be useful for providing stable URLs.
 .It Cm xhtml-chap-prefix
 The name prefix for generated files when producing multi-page XHTML
 or EPUB documents.
@@ -1388,8 +1392,10 @@ Path to the css file when exporting to XHTML.
 It will appear as-is in
 the XHTML file.
 .It Cm xhtml-custom-ids
-If set to a non-zero value, when a header as a particular id, it will be used
-as an html id too.
+If set to a non-zero value, when a header as a particular identifier, it will be used
+as an html
+.Sq id
+too.
 This may be useful for providing stable URLs.
 .It Cm xhtml-index
 Automatic index generation in multi-file XHTML documents.
@@ -1412,6 +1418,7 @@ an up arrow symbol by default.
 .It Cm xhtml-top
 Path to XHTML file providing additional top content just after body in
 each file, before the navigation bar.
+Used in multi-file XHTML documents.
 .It Cm xhtml5
 If set to a non-zero value, HTML5 will be produced.
 .El
