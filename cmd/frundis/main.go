@@ -87,7 +87,11 @@ func main() {
 			filename,
 			*optExec)
 		if *optFormat == "epub" && *optCompress {
-			writeEpub(*optOutputFile, *optOutputFile+".epub")
+			err := writeEpub(*optOutputFile, *optOutputFile+".epub")
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "frundis: %v", err)
+				os.Exit(1)
+			}
 		}
 	case "latex":
 		export(
