@@ -88,6 +88,12 @@ func (exp *exporter) beginLatexDocument() {
 	author := ctx.Params["document-author"]
 	date := ctx.Params["document-date"]
 	preamble := ctx.Params["latex-preamble"]
+	variant := ctx.Params["latex-variant"]
+	switch variant {
+	case "", "pdflatex", "xelatex":
+	default:
+		ctx.Errorf("unknown latex variant: %s", variant)
+	}
 	data := &struct {
 		Title     string
 		Author    string
@@ -108,7 +114,7 @@ func (exp *exporter) beginLatexDocument() {
 		Author:    author,
 		Date:      date,
 		Book:      ctx.Toc.HasPart || ctx.Toc.HasChapter,
-		XeLaTeX:   ctx.Params["latex-variant"] == "xelatex",
+		XeLaTeX:   variant == "xelatex",
 		MiniToc:   exp.minitoc,
 		HasVerse:  ctx.Verse.Used,
 		HasImage:  len(ctx.Images) > 0,
