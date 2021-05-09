@@ -1,11 +1,12 @@
 Frundis
 -------
 
-The *frundis* language is a semantic markup language with a simplified
-roff-like syntax. It was originally intended for supporting authoring of
-novels, but it can be used for more varied documents.  It relies on the
-exporting capabilities of the tool `frundis` to LaTeX, XHTML, EPUB (2 and 3),
-markdown and groff mom.
+*frundis* is a tool for compiling documents written in the [frundis
+language](https://frundis.tuxfamily.org/man/frundis_syntax-5.html), a semantic
+markup language primarily intended for supporting authoring of novels, but also
+well suited for many other kinds of documents. The [frundis
+tool](https://frundis.tuxfamily.org/man/frundis-1.html) can export documents
+into to LaTeX, XHTML 5, EPUB, markdown and groff mom.
 
 The language has a focus on simplicity. It provides a few flexible built-in
 macros with extensible semantics. It strives to provide good error messages and
@@ -16,20 +17,17 @@ Here is a list of its main features:
 
 + Common elements such as links, images, cross-references, lists, simple
   tables, table of contents …
-+ Arbitrary metadata for EPUB. Indexed html files.
++ Arbitrary metadata for EPUB. Indexed HTML files.
 + User defined markup tags with configurable rendering.
-+ Raw blocks, file inclusion, filters, macros and variables.
++ Raw blocks, file inclusion, filters, conditionals, macros and variables.
 + Roff-like syntax: simple, clear and friendly to grep and diff.
 
 Documentation
 -------------
 
-The tool and language are explained in detail in manpages doc/frundis.1 and
-doc/frundis\_syntax.5.
-
-The [website of the project](https://frundis.tuxfamily.org/) serves an html
-version of the manual pages, as well as a FAQ, examples and other relevant
-information.
+Both the tool and language are explained in detail in the [website of the
+project](https://frundis.tuxfamily.org/). The website serves an html version of
+the manual pages, as well as a FAQ, examples and other relevant information.
 
 Install
 -------
