@@ -701,7 +701,7 @@ func (exp *exporter) Xdtag(cmd string, pairs []string) frundis.Dtag {
 	case "address", "article", "aside", "blockquote", "div", "header", "fieldset",
 		"figure", "footer", "form", "main", "nav", "section", "":
 	default:
-		exp.Context().Error(cmd, ":expected element allowing flowing content")
+		exp.Context().Error(cmd, ":element does not allow all flowing content (warning)")
 	}
 	return frundis.Dtag{Cmd: cmd, Pairs: pairs}
 }
