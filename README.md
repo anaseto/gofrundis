@@ -34,7 +34,7 @@ Install
 
 + Install the [go compiler](https://golang.org/).
 + Add `$(go env GOPATH)/bin` to your `$PATH` (for example `export PATH="$PATH:$(go env GOPATH)/bin"`).
-+ Run the command `go install` in the `cmd/frundis/` directory.
++ Run the command `go install ./cmd/frundis`.
   
 The `frundis` command should now be available.
 
