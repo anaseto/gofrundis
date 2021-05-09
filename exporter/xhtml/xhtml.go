@@ -347,6 +347,11 @@ func (exp *exporter) CheckParamAssignement(param string, value string) bool {
 			ctx.Error("epub-version parameter should be 2 or 3 but got ", value)
 			return false
 		}
+	case "xhtml-version":
+		if value != "4" && value != "5" {
+			ctx.Error("xhtml-version parameter should be 4 or 5 but got ", value)
+			return false
+		}
 	}
 	return true
 }

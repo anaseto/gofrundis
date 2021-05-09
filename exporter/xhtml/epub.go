@@ -74,7 +74,7 @@ func (exp *exporter) epubGen() {
 
 	exp.epubGenContainer()
 	exp.epubGenContentOpf(title, lang, cover)
-	if strings.HasPrefix(ctx.Params["epub-version"], "3") {
+	if !strings.HasPrefix(ctx.Params["epub-version"], "2") {
 		exp.epubGenNav(title)
 	}
 	exp.epubGenCSS()

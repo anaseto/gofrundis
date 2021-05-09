@@ -1338,7 +1338,7 @@ func macroXset(exp Exporter, args [][]ast.Inline) {
 		"latex-preamble", "latex-variant",
 		"mom-preamble",
 		"nbsp", "title-page",
-		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-favicon", "xhtml-go-up", "xhtml-top", "xhtml5", "xhtml-chap-prefix", "xhtml-chap-custom-filenames", "xhtml-custom-ids":
+		"xhtml-bottom", "xhtml-css", "xhtml-index", "xhtml-favicon", "xhtml-go-up", "xhtml-top", "xhtml-version", "xhtml-chap-prefix", "xhtml-chap-custom-filenames", "xhtml-custom-ids":
 	default:
 		ctx.Error("unknown parameter:", param)
 	}

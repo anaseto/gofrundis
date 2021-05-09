@@ -248,7 +248,8 @@ func (exp *exporter) getID(entry *frundis.LoXinfo) string {
 
 func (exp *exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
 	ctx := exp.Context()
-	epub3 := strings.HasPrefix(ctx.Params["epub-version"], "3")
+	epub3 := !strings.HasPrefix(ctx.Params["epub-version"], "2")
+	xhtml5 := !strings.HasPrefix(ctx.Params["xhtml-version"], "4")
 	var xmlnsepub string
 	if ctx.Format == "epub" && epub3 {
 		fmt.Fprint(w, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
@@ -256,16 +257,16 @@ func (exp *exporter) XHTMLandEPUBcommonHeader(w io.Writer) {
 		xmlnsepub += fmt.Sprintf("xml:lang=\"%s\" ", ctx.Params["lang"])
 	}
 	if ctx.Format == "epub" && epub3 ||
-		ctx.Format == "xhtml" && frundis.IsTrue(ctx.Params["xhtml5"]) {
+		ctx.Format == "xhtml" && xhtml5 {
 		fmt.Fprint(w, "<!DOCTYPE html>\n")
-	} else if ctx.Format == "xhtml" || !epub3 {
+	} else {
 		fmt.Fprint(w, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n")
 	}
 	fmt.Fprintf(w, "<html xmlns=\"http://www.w3.org/1999/xhtml\" %slang=\"%s\">\n", xmlnsepub, ctx.Params["lang"])
 	fmt.Fprint(w, "  <head>\n")
 	if ctx.Format == "epub" && epub3 {
 		fmt.Fprint(w, "    <meta charset=\"utf-8\" />\n")
-	} else if ctx.Format == "xhtml" && frundis.IsTrue(ctx.Params["xhtml5"]) {
+	} else if ctx.Format == "xhtml" && xhtml5 {
 		fmt.Fprint(w, "    <meta charset=\"utf-8\" />\n")
 		fmt.Fprint(w, "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n")
 	} else {

@@ -238,8 +238,17 @@ func (exp *exporter) BeginVerseLine() {
 }
 
 func (exp *exporter) CheckParamAssignement(param string, value string) bool {
+	ctx := exp.Context()
+	switch param {
+	case "latex-variant":
+		switch value {
+		case "pdflatex", "xelatex":
+		default:
+			ctx.Error("latex-variant parameter:unknown value:", value)
+			return false
+		}
+	}
 	return true
-	// XXX: nothing to be done for now
 }
 
 func (exp *exporter) Context() *frundis.Context {
