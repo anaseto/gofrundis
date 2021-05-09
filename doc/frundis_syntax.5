@@ -661,7 +661,7 @@ The syntax is as follows:
 .Pf \. Sx \&Lk
 .Op Fl ns
 .Ar url
-.Op Ar text
+.Op Ar args ...
 .Op Ar delimiter
 .Ed
 .Pp
@@ -672,6 +672,9 @@ argument and the
 flag work as in the
 .Sx \&Sm
 macro.
+The optional
+.Ar args
+arguments are joined with spaces interleaved to provide text for the link.
 .Pp
 The
 .Cm hyperref

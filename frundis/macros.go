@@ -918,11 +918,8 @@ func macroLk(exp Exporter) {
 	ctx.WantsSpace = true
 
 	if len(args) >= 2 {
-		if len(args) > 2 {
-			ctx.Error("too many arguments")
-		}
 		url := ctx.InlinesToText(args[0])
-		label := exp.RenderText(args[1])
+		label := processInlineMacros(exp, args[1:])
 		exp.LkWithLabel(url, label, punct)
 	} else {
 		url := ctx.InlinesToText(args[0])
