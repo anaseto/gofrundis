@@ -59,7 +59,7 @@ func (e Escape) ToText() string {
 	case "e":
 		return "\\"
 	case "~":
-		return string(0xa0)
+		return string(rune(0xa0))
 	default:
 		return ""
 	}

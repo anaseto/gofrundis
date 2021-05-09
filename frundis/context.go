@@ -307,9 +307,7 @@ type IDInfo struct {
 
 type bfInfo struct {
 	file        string // file where "Bf" was invoked
-	filter      string // optional shell command filter
 	filterTag   string // "-t" option of "Bf"
-	format      string // export format (eg. "xhtml", "latex", etc.)
 	ignore      bool   // whether this format block should be ignored
 	inUserMacro bool   // whether "Bf" was invoked through user macro
 	line        int    // line where "Bf" was invoked

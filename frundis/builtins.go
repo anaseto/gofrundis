@@ -20,7 +20,7 @@ func macroDefStart(exp Exporter) {
 		}
 		return
 	}
-	opts, _, args := ctx.ParseOptions(specOptIf, ctx.Args)
+	opts, _, args := ctx.ParseOptions(specOptDef, ctx.Args)
 	if len(args) < 1 {
 		if ctx.Process {
 			ctx.Error("'.#de' requires name argument")
@@ -270,5 +270,8 @@ func macroRun(exp Exporter) {
 		ctx.Errorf("shell command: %v: %s", sargs, err)
 		return
 	}
-	ctx.W().Write(bytes)
+	_, err = ctx.W().Write(bytes)
+	if err != nil {
+		ctx.Errorf("shell command: %v: error writing output: %s", sargs, err)
+	}
 }

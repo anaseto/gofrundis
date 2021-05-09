@@ -417,7 +417,7 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 	if prefix != "" {
 		return fmt.Sprintf("%s:%s", prefix, id)
 	}
-	return fmt.Sprintf("%s", id)
+	return id
 }
 
 func (exp *exporter) HeaderReference(macro string) string {

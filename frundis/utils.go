@@ -33,7 +33,7 @@ func (ctx *Context) Error(msgs ...interface{}) {
 			s = fmt.Sprint("frundis: ", ctx.loc.curFile, ":")
 		}
 	} else {
-		s = fmt.Sprint("frundis: ")
+		s = "frundis: "
 	}
 	if ctx.Macro != "" {
 		s += ctx.Macro + ": "
@@ -272,14 +272,22 @@ func shellFilter(exp Exporter, args []string, text string) string {
 		ctx.Error(err)
 		return ""
 	}
-	file.Sync()
-	file.Seek(0, 0) // return to start of the file
+	err = file.Sync()
+	if err != nil {
+		ctx.Errorf("shell command: %v: file sync: %v", args, err)
+		return ""
+	}
+	_, err = file.Seek(0, 0) // return to start of the file
+	if err != nil {
+		ctx.Errorf("shell command: %v: file seek: %v", args, err)
+		return ""
+	}
 	cmd := getCommand(args)
 	cmd.Stdin = file
 	cmd.Stderr = os.Stderr
 	bytes, err := cmd.Output()
 	if err != nil {
-		ctx.Errorf("shell command: %v: %s", args, err)
+		ctx.Errorf("shell command: %v: %v", args, err)
 		return ""
 	}
 	return string(bytes)

@@ -234,7 +234,7 @@ func (exp *exporter) BeginHeader(macro string, numbered bool, title string) {
 		}
 	}
 	w := ctx.W()
-	toc, _ := ctx.LoXstack["toc"]
+	toc := ctx.LoXstack["toc"]
 	entry := toc[ctx.Toc.HeaderCount-1] // headers count is updated before
 	id := exp.getID(entry)
 	fmt.Fprintf(w, "<h%d class=\"%s\" id=\"%s\">", num, macro, id)

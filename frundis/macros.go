@@ -1466,9 +1466,7 @@ func processInlineMacros(exp Exporter, args [][]ast.Inline) string {
 				if len(b.Text) > 0 {
 					b.Text = append(b.Text, ast.Text(" "))
 				}
-				for _, elt := range arg {
-					b.Text = append(b.Text, elt)
-				}
+				b.Text = append(b.Text, arg...)
 			}
 		}
 	}
@@ -1642,7 +1640,10 @@ func endParagraph(exp Exporter, softbreak bool) {
 
 func processParagraph(exp Exporter) {
 	ctx := exp.Context()
-	ctx.Wout.Write(exp.FormatParagraph(ctx.buf.Bytes()))
+	_, err := ctx.Wout.Write(exp.FormatParagraph(ctx.buf.Bytes()))
+	if err != nil {
+		ctx.Errorf("writing paragraph output: %v", err)
+	}
 	ctx.buf.Reset()
 	ctx.parScope = false
 }

@@ -73,7 +73,8 @@ func (exp *exporter) BeginDescList(id string) {
 
 func (exp *exporter) BeginDescValue() {
 	exp.nesting = 3
-	exp.Context().Wout.WriteString("  ~ ")
+	w := exp.Context().W()
+	fmt.Fprint(w, "  ~ ")
 }
 
 func (exp *exporter) BeginDialogue() {
@@ -129,8 +130,7 @@ func (exp *exporter) BeginItem() {
 func (exp *exporter) BeginEnumItem() {
 	ctx := exp.Context()
 	w := ctx.W()
-	var item string
-	item = "1. "
+	item := "1. "
 	if exp.nesting >= 3 {
 		// should allways be the case
 		fmt.Fprint(w, strings.Repeat(" ", exp.nesting-3))
@@ -211,7 +211,8 @@ func (exp *exporter) DescName(name string) {
 }
 
 func (exp *exporter) EndDescList() {
-	exp.Context().Wout.WriteString("\n")
+	w := exp.Context().W()
+	fmt.Fprint(w, "\n")
 }
 
 func (exp *exporter) EndDescValue() {

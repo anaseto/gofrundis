@@ -34,10 +34,6 @@ type exporter struct {
 	OutputFile    string
 	curOutputFile *os.File
 	Standalone    bool
-	dominilof     bool
-	dominilot     bool
-	dominitoc     bool
-	minitoc       bool
 	verse         bool
 	inCell        bool
 	fontstack     []string
@@ -344,7 +340,7 @@ func (exp *exporter) EndParagraphUnsoftly() {
 	w := exp.Context().W()
 	if exp.verse {
 		fmt.Fprint(w, "\n\n")
-	} else {
+		//} else {
 		// XXX: in mom several .PP add up so this was buggy
 		//fmt.Fprint(w, ".PP\n")
 	}
@@ -418,7 +414,7 @@ func (exp *exporter) GenRef(prefix string, id string, hasfile bool) string {
 	if prefix != "" {
 		return fmt.Sprintf("%s:%s", prefix, id)
 	}
-	return fmt.Sprintf("%s", id)
+	return id
 }
 
 func (exp *exporter) HeaderReference(macro string) string {

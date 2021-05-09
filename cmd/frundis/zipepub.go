@@ -77,7 +77,7 @@ func writeEpub(tempDir string, destFilePath string) error {
 		var w io.Writer
 		if path == filepath.Join(tempDir, mimetypeFilename) {
 			// Skip the mimetype file if it's already been written
-			if skipMimetypeFile == true {
+			if skipMimetypeFile {
 				return nil
 			}
 			// The mimetype file must be uncompressed according to the EPUB spec
