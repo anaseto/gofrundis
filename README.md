@@ -6,7 +6,7 @@ language](https://frundis.tuxfamily.org/man/frundis_syntax-5.html), a semantic
 markup language primarily intended for supporting authoring of novels, but also
 well suited for many other kinds of documents. The [frundis
 tool](https://frundis.tuxfamily.org/man/frundis-1.html) can export documents
-into to LaTeX, XHTML 5, EPUB, markdown and groff mom.
+to LaTeX, XHTML 5, EPUB, markdown and groff mom.
 
 The language has a focus on simplicity. It provides a few flexible built-in
 macros with extensible semantics. It strives to provide good error messages and
