@@ -380,7 +380,12 @@ func macroEd(exp Exporter) {
 	if len(args) > 0 {
 		ctx.Error("useless arguments")
 	}
-	scope := ctx.popScope("block")
+	var scope *scope
+	for _, sc := range ctx.scopes["block"] {
+		if sc.macro == "Bd" {
+			scope = sc
+		}
+	}
 	if scope == nil {
 		ctx.Error("no corresponding `.Bd'")
 		return
@@ -400,6 +405,7 @@ func macroEd(exp Exporter) {
 	}
 	closeUnclosedScopes(exp, "inline")
 	closeUnclosedBlocks(exp, "Bd")
+	ctx.popScope("block")
 	endParagraph(exp, pbreak)
 	exp.EndDisplayBlock(scope.tag)
 
@@ -1669,7 +1675,10 @@ func closeUnclosedScopes(exp Exporter, scope string) {
 					ctx.Args = append(ctx.Args,
 						[]ast.Inline{ast.Text("-t")}, []ast.Inline{ast.Text(s.tag)})
 				}
+				oquiet := ctx.quiet
+				ctx.quiet = true
 				macroEm(exp)
+				ctx.quiet = oquiet
 				ctx.Args = ctx.Args[:0]
 			}
 		case "block":
@@ -1677,7 +1686,7 @@ func closeUnclosedScopes(exp Exporter, scope string) {
 				scopes := ctx.scopes["block"]
 				s := scopes[len(scopes)-1]
 				switch s.macro {
-				case "Bl":
+				case "Bl", "It":
 					ctx.Macro = "El"
 				default:
 					ctx.Macro = "Ed"
@@ -1686,12 +1695,15 @@ func closeUnclosedScopes(exp Exporter, scope string) {
 					ctx.Args = append(ctx.Args,
 						[]ast.Inline{ast.Text("-t")}, []ast.Inline{ast.Text(s.tag)})
 				}
+				oquiet := ctx.quiet
+				ctx.quiet = true
 				switch s.macro {
-				case "Bl":
+				case "Bl", "It":
 					macroEl(exp)
 				default:
 					macroEd(exp)
 				}
+				ctx.quiet = oquiet
 				ctx.Args = ctx.Args[:0]
 			}
 		}
@@ -1727,38 +1739,45 @@ func closeUnclosedBlocks(exp Exporter, macro string) {
 		ctx.Macro = curMacro
 		ctx.Args = curArgs
 	}()
-	for len(ctx.scopes["block"]) > 0 {
-		scopes := ctx.scopes["block"]
-		s := scopes[len(scopes)-1]
+	for i := len(scopes) - 1; i >= 0; i-- {
+		s := scopes[i]
 		if s.macro == macro || macro == "It" && s.macro == "Bl" {
 			return
 		}
 		endParagraph(exp, ParBreakNormal)
+		location := ctx.scopeLocation(s)
+		var tag string
+		if s.tag != "" {
+			tag = " of type " + s.tag
+		}
 		switch s.macro {
-		case "Bl":
+		case "Bl", "It":
+			msg := fmt.Sprintf("found %s while `.%s' macro%s %s isn't closed yet by a `.%s'",
+				curMacro, s.macro, tag, location, "El")
+			ctx.Error(msg)
 			ctx.Macro = "El"
 		default:
+			msg := fmt.Sprintf("found %s while `.%s' macro%s %s isn't closed yet by a `.%s'",
+				curMacro, s.macro, tag, location, "Ed")
+			ctx.Error(msg)
 			ctx.Macro = "Ed"
 		}
 		if s.tag != "" {
 			ctx.Args = append(ctx.Args,
 				[]ast.Inline{ast.Text("-t")}, []ast.Inline{ast.Text(s.tag)})
 		}
-		location := ctx.scopeLocation(s)
-		var tag string
-		if s.tag != "" {
-			tag = " of type " + s.tag
-		}
-		msg := fmt.Sprintf("found %s while `.%s' macro%s %s isn't closed yet by a `.%s'",
-			curMacro, s.macro, tag, location, ctx.Macro)
-		ctx.Error(msg)
+		oquiet := ctx.quiet
+		ctx.quiet = true
 		switch s.macro {
-		case "Bl":
+		case "Bl", "It":
 			macroEl(exp)
 		default:
 			macroEd(exp)
 		}
+		ctx.quiet = oquiet
 		ctx.Args = ctx.Args[:0]
+		ctx.Macro = curMacro
+		ctx.Args = curArgs
 	}
 }
 
