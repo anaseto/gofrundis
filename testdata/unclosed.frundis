@@ -1,0 +1,47 @@
+.X dtag -f xhtml -t one -c div
+.X dtag -f xhtml -t two -c div
+.X dtag -f xhtml -t three -c div
+.Bd -t one
+.Bl
+.It
+.Ed
+.It
+lolo
+.El
+.Bd -t two
+.Bd -t one
+.Ed -t two
+.Ed -t one
+.Bm
+open
+.Bd
+close
+.Ed
+.Bl -t verse
+lala
+.It lolo
+.It lulu
+.P
+lili
+.It lulu
+.Bd
+.El
+lolo     
+lala
+.Bd
+.Bl
+.El
+.Ed
+.Bl
+lolo
+.It lili
+.El
+.Bd
+.Bl
+.It
+.Bm
+.Bm
+.Ed
+.Bd
+.Bl
+.Bm

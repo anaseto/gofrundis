@@ -29,13 +29,15 @@ func ProcessFrundisSource(exp Exporter, filename string, unrestricted bool) erro
 		ctx.loc = &location{curBlock: -1, curFile: filename}
 	}
 	ctx.Macro = "End Of File"
-	closeUnclosedBlocks(exp, "Bm")
-	closeUnclosedBlocks(exp, "Bl")
-	closeUnclosedBlocks(exp, "Bd")
-	checkForUnclosedScope(exp, "#if")
+	closeUnclosedScopes(exp, scopeInline)
+	endParagraph(exp, ParBreakNormal)
+	closeUnclosedScopes(exp, scopeBlock)
+	s := ctx.scopes[scopeIf]
+	if len(s) > 0 {
+		warnUnclosedScope(exp, s[len(s)-1])
+	}
 	checkForUnclosedFormatBlock(exp)
 	checkForUnclosedDe(exp)
-	endParagraph(exp, ParBreakNormal)
 	exp.PostProcessing()
 	return nil
 }

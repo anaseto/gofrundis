@@ -4,20 +4,28 @@ package frundis
 
 import "fmt"
 
+type scopeKind int
+
+const (
+	scopeBlock scopeKind = iota
+	scopeInline
+	scopeIf
+)
+
 type scope struct {
 	tag         string
 	tagRequired bool
 	id          string
 	lnum        int
 	file        string
-	name        string
+	kind        scopeKind
 	macro       string
 	inUserMacro bool
 }
 
 // pushScope adds a new scope
 func (ctx *Context) pushScope(s *scope) {
-	st, ok := ctx.scopes[s.name]
+	st, ok := ctx.scopes[s.kind]
 	if !ok {
 		st = []*scope{}
 	}
@@ -33,17 +41,17 @@ func (ctx *Context) pushScope(s *scope) {
 	}
 
 	st = append(st, s)
-	ctx.scopes[s.name] = st
+	ctx.scopes[s.kind] = st
 }
 
 // popScope pops a scope from specific tag
-func (ctx *Context) popScope(name string) *scope {
-	st, ok := ctx.scopes[name]
+func (ctx *Context) popScope(kind scopeKind) *scope {
+	st, ok := ctx.scopes[kind]
 	if !ok || len(st) == 0 {
 		return nil
 	}
 	s := st[len(st)-1]
-	ctx.scopes[name] = st[:len(st)-1]
+	ctx.scopes[kind] = st[:len(st)-1]
 	return s
 }
 

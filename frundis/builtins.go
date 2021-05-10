@@ -146,7 +146,7 @@ func (ctx *Context) searchArgInText(text []ast.Inline, opts map[string]Option) (
 func macroIfStart(exp Exporter) {
 	// macro .#if
 	ctx := exp.Context()
-	ctx.pushScope(&scope{name: "#if"})
+	ctx.pushScope(&scope{kind: scopeIf})
 	if ctx.ifIgnoreDepth > 0 {
 		ctx.ifIgnoreDepth++
 		return
@@ -203,7 +203,7 @@ func macroIfEnd(exp Exporter) {
 	if ctx.ifIgnoreDepth > 0 {
 		ctx.ifIgnoreDepth--
 	}
-	scope := ctx.popScope("#if")
+	scope := ctx.popScope(scopeIf)
 	if scope == nil && ctx.Process {
 		ctx.Error("no corresponding `.#if'")
 	}

@@ -198,8 +198,9 @@ type Context struct {
 	line          int                            // current/last block source line
 	loc           *location                      // source location information
 	parScope      bool                           // whether currently inside a paragraph or not
+	verseScope    bool                           // whether currently inside a verse or not
 	rawText       bytes.Buffer                   // buffer for currently accumulated raw text (as-is text of Bf/Ef)
-	scopes        map[string]([]*scope)          // scopes
+	scopes        map[scopeKind]([]*scope)       // scopes
 	text          []ast.Inline                   // current/last text block text
 	uMacroCall    *uMacroCallInfo                // information related to user macro call
 	uMacroDef     *uMacroDefInfo                 // information related to user macro definition
@@ -327,7 +328,7 @@ func (ctx *Context) Init() {
 	ctx.bufi2t = bytes.Buffer{}
 	ctx.bufa2t = bytes.Buffer{}
 	ctx.bufra = bytes.Buffer{}
-	ctx.scopes = make(map[string]([]*scope))
+	ctx.scopes = make(map[scopeKind]([]*scope))
 	ctx.uMacros = make(map[string]*uMacroDefInfo)
 	ctx.ivars = make(map[string]string)
 	ctx.validFormats = []string{"markdown", "xhtml", "latex", "epub", "mom"}
