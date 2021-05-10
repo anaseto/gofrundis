@@ -32,7 +32,7 @@ func ProcessFrundisSource(exp Exporter, filename string, unrestricted bool) erro
 	closeUnclosedBlocks(exp, "Bm")
 	closeUnclosedBlocks(exp, "Bl")
 	closeUnclosedBlocks(exp, "Bd")
-	checkForUnclosedBlock(exp, "#if")
+	checkForUnclosedScope(exp, "#if")
 	checkForUnclosedFormatBlock(exp)
 	checkForUnclosedDe(exp)
 	endParagraph(exp, ParBreakNormal)

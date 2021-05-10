@@ -109,3 +109,16 @@ Text\&.
 .PP
 .PDF_LINK "label2" SUFFIX "" "untitled enum list"
 .PP
+.LIST
+.ITEM
+First Paragraph\&.
+.PP
+Second Paragraph\&.
+.ITEM
+Before block\&.
+.PP
+In block\&.
+.PP
+After block\&.
+.LIST OFF
+.PP

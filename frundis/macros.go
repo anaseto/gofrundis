@@ -63,7 +63,7 @@ func hasBlankLine(s string) bool {
 
 func macroBd(exp Exporter) {
 	ctx := exp.Context()
-	if inVerseScope(exp) {
+	if scopeVerse(exp) {
 		ctx.Error("`Bd' disallowed within verse")
 		return
 	}
@@ -161,7 +161,7 @@ func macroBf(exp Exporter) {
 
 func macroBl(exp Exporter) {
 	ctx := exp.Context()
-	if inVerseScope(exp) {
+	if scopeVerse(exp) {
 		ctx.Error("`Bl' disallowed within verse")
 		return
 	}
@@ -354,7 +354,7 @@ func macroD(exp Exporter) {
 	if ctx.parScope {
 		closeSpanningBlocks(exp)
 		processParagraph(exp)
-		if inVerseScope(exp) {
+		if scopeVerse(exp) {
 			exp.EndStanza()
 		} else {
 			exp.EndParagraph(ParBreakNormal)
@@ -369,7 +369,7 @@ func macroD(exp Exporter) {
 
 func macroEd(exp Exporter) {
 	ctx := exp.Context()
-	if inVerseScope(exp) {
+	if scopeVerse(exp) {
 		ctx.Error("`Ed' disallowed within verse")
 		return
 	}
@@ -512,6 +512,10 @@ func macroElProcess(exp Exporter) {
 		case "enum":
 			ctx.Error("no previous `.It'. Empty list?")
 			exp.BeginEnumItem()
+		case "verse":
+			if !ctx.parScope {
+				ctx.Error("unexpected accumulated text outside item scope")
+			}
 		default:
 			if ctx.parScope {
 				ctx.Error("unexpected accumulated text outside item scope")
@@ -847,7 +851,7 @@ func macroItProcess(exp Exporter) {
 func macroItDesc(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	closeUnclosedBlocks(exp, "It")
-	if inItScope(exp) {
+	if scopeIt(exp) {
 		endParagraph(exp, ParBreakItem)
 		exp.EndDescValue()
 	}
@@ -859,7 +863,7 @@ func macroItDesc(exp Exporter, args [][]ast.Inline) {
 	exp.DescName(name)
 	exp.BeginDescValue()
 	ctx.parScope = false
-	if !inItScope(exp) {
+	if !scopeIt(exp) {
 		ctx.pushScope(&scope{name: "block", macro: "It"})
 	}
 }
@@ -867,7 +871,7 @@ func macroItDesc(exp Exporter, args [][]ast.Inline) {
 func macroItemenum(exp Exporter, args [][]ast.Inline, tag string) {
 	ctx := exp.Context()
 	closeUnclosedBlocks(exp, "It")
-	if inItScope(exp) {
+	if scopeIt(exp) {
 		endParagraph(exp, ParBreakItem)
 		switch tag {
 		case "item":
@@ -891,7 +895,7 @@ func macroItemenum(exp Exporter, args [][]ast.Inline, tag string) {
 		fmt.Fprint(w, processInlineMacros(exp, args))
 		ctx.WantsSpace = true
 	}
-	if !inItScope(exp) {
+	if !scopeIt(exp) {
 		ctx.pushScope(&scope{name: "block", macro: "It"})
 	}
 	//text := ""
@@ -904,7 +908,7 @@ func macroItemenum(exp Exporter, args [][]ast.Inline, tag string) {
 func macroItTable(exp Exporter, args [][]ast.Inline) {
 	ctx := exp.Context()
 	closeUnclosedBlocks(exp, "It")
-	if inItScope(exp) {
+	if scopeIt(exp) {
 		endParagraph(exp, ParBreakItem)
 		exp.EndTableCell()
 		exp.EndTableRow()
@@ -924,7 +928,7 @@ func macroItTable(exp Exporter, args [][]ast.Inline) {
 		fmt.Fprint(w, processInlineMacros(exp, args))
 		ctx.WantsSpace = true
 	}
-	if !inItScope(exp) {
+	if !scopeIt(exp) {
 		ctx.pushScope(&scope{name: "block", macro: "It"})
 	}
 }
@@ -983,7 +987,7 @@ func macroP(exp Exporter) {
 	if ctx.parScope {
 		closeSpanningBlocks(exp)
 		processParagraph(exp)
-		if inVerseScope(exp) {
+		if scopeVerse(exp) {
 			exp.EndStanza()
 		} else {
 			exp.EndParagraph(ParBreakNormal)
@@ -1106,7 +1110,7 @@ func macroTaProcess(exp Exporter) {
 	closeUnclosedBlocks(exp, "It")
 	scopes = ctx.scopes["block"]
 	var s *scope
-	if inItScope(exp) {
+	if scopeIt(exp) {
 		s = scopes[len(scopes)-2]
 	} else {
 		ctx.Error("there are no rows")
@@ -1116,7 +1120,7 @@ func macroTaProcess(exp Exporter) {
 		ctx.Error("not a ``table'' list", s.tag, s.macro)
 		return
 	}
-	if !inItScope(exp) {
+	if !scopeIt(exp) {
 		ctx.Error("outside an `.It' row scope")
 		return
 	}
@@ -1580,7 +1584,7 @@ func beginPhrasingMacro(exp Exporter, nospace bool) {
 		exp.BeginPhrasingMacroInParagraph(nospace)
 		return
 	}
-	if !ctx.Inline && !inVerseScope(exp) {
+	if !ctx.Inline && !scopeVerse(exp) {
 		exp.BeginParagraph()
 		reopenSpanningBlocks(exp)
 	}
@@ -1647,7 +1651,7 @@ func closeSpanningBlocks(exp Exporter) {
 // closeUnclosedScopes closes unclosed scopes of a given type.
 func closeUnclosedScopes(exp Exporter, scope string) {
 	ctx := exp.Context()
-	if checkForUnclosedBlock(exp, scope) {
+	if checkForUnclosedScope(exp, scope) {
 		curMacro := ctx.Macro
 		curArgs := ctx.Args
 		ctx.Args = [][]ast.Inline{}
@@ -1792,9 +1796,9 @@ func processParagraph(exp Exporter) {
 	ctx.parScope = false
 }
 
-// checkForUnclosedBlock returns true if there is an unclosed block of type
+// checkForUnclosedScope returns true if there is an unclosed block of type
 // given by macro, and warns in such a case.
-func checkForUnclosedBlock(exp Exporter, scope string) bool {
+func checkForUnclosedScope(exp Exporter, scope string) bool {
 	ctx := exp.Context()
 	stack := ctx.scopes[scope]
 	if len(stack) > 0 {
@@ -1864,21 +1868,7 @@ func checkForUnclosedDe(exp Exporter) {
 	ctx.Errorf("found End Of File while `.#de' macro at line %d of file %s isn't closed by a `.#.'", ctx.uMacroDef.line, ctx.uMacroDef.file)
 }
 
-// checkForList checks whether in list (not including verse)
-// XXX unused
-func checkForList(exp Exporter) bool {
-	ctx := exp.Context()
-	scopes, ok := ctx.scopes["block"]
-	if ok && len(scopes) > 0 {
-		last := scopes[len(scopes)-1]
-		if last == nil || last.tag != "verse" {
-			return true
-		}
-	}
-	return false
-}
-
-func inVerseScope(exp Exporter) bool {
+func scopeVerse(exp Exporter) bool {
 	ctx := exp.Context()
 	scopes, ok := ctx.scopes["block"]
 	if ok && len(scopes) > 0 {
@@ -1888,7 +1878,7 @@ func inVerseScope(exp Exporter) bool {
 	return false
 }
 
-func inItScope(exp Exporter) bool {
+func scopeIt(exp Exporter) bool {
 	ctx := exp.Context()
 	scopes := ctx.scopes["block"]
 	if len(scopes) > 0 {

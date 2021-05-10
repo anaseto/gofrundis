@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd May 9, 2021
+.Dd May 10, 2021
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -227,7 +227,9 @@ refers to markdown, and
 refers to groff mom.
 Several formats can be specified at once by separating them by commas.
 .Em Note:
-only XHTML, EPUB and LaTeX output formats are considered complete and mature.
+only XHTML, EPUB and LaTeX output formats handle the complete language.
+For example, the mom and markdown output formats do not handle complex lists
+and tables.
 .Ss Restricted mode
 Restricted mode (option
 .Fl t

@@ -79,3 +79,15 @@ Text
 Text.
 .El
 .Sx label2 untitled enum list
+.Bl
+.It
+First Paragraph.
+.P
+Second Paragraph.
+.It
+Before block.
+.Bd
+In block.
+.Ed
+After block.
+.El
