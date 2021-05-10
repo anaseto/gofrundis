@@ -145,7 +145,8 @@ func doFile(file string, format string, tpl bool) error {
 	} else {
 		cmd = exec.Command(binPath, "-T", format, "-x", "-a", "-o", outputFile, file)
 	}
-	_, err = cmd.CombinedOutput()
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
 	ref := name + "." + suffix
 	if err != nil {
 		ok(false, ref)

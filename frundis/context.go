@@ -97,16 +97,7 @@ type Renderer interface {
 	// EndMarkupBlock ends a markup block (e.g. "</em>").
 	EndMarkupBlock(tag string, id string, punct string)
 	// EndParagraph ends a paragraph (e.g. "</p>").
-	EndParagraph()
-	// EndParagraph ends a paragraph softly. It can be the same as
-	// EndParagraph, and is called before lists and display blocks (useful
-	// for LaTeX, in which a list can be preceded by text in a same
-	// paragraph).
-	EndParagraphSoftly()
-	// EndParagraphUnsoftly ends an empty paragraph (e.g. useful for
-	// LaTeX, to force a real paragraph break (not a soft break) before a
-	// list)
-	EndParagraphUnsoftly()
+	EndParagraph(ParagraphBreak)
 	// EndStanza ends a stanza.
 	EndStanza()
 	// EndTable ends a table (e.g. "</table>").
@@ -203,7 +194,6 @@ type Context struct {
 	files         map[string]([]ast.Block)       // parsed files
 	frundisINC    []string                       // list of paths where to search for frundis source files
 	ifIgnoreDepth int                            // depth of "#if" blocks with false condition
-	itemScope     bool                           // whether currently inside a list item
 	ivars         map[string]string              // interpolation variables
 	line          int                            // current/last block source line
 	loc           *location                      // source location information
@@ -247,7 +237,6 @@ type uMacroDefInfo struct {
 type VerseInfo struct {
 	Used       bool // whether there is a poem in the source
 	verseCount int  // current titled poem number
-	Scope      bool // currently processing poem
 }
 
 // TableInfo contains table information.

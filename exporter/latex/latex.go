@@ -337,23 +337,21 @@ func (exp *exporter) EndMarkupBlock(tag string, id string, punct string) {
 	fmt.Fprint(w, punct)
 }
 
-func (exp *exporter) EndParagraph() {
+func (exp *exporter) EndParagraph(pbreak frundis.ParagraphBreak) {
 	w := exp.Context().W()
-	fmt.Fprint(w, "\n\n")
-}
-
-func (exp *exporter) EndParagraphSoftly() {
-	w := exp.Context().W()
-	fmt.Fprint(w, "\n")
-}
-
-func (exp *exporter) EndParagraphUnsoftly() {
-	w := exp.Context().W()
-	fmt.Fprint(w, "\n")
+	switch pbreak {
+	case frundis.ParBreakForced:
+		fmt.Fprint(w, "\n")
+	case frundis.ParBreakItem:
+	case frundis.ParBreakBlock:
+		fmt.Fprint(w, "\n")
+	default:
+		fmt.Fprint(w, "\n\n")
+	}
 }
 
 func (exp *exporter) EndStanza() {
-	exp.EndParagraph()
+	exp.EndParagraph(frundis.ParBreakNormal)
 }
 
 func (exp *exporter) EndTable(tableinfo *frundis.TableData) {

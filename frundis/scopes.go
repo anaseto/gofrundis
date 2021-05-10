@@ -11,6 +11,7 @@ type scope struct {
 	lnum        int
 	file        string
 	name        string
+	macro       string
 	inUserMacro bool
 }
 

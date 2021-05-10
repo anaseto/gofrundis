@@ -35,7 +35,7 @@ func ProcessFrundisSource(exp Exporter, filename string, unrestricted bool) erro
 	checkForUnclosedBlock(exp, "#if")
 	checkForUnclosedFormatBlock(exp)
 	checkForUnclosedDe(exp)
-	endParagraph(exp, false)
+	endParagraph(exp, ParBreakNormal)
 	exp.PostProcessing()
 	return nil
 }
