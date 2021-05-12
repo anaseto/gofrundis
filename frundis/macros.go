@@ -1166,7 +1166,12 @@ func macroTcInfos(exp Exporter) {
 func macroTcProcess(exp Exporter) {
 	ctx := exp.Context()
 	closeUnclosedScopes(exp, scopeInline)
-	closeUnclosedScopes(exp, scopeBlock) // XXX not necessary in xhtml
+	switch ctx.Format {
+	case "xhtml", "epub":
+		// allow blocks when exporting to xhtml or epub
+	default:
+		closeUnclosedScopes(exp, scopeBlock)
+	}
 	opts, flags, args := ctx.ParseOptions(specOptTc, ctx.Args)
 	if len(args) > 0 {
 		ctx.Error("useless arguments")
