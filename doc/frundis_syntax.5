@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd May 10, 2021
+.Dd May 13, 2021
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -618,7 +618,7 @@ provides alternate text for the
 .Dq alt
 attribute.
 If the
-.Dq alt
+.Fl alt
 option is not passed, the
 .Dq alt
 attribute is set to
@@ -744,8 +744,7 @@ macro.
 .Pp
 In XHTML and EPUB, a header is rendered as an
 .Dq h Ns Ar N
-element, with class the name of the macro,
-and where
+element, with the name of the macro as a class attribute, and where
 .Ar N
 is such that the hierarchical order between header macros
 .Sx \&Pt ,
