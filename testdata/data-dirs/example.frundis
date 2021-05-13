@@ -1,5 +1,5 @@
 .X set epub-uuid very-unique-identifier
-.X set document-title Title
+.X set document-title Title\e
 .X set lang xx
 .Pt Part1
 .Ch -id chap1 Chap1

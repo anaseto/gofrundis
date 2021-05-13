@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"text/template"
 
-	"github.com/anaseto/gofrundis/escape"
 	"github.com/anaseto/gofrundis/frundis"
 )
 
@@ -44,9 +43,9 @@ func (exp *exporter) beginMomDocument() {
 		Author string
 		Date   string
 	}{
-		escape.Roff(title),
-		escape.Roff(author),
-		escape.Roff(date)}
+		title,
+		author,
+		date}
 	tmpl, err := template.New("preamble").Parse(`.PAPER A5
 .PRINTSTYLE TYPESET
 .TITLE "{{.Title}}"
