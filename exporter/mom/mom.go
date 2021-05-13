@@ -218,6 +218,8 @@ func (exp *exporter) BeginVerse(title string, id string) {
 	} else if id != "" {
 		fmt.Fprintf(w, ".PDF_TARGET \"%s\"\n", id)
 	}
+	fmt.Fprint(w, ".QUOTE_SIZE -1\n")
+	fmt.Fprint(w, ".QUOTE_INDENT 1\n")
 	fmt.Fprint(w, ".QUOTE\n")
 }
 
