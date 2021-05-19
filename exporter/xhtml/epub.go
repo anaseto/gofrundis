@@ -134,7 +134,7 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 			ctx.Params["epub-uuid"] = "urn:uuid:" + uuid
 		}
 	}
-	epub3 := strings.HasPrefix(ctx.Params["epub-version"], "3")
+	epub3 := !strings.HasPrefix(ctx.Params["epub-version"], "2")
 	if epub3 {
 		buf.WriteString("<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"3.0\" unique-identifier=\"epub-id-1\">\n")
 	} else {
