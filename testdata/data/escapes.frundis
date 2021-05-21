@@ -6,10 +6,10 @@
 .X mtag -t with-1attr -f latex -c emph -a |bla|a&a
 .X set dmark —\~
 .If data/includes/code.frundis
-A backslash `\e' is written `\ee'. To begin a line with a period you can
-\&. use a zero-width `\e&' character. {}
+A backslash `\e\&' is written `\ee\&'. To begin a line with a period you can
+\&. use a zero-width `\e&\&' character. {}
 .Ch -id label \&"title
-A `~'character
+A `~\&'character
 A non-breaking space\~!
 [bla]
 <bla>

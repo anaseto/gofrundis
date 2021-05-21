@@ -6,7 +6,7 @@ character. {}
 ======
 
 A \`\~'character A non-breaking space ! \[bla\] <bla\>
-^bla\#$%"'
+^bla\#$%"’
 
 —A dialogue starts with a mark. Two backslashes \\\\.
 

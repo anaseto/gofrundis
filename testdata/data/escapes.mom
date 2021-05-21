@@ -8,7 +8,7 @@ A `~\(cqcharacter
 A non-breaking space\~!
 [bla]
 <bla>
-^bla#$%\(dq\(cq
+^bla#$%\(dq’
 .PP
 —\~A dialogue starts with a mark\&.
 Two backslashes \e\e\&.

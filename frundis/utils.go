@@ -293,9 +293,9 @@ func shellFilter(exp Exporter, args []string, text string) string {
 	return string(bytes)
 }
 
-// FrenchTipography inserts non-breaking spaces following french punctuation
-// rules, as well as replacing quotes with tipographic ones.
-func FrenchTipography(exp Exporter, text []ast.Inline) []ast.Inline {
+// FrenchTypography inserts non-breaking spaces following french punctuation
+// rules, as well as replacing apostrophes with typographic ones.
+func FrenchTypography(exp Exporter, text []ast.Inline) []ast.Inline {
 	ctx := exp.Context()
 	newtext := []ast.Inline{}
 	escape := false
@@ -362,6 +362,43 @@ func FrenchTipography(exp Exporter, text []ast.Inline) []ast.Inline {
 					escape = false
 				}
 				space = c == ' ' || c == '\n'
+			}
+			if start <= len(elt)-1 {
+				newtext = append(newtext, ast.Text(elt[start:]))
+			}
+		default:
+			newtext = append(newtext, elt)
+		}
+	}
+	return newtext
+}
+
+// EnglishTypography replaces apostrophes with typographic ones.
+func EnglishTypography(exp Exporter, text []ast.Inline) []ast.Inline {
+	newtext := []ast.Inline{}
+	escape := false
+	for _, elt := range text {
+		switch elt := elt.(type) {
+		case ast.Escape:
+			escape = (elt == "&" || elt == "~")
+			newtext = append(newtext, elt)
+		case ast.Text:
+			start := 0
+			for j, c := range elt {
+				switch c {
+				case '\'':
+					next := j + utf8.RuneLen('\'')
+					if !escape {
+						if start != j {
+							newtext = append(newtext, ast.Text(elt[start:j]))
+						}
+						newtext = append(newtext, ast.Text("’"))
+						start = next
+					}
+					escape = false
+				default:
+					escape = false
+				}
 			}
 			if start <= len(elt)-1 {
 				newtext = append(newtext, ast.Text(elt[start:]))

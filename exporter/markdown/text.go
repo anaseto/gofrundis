@@ -374,8 +374,12 @@ func (exp *exporter) ParagraphTitle(title string) {
 }
 
 func (exp *exporter) RenderText(text []ast.Inline) string {
-	if exp.Context().Params["lang"] == "fr" {
-		text = frundis.FrenchTipography(exp, text)
+	ctx := exp.Context()
+	switch ctx.Params["lang"] {
+	case "fr":
+		text = frundis.FrenchTypography(exp, text)
+	case "en":
+		text = frundis.EnglishTypography(exp, text)
 	}
 	return escape.Markdown(exp.Context().InlinesToText(text))
 }
