@@ -45,3 +45,8 @@ Editor Support
 
 There is a frundis-specific vim syntax file under doc/vim/. Others editors
 should do fine by using any built-in general mode for roff/nroff files.
+
+Misc
+----
+
+The `misc` folder contains some utility scripts that may be useful.
