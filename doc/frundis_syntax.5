@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd May 13, 2021
+.Dd Mar 19, 2022
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -272,9 +272,11 @@ The syntax is as follows:
 .Op Fl t Ar tag
 .Ed
 .Pp
-The optional
+.Sx Bd
+is a generic macro for styled blocks, whose styling and exact semantics are
+controlled by the optional
 .Ar tag
-argument can be
+argument, which can be
 .Cm div ,
 or a new tag created by a previous
 .Sx X
