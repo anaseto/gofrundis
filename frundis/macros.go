@@ -567,7 +567,7 @@ func macroEm(exp Exporter) {
 	if !ctx.Process {
 		return
 	}
-	opts, _, args := ctx.ParseOptions(specOptEm, ctx.Args)
+	opts, flags, args := ctx.ParseOptions(specOptEm, ctx.Args)
 	scope := ctx.popScope(scopeInline)
 	if scope == nil {
 		ctx.Error("no corresponding `.Bm'")
@@ -600,7 +600,7 @@ func macroEm(exp Exporter) {
 			fmt.Fprint(w, renderArgs(exp, args))
 		}
 	}
-	ctx.WantsSpace = true
+	ctx.WantsSpace = !flags["ns"]
 }
 
 func macroFt(exp Exporter) {
@@ -1804,7 +1804,7 @@ const (
 	ParBreakForced
 )
 
-// endEventualParagraph ends an eventual paragraph. The break can be ``soft''
+// endEventualParagraph ends an eventual paragraph. The break can be “soft”
 // (for example in LaTeX this allows a list to belong to a surrounding
 // paragraph).
 func endParagraph(exp Exporter, pbreak ParagraphBreak) {

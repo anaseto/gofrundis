@@ -57,3 +57,5 @@ punctuation *
 SmThisIsNotAnEmphasizedTitle
 ----------------------------
 
+*A*BC.
+

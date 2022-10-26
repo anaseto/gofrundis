@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd Mar 19, 2022
+.Dd Oct 26, 2022
 .Dt FRUNDIS_SYNTAX 5
 .Os
 .Sh NAME
@@ -469,6 +469,7 @@ macro.
 The syntax is as follows:
 .Bd -ragged -offset indent
 .Pf \. Sx \&Em
+.Op Fl ns
 .Op Fl t Ar tag
 .Op Ar delimiter
 .Ed
@@ -484,6 +485,9 @@ The optional
 plays the same role as in the
 .Sx \&Ed
 macro.
+The optional
+.Fl ns
+flag specifies that no space is wanted before further paragraph text.
 .Ss \&Ft
 One line filter.
 The syntax is as follows:

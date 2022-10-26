@@ -88,3 +88,7 @@ Text.
 Text.
 .Sm This does not end in punctuation ""
 .Ch Sm\&ThisIsNotAnEmphasizedTitle
+.Bm
+A
+.Em -ns
+BC.

@@ -88,7 +88,10 @@ var specOptDef = map[string]Option{"f": ArgOption}
 var specOptDefVar = map[string]Option{"f": ArgOption}
 var specOptEd = map[string]Option{"t": ArgOption}
 var specOptEl = map[string]Option{}
-var specOptEm = map[string]Option{"t": ArgOption}
+var specOptEm = map[string]Option{
+	"t":  ArgOption,
+	"ns": FlagOption,
+}
 var specOptEf = map[string]Option{"ns": FlagOption}
 var specOptFt = map[string]Option{
 	"t":  ArgOption,

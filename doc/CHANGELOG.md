@@ -1,5 +1,11 @@
 This changelog file only lists important changes.
 
+## v0.13.0 2022-10-26
+
++ Improved support for english typography.
++ New -ns option in Em macro.
++ Added html coloration script in misc/ repository.
+
 ## v0.12.0 2021-05-10
 
 + Now lists and tables can handle more general content in HTML, EPUB and LaTeX
