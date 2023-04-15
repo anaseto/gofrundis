@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -56,7 +56,7 @@ func doWarnings(t *testing.T, path, format string) {
 		&xhtml.Options{
 			Format:     format,
 			OutputFile: ".gofrundis_warnings_test",
-			Werror:     ioutil.Discard,
+			Werror:     io.Discard,
 			//Werror:       os.Stderr,
 			AllInOneFile: true})
 	err = frundis.ProcessFrundisSource(exp, path, false)

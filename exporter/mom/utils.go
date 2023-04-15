@@ -2,7 +2,7 @@ package mom
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"text/template"
 
 	"github.com/anaseto/gofrundis/frundis"
@@ -19,7 +19,7 @@ func (exp *exporter) beginMomDocument() {
 		if !ok {
 			ctx.Errorf("mom preamble: %s: no such file", preamble)
 		} else {
-			source, err := ioutil.ReadFile(p)
+			source, err := os.ReadFile(p)
 			if err != nil {
 				ctx.Error(err)
 			} else {

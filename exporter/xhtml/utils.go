@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -301,7 +300,7 @@ func (exp *exporter) XHTMLdocumentHeader(w io.Writer, title string) {
 		if !ok {
 			ctx.Errorf("xhtml-top: %s: no such file", xhtmltop)
 		} else {
-			data, err := ioutil.ReadFile(f)
+			data, err := os.ReadFile(f)
 			if err != nil {
 				ctx.Errorf("xhtml-top: %s: %s", f, err)
 				return
@@ -318,7 +317,7 @@ func (exp *exporter) XHTMLdocumentFooter(w io.Writer) {
 		if !ok {
 			ctx.Errorf("xhtml-bottom: %s: no such file", xhtmlbottom)
 		} else {
-			data, err := ioutil.ReadFile(f)
+			data, err := os.ReadFile(f)
 			if err != nil {
 				ctx.Errorf("xhtml-bottom: %s: %s", f, err)
 				return
@@ -384,7 +383,7 @@ func (exp *exporter) xhtmlFileOutputChange(title string) {
 	if exp.curOutputFile != nil {
 		ctx.Wout = bufio.NewWriter(exp.curOutputFile)
 	} else {
-		ctx.Wout = bufio.NewWriter(ioutil.Discard)
+		ctx.Wout = bufio.NewWriter(io.Discard)
 		exp.curOutputFile = os.Stdout // XXX
 	}
 	exp.XHTMLdocumentHeader(ctx.Wout, title)

@@ -2,7 +2,6 @@ package frundis
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -255,7 +254,7 @@ func shellFilter(exp Exporter, args []string, text string) string {
 		ctx.Error("skipping disallowed external command")
 		return ""
 	}
-	file, err := ioutil.TempFile("", "frundis-")
+	file, err := os.CreateTemp("", "frundis-")
 	defer func() {
 		file.Close()
 		err := os.Remove(file.Name())

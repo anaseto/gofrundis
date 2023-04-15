@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -180,12 +179,12 @@ func doFile(file string, format string, tpl bool) error {
 		fmt.Fprint(os.Stderr, string(diff))
 		input := readLine()
 		if input == "Y" {
-			b, err := ioutil.ReadFile(outputFile)
+			b, err := os.ReadFile(outputFile)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error reading:%s", outputFile)
 				return nil
 			}
-			err = ioutil.WriteFile(ref, b, 0644)
+			err = os.WriteFile(ref, b, 0644)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error writing:%s", ref)
 				return nil

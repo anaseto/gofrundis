@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"html"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -44,12 +43,12 @@ func (exp *exporter) epubCopyImages() {
 		if info, err := os.Stat(newImage); err == nil && info.Mode().IsRegular() {
 			continue
 		}
-		data, err := ioutil.ReadFile(image)
+		data, err := os.ReadFile(image)
 		if err != nil {
 			ctx.Errorf("image copy: reading image: %s: %s", image, err)
 			continue
 		}
-		err = ioutil.WriteFile(newImage, data, 0644)
+		err = os.WriteFile(newImage, data, 0644)
 		if err != nil {
 			ctx.Errorf("image copy: writing image to %s: %s", newImage, err)
 		}
@@ -87,7 +86,7 @@ func (exp *exporter) epubGen() {
 func (exp *exporter) epubGenContainer() {
 	ctx := exp.Context()
 	containerXML := path.Join(exp.OutputFile, "META-INF", "container.xml")
-	err := ioutil.WriteFile(containerXML, []byte(
+	err := os.WriteFile(containerXML, []byte(
 		`<?xml version="1.0" encoding="utf-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
 <rootfiles>
@@ -173,7 +172,7 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 			ctx.Error("no such file:", em)
 			return
 		}
-		epubMetadata, err := ioutil.ReadFile(f)
+		epubMetadata, err := os.ReadFile(f)
 		if err != nil {
 			ctx.Error("error reading epub metadata file:", f)
 		} else {
@@ -270,7 +269,7 @@ func (exp *exporter) epubGenContentOpf(title string, lang string, cover string) 
 	}
 	buf.WriteString(`</package>
 `)
-	err := ioutil.WriteFile(contentOpf, buf.Bytes(), 0644)
+	err := os.WriteFile(contentOpf, buf.Bytes(), 0644)
 	if err != nil {
 		ctx.Errorf("writing opf file %s: %s", contentOpf, err)
 	}
@@ -293,7 +292,7 @@ func (exp *exporter) epubGenCover(title string, cover string) {
 </html>
 `)
 
-	err := ioutil.WriteFile(coverXhtml, buf.Bytes(), 0644)
+	err := os.WriteFile(coverXhtml, buf.Bytes(), 0644)
 	if err != nil {
 		ctx.Errorf("writing cover file %s: %s", coverXhtml, err)
 	}
@@ -311,7 +310,7 @@ func (exp *exporter) epubGenCSS() {
 			ctx.Error("no such file:", epubCSS)
 			return
 		}
-		contents, err := ioutil.ReadFile(epubCSS)
+		contents, err := os.ReadFile(epubCSS)
 		if err != nil {
 			ctx.Errorf("reading epub css %s: %s", epubCSS, err)
 			return
@@ -319,7 +318,7 @@ func (exp *exporter) epubGenCSS() {
 		buf.Write(contents)
 	}
 
-	err := ioutil.WriteFile(stylesheetCSS, buf.Bytes(), 0644)
+	err := os.WriteFile(stylesheetCSS, buf.Bytes(), 0644)
 	if err != nil {
 		ctx.Errorf("writing css file %s: %s", stylesheetCSS, err)
 	}
@@ -328,7 +327,7 @@ func (exp *exporter) epubGenCSS() {
 func (exp *exporter) epubGenMimetype() {
 	ctx := exp.Context()
 	mimetype := path.Join(exp.OutputFile, "mimetype")
-	err := ioutil.WriteFile(mimetype, []byte("application/epub+zip"), 0644)
+	err := os.WriteFile(mimetype, []byte("application/epub+zip"), 0644)
 	if err != nil {
 		ctx.Errorf("writing mimetype file %s: %s", mimetype, err)
 	}
@@ -357,7 +356,7 @@ func (exp *exporter) epubGenNav(title string) {
 	exp.writeTOC(buf, navToc, map[string][]ast.Inline{}, map[string]bool{})
 	if landmarks, ok := ctx.Params["epub-nav-landmarks"]; ok {
 		// TODO: document this if it turns out useful, or remove
-		data, err := ioutil.ReadFile(landmarks)
+		data, err := os.ReadFile(landmarks)
 		if err != nil {
 			ctx.Errorf("epub-nav-lanmarks %s: %s", landmarks, err)
 			return
@@ -369,7 +368,7 @@ func (exp *exporter) epubGenNav(title string) {
 </html>
 `)
 
-	err := ioutil.WriteFile(navFile, buf.Bytes(), 0644)
+	err := os.WriteFile(navFile, buf.Bytes(), 0644)
 	if err != nil {
 		ctx.Errorf("writing nav file %s: %s", navFile, err)
 	}
@@ -398,7 +397,7 @@ func (exp *exporter) epubGenNCX(title string) {
 	exp.writeTOC(buf, ncxToc, map[string][]ast.Inline{}, map[string]bool{})
 	buf.WriteString("</ncx>\n")
 
-	err := ioutil.WriteFile(ncxFile, buf.Bytes(), 0644)
+	err := os.WriteFile(ncxFile, buf.Bytes(), 0644)
 	if err != nil {
 		ctx.Errorf("writing ncx file %s: %s", ncxFile, err)
 	}

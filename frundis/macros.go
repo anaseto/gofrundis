@@ -3,7 +3,7 @@ package frundis
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -670,7 +670,7 @@ func macroIncludeFile(exp Exporter) {
 			beginPhrasingMacro(exp, flags["ns"])
 			ctx.WantsSpace = true
 		}
-		source, err := ioutil.ReadFile(filename)
+		source, err := os.ReadFile(filename)
 		if err != nil {
 			ctx.Error("as-is inclusion:", err)
 			return

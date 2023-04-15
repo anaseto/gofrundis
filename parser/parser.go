@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 
@@ -47,7 +47,7 @@ func (p *Parser) ParseWithReader(reader io.Reader) ([]ast.Block, error) {
 // ParseFile parses a frundis file and returns a list of AST blocks. Sets
 // p.Source to filename if empty.
 func (p *Parser) ParseFile(filename string) ([]ast.Block, error) {
-	file, err := ioutil.ReadFile(filename)
+	file, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
