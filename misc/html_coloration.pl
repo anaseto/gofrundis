@@ -19,7 +19,8 @@
 #
 # Use it in a frundis file with:
 #
-#   .If -as-is -shell "perl html_coloration.pl" source.frundis
+#   .X ftag -t frundis-code -shell "perl html_coloration.pl"
+#   .If -as-is -t frundis-code source.frundis
 #
 # Then you can parameter your css to color as you want. Available classes are:
 #   "comment", "macro", "ppmacro", "escape"
