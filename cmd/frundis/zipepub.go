@@ -1,5 +1,5 @@
 // This file is a modified version of write.go from
-// https://codeberg.org/bmaupin/go-epub which has the following license:
+// https://github.com/bmaupin/go-epub which has the following license:
 //
 // The MIT License (MIT)
 //
