@@ -9,7 +9,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/ast"
 )
 
 // Error writes msgs to ctx.Werror with some additional context information.

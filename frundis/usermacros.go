@@ -5,7 +5,7 @@ package frundis
 import (
 	"fmt"
 
-	"github.com/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/ast"
 )
 
 // argsSubst returns inline text where numbered arguments are substituted with

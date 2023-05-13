@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/anaseto/gofrundis/ast"
-	"github.com/anaseto/gofrundis/scanner"
-	"github.com/anaseto/gofrundis/token"
+	"codeberg.org/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/scanner"
+	"codeberg.org/anaseto/gofrundis/token"
 )
 
 // Parser gathers state data for parsing.

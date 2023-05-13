@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/anaseto/gofrundis/ast"
-	"github.com/anaseto/gofrundis/frundis"
+	"codeberg.org/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/frundis"
 )
 
 func (exp *exporter) epubCopyImages() {

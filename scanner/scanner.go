@@ -9,7 +9,7 @@ import (
 	"os"
 	"unicode"
 
-	"github.com/anaseto/gofrundis/token"
+	"codeberg.org/anaseto/gofrundis/token"
 )
 
 // Scanner gathers information and methods for scanning frundis files.

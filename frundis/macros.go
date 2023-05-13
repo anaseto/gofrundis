@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/ast"
 )
 
 // text: as-is (not escaped), or regular (escaped + additional processing)

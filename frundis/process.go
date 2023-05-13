@@ -3,8 +3,8 @@
 package frundis
 
 import (
-	"github.com/anaseto/gofrundis/ast"
-	"github.com/anaseto/gofrundis/parser"
+	"codeberg.org/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/parser"
 )
 
 // ProcessFrundisSource processes a frundis file with a given exporter. In

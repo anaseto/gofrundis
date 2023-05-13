@@ -11,8 +11,8 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/anaseto/gofrundis/ast"
-	"github.com/anaseto/gofrundis/frundis"
+	"codeberg.org/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/frundis"
 )
 
 // Options gathers configuration for HTML and EPUB export.

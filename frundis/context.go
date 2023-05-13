@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/ast"
 )
 
 // BaseExporter is a basic interface with essential Exporter methods.

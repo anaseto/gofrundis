@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/ast"
 )
 
 func macroDefStart(exp Exporter) {

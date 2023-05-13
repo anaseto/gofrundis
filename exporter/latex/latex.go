@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/anaseto/gofrundis/ast"
-	"github.com/anaseto/gofrundis/escape"
-	"github.com/anaseto/gofrundis/frundis"
+	"codeberg.org/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/escape"
+	"codeberg.org/anaseto/gofrundis/frundis"
 )
 
 // Options gathers configuration for LaTeX exporter.

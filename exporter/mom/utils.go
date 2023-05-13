@@ -5,7 +5,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/anaseto/gofrundis/frundis"
+	"codeberg.org/anaseto/gofrundis/frundis"
 )
 
 func (exp *exporter) beginMomDocument() {

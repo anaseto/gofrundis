@@ -9,8 +9,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/anaseto/gofrundis/ast"
-	"github.com/anaseto/gofrundis/frundis"
+	"codeberg.org/anaseto/gofrundis/ast"
+	"codeberg.org/anaseto/gofrundis/frundis"
 )
 
 type toc int

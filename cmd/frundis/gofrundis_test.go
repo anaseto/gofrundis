@@ -10,12 +10,12 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/anaseto/gofrundis/exporter/latex"
-	"github.com/anaseto/gofrundis/exporter/markdown"
-	"github.com/anaseto/gofrundis/exporter/mom"
-	"github.com/anaseto/gofrundis/exporter/tpl"
-	"github.com/anaseto/gofrundis/exporter/xhtml"
-	"github.com/anaseto/gofrundis/frundis"
+	"codeberg.org/anaseto/gofrundis/exporter/latex"
+	"codeberg.org/anaseto/gofrundis/exporter/markdown"
+	"codeberg.org/anaseto/gofrundis/exporter/mom"
+	"codeberg.org/anaseto/gofrundis/exporter/tpl"
+	"codeberg.org/anaseto/gofrundis/exporter/xhtml"
+	"codeberg.org/anaseto/gofrundis/frundis"
 )
 
 func TestMain(m *testing.M) {

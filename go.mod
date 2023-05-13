@@ -1,3 +1,3 @@
-module github.com/anaseto/gofrundis
+module codeberg.org/anaseto/gofrundis
 
 go 1.16
