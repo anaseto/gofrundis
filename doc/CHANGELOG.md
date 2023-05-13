@@ -1,5 +1,12 @@
 This changelog file only lists important changes.
 
+## v0.14.0 2023-05-13
+
++ Change main repository and module name to codeberg.org/anaseto/gofrundis.
++ Update some deprecated functions from io/ioutil to their currently
+  recommended alternatives.
++ A couple of minor fixes in documentation.
+
 ## v0.13.0 2022-10-26
 
 + Improved support for english typography.
